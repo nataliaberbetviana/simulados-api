@@ -40,9 +40,9 @@
     <div class="container" style="margin-top: 20px;">
         <h2>Recursos</h2>
         <p>Explore os simulados e materiais de estudo disponíveis na plataforma para se preparar para a certificação AWS.</p>
-        <a href="/simulados">Acessar Simulados</a>
-        <a href="/materiais" style="margin-left: 15px;">Acessar Materiais de Estudo</a>
-        <a href="'/links'" style="margin-left: 15px;">Acessar Links Úteis</a>
+        <a href="{{ url_for('simulados') }}">Acessar Simulados</a>
+        <a href="{{ url_for('materiais') }}" style="margin-left: 15px;">Acessar Materiais de Estudo</a>
+        <a href="{{ url_for('links') }}" style="margin-left: 15px;">Acessar Links Úteis</a>
     </div>
 </body>
 </html>

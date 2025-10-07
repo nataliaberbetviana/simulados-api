@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Simulados</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            text-align: center;
+            background-color: #f7f7f7;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2196f3;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 15px 0;
+            background-color: #e3f2fd;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        li:hover {
+            background-color: #bbdefb;
+        }
+        a {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+            color: #0d47a1;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .link-voltar {
+            margin-top: 25px;
+            display: inline-block;
+            color: #616161;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Escolha um Simulado</h1>
+        <p>Selecione um dos simulados abaixo para iniciar sua preparação.</p>
+        
+        <ul>
+            <!-- ESTA É A CONEXÃO COM O FLASK -->
+            {% for simulado in simulados_disponiveis %}
+            <li>
+                <!-- url_for('fazer_simulado') aponta para a função no app.py -->
+                <!-- id_do_simulado=simulado.id passa o ID 1, 2, etc. -->
+                <a href="{{ url_for('fazer_simulado', id_do_simulado=simulado.id) }}">
+                    {{ simulado.titulo }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <a class="link-voltar" href="{{ url_for('home') }}">Voltar para o Início</a>
+    </div>
+</body>
+</html>
