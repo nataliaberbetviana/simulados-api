@@ -1,0 +1,17 @@
+# Ignorar arquivos e pastas específicas
+# Ambiente virtual
+venv/
+simulados_api_flask/
+
+# Arquivos de cache do Python
+__pycache__/
+*.pyc
+
+# Arquivos de IDEs (se você usa o VS Code, por exemplo)
+.vscode/
+
+# Arquivos de log
+*.log
+
+# Arquivos temporários e de teste
+*.temp
