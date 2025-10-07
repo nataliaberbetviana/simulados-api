@@ -1,17 +1,32 @@
-# Ignorar arquivos e pastas específicas
-# Ambiente virtual
-venv/
-simulados_api_flask/
+# ---------------------------------------------
+# Pastas e Arquivos de Ambiente Virtual e Python
+# ---------------------------------------------
 
-# Arquivos de cache do Python
+# 1. Ambiente Virtual do Python
+# Ignora a pasta principal do ambiente virtual
+venv/
+# Se você tiver outro ambiente com nome diferente (ex: o que começa com 'simulados_api_flask' na sua imagem)
+simulados_api_flask/ 
+
+# 2. Pastas de Cache e Compilação do Python
+# Ignora a pasta de cache padrão
 __pycache__/
+# Ignora arquivos de bytecode compilados (.pyc)
 *.pyc
 
-# Arquivos de IDEs (se você usa o VS Code, por exemplo)
+# 3. Arquivos de Desenvolvimento (IDEs e Sistemas Operacionais)
+# Visual Studio Code (VS Code)
 .vscode/
 
-# Arquivos de log
-*.log
+# Arquivos de IDEs PyCharm/IntelliJ
+.idea/
 
-# Arquivos temporários e de teste
-*.temp
+# Arquivos de Mac OS (se usar macOS)
+.DS_Store
+
+# ---------------------------------------------
+# 4. Dados Locais e Segredos (Se necessário)
+# ---------------------------------------------
+
+# Arquivos de log (se sua aplicação criar)
+*.log
