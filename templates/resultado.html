@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultado do Simulado</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e8f5e9; /* Fundo suave verde-claro */
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2e7d32; /* Verde escuro */
+            margin-bottom: 10px;
+        }
+        .score {
+            font-size: 3em;
+            color: #43a047; /* Verde vibrante */
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 10px;
+            border: 3px solid #43a047;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        p {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .link-retorno {
+            display: block;
+            margin-top: 25px;
+            font-size: 1.1em;
+            color: #1976d2;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .link-retorno:hover {
+            color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simulado Finalizado!</h1>
+        
+        <!-- CORRIGIDO: Removida a duplicação de tag <strong> -->
+        <p>Você completou o simulado em <strong>{{ tempo_final_formatado }}</strong>.</p>
+        
+        <h2>Sua Pontuação Final:</h2>
+        <div class="score">{{ percentual }}%</div>
+        
+        <p>Você acertou <strong>{{ acertos }}</strong> de <strong>{{ total }}</strong> questões.</p>
+
+        <a class="link-retorno" href="{{ url_for('simulados') }}">
+            Fazer outro simulado
+        </a>
+        <a class="link-retorno" href="{{ url_for('historico') }}">
+            Ver Histórico
+        </a>
+    </div>
+</body>
+</html>

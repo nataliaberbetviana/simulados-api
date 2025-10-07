@@ -1,6 +1,5 @@
 # Arquivo: dados/simulados.py
 # Este arquivo funciona como um índice para todos os simulados disponíveis.
-# Ele NÃO contém as questões completas.
 
 SIMULADOS_DISPONIVEIS = [
     {

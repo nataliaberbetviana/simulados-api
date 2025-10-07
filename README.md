@@ -24,11 +24,12 @@ Este projeto é uma plataforma interativa e completa, criada para simplificar a 
 
 * **Linguagem**: Python
 * **Framework Web**: Flask
-* **Banco de Dados**: 
+* **Banco de Dados**:  Flask-SQLAlchemy
 ## ⚙️ Como Rodar o Projeto
 
 Siga os passos abaixo para ter o projeto rodando em sua máquina local.
 
+### Preparação Inicial
 **1. Clone o repositório**
 ```bash
 git clone git@github.com:nataliaberbetviana/simulados-api.git
@@ -50,18 +51,55 @@ venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
-**4. Execute a aplicação**
+
+### Criação do Banco de Dados
+O banco de dados será criado na primeira vez que você rodar o aplicativo
+
+**1. Execute a aplicação**
 <br>
 Para executar a aplicação Flask, use o comando abaixo. Ele garante que o servidor de desenvolvimento será iniciado corretamente
 ```
-flask run
+python app.py
 ```
 Se seu arquivo principal for diferente de app.py, use:
 ```bash
 export FLASK_APP=seu_arquivo.py
 flask run
 ```
+
+**2. No seu terminal, você verá a mensagem de confirmação:**
+```bash
+Banco de dados 'site.db' criado com sucesso!
+```
+
+**3. Acesso à plataforma**
+<br>
 A aplicação estará disponível em http://localhost:5000.
+
+## 🔄 Gerenciamento e Atualização (Sem Perder o Histórico)
+
+Para atualizar o projeto após puxar novas modificações do repositório (como novos simulados) sem deletar suas pontuações, siga esta rotina:
+1. Puxe as alterações do Git:
+```bash
+git pull origin main
+```
+2. Reinstale as dependências (se houver)
+```bash
+pip install -r requirements.txt
+```
+3. Inicie a aplicação
+```bash
+python app.py
+```
+IMPORTANTE: Como o banco de dados já existe, o bloco de criação automática do app.py será ignorado, e seus dados de histórico serão preservados.
+
+### Como Deletar e Resetar o Histórico
+
+Se você quiser apagar todos os resultados salvos (para começar do zero), acesse a rota de administração:
+* Certifique-se de que o servidor Flask está rodando.
+* Acesse esta URL no seu navegador: http://localhost:5000/resetar-historico
+* A página de histórico será recarregada, mostrando a tabela vazia.
+
 
 ## 📄 Licença
 

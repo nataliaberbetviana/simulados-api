@@ -3,26 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <title>Simulado: {{ simulado.titulo }}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f7f7;
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative; /* Para posicionar o timer */
+        }
+        /* Estilo para o Contador de Tempo */
+        .timer {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #d9534f; /* Cor vermelha para destacar */
+            padding: 5px 10px;
+            border: 2px solid #d9534f;
+            border-radius: 5px;
+        }
+        h1 {
+            color: #2196f3;
+            margin-bottom: 20px;
+            padding-right: 120px; /* Espaço para o timer */
+        }
+        h3 {
+            color: #555;
+            margin-top: 25px;
+        }
+        p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: left;
+        }
+        li {
+            margin: 10px 0;
+            background-color: #eef;
+            padding: 0;
+            border-radius: 5px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        li label {
+            display: block;
+            width: 100%;
+            cursor: pointer;
+            padding: 15px;
+            transition: background-color 0.3s;
+        }
+        li label:hover {
+            background-color: #ddeeff;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        button {
+            background-color: #2196f3;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin-top: 30px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0d47a1;
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ simulado.titulo }}</h1>
-    
-    {% for questao in simulado.questoes %}
-    <div style="margin-bottom: 20px;">
-        <h3>Questão {{ loop.index }}</h3>
-        <p>{{ questao.pergunta }}</p>
+    <div class="container">
+        <!-- Elemento para exibir o tempo -->
+        <div id="timer" class="timer">00:00:00</div>
         
-        <ul>
-            {% for opcao in questao.opcoes %}
-            <li>
-                <input type="radio" name="questao{{ loop.index }}" value="{{ opcao }}">
-                <label>{{ opcao }}</label>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endfor %}
+        <h1>{{ simulado.titulo }}</h1>
+        
+        <form method="POST" action="{{ url_for('processar_simulado', id_do_simulado=id_simulado) }}">
 
-    <a href="{{ url_for('simulados') }}">Voltar para a lista de simulados</a>
+            <input type="hidden" name="questao_index" value="{{ questao_index }}">
+            <!-- Campo oculto para salvar o tempo total decorrido -->
+            <input type="hidden" name="tempo_decorrido" id="tempo_decorrido_input" value="0">
+
+            <div style="margin-bottom: 20px;">
+                <h3>Questão {{ questao_index + 1 }} de {{ total_questoes }}</h3>
+                <p>{{ questao.pergunta }}</p>
+                
+                <ul>
+                    {% for opcao in questao.opcoes %}
+                    <li>
+                        <label>
+                            <input type="radio" name="resposta" value="{{ opcao }}" required>
+                            {{ opcao }}
+                        </label>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <button type="submit">Próxima Questão</button>
+        </form>
+
+        <br><a href="{{ url_for('simulados') }}">Voltar para a lista de simulados</a>
+    </div>
+
+    <script>
+        // Tempo total do simulado em segundos (1h30 = 5400 segundos)
+        const TEMPO_LIMITE = 5400; 
+        
+        // Flask DEVE fornecer esta variável (tempo já gasto em questões anteriores)
+        let tempoGastoPreviamente = {{ tempo_gasto_previamente | default(0) | tojson }}; 
+
+        let tempoRestante = TEMPO_LIMITE - tempoGastoPreviamente;
+        const tempoGastoNestaQuestao = 0; // Contagem começa em 0 para a questao atual
+
+        const timerDisplay = document.getElementById('timer');
+        const tempoInput = document.getElementById('tempo_decorrido_input');
+        const form = document.querySelector('form');
+
+        function formatarTempo(totalSegundos) {
+            if (totalSegundos < 0) return "00:00:00";
+            
+            const horas = Math.floor(totalSegundos / 3600);
+            const minutos = Math.floor((totalSegundos % 3600) / 60);
+            const segundos = totalSegundos % 60;
+
+            const pad = (num) => String(num).padStart(2, '0');
+            return `${pad(horas)}:${pad(minutos)}:${pad(segundos)}`;
+        }
+
+        function atualizarContador() {
+            if (tempoRestante <= 0) {
+                timerDisplay.textContent = "00:00:00";
+                clearInterval(intervalId);
+                // O tempo acabou, envia o formulário automaticamente
+                alert('O tempo acabou! O simulado será finalizado.');
+                form.submit();
+                return;
+            }
+
+            tempoRestante--;
+            tempoGastoNestaQuestao++; // Acompanha o tempo gasto na questao atual
+            
+            timerDisplay.textContent = formatarTempo(tempoRestante);
+            
+            // Salva o tempo TOTAL gasto (previamente + agora) no campo oculto do formulário
+            tempoInput.value = tempoGastoPreviamente + tempoGastoNestaQuestao;
+        }
+
+        // Exibe o tempo inicial assim que a página carrega
+        timerDisplay.textContent = formatarTempo(tempoRestante);
+
+        // Inicia o contador
+        const intervalId = setInterval(atualizarContador, 1000);
+        
+        // Certifica-se de que o valor final é salvo ao enviar o formulário
+        form.addEventListener('submit', () => {
+            // Garante que o valor final do tempo gasto (total) seja enviado
+            tempoInput.value = tempoGastoPreviamente + tempoGastoNestaQuestao;
+        });
+
+    </script>
 </body>
 </html>

@@ -12,7 +12,7 @@
             color: #333;
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: auto;
             background-color: #fff;
             padding: 30px;
@@ -30,6 +30,12 @@
             padding: 15px;
             margin-bottom: 25px;
             border-radius: 4px;
+            text-align: center;
+        }
+        .info-geral p {
+            display: inline-block;
+            margin: 0 15px;
+            font-weight: bold;
         }
         table {
             width: 100%;
@@ -57,17 +63,40 @@
             color: #007bff;
             text-decoration: none;
         }
+        .link-voltar:last-child {
+            margin-top: 10px;
+        }
+        .btn-reset {
+            background-color: #d9534f; /* Vermelho para reset */
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none; /* Remove sublinhado */
+            display: inline-block;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .btn-reset:hover {
+            background-color: #c9302c;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Histórico de Simulados</h1>
 
+        <!-- BOTÃO DE RESET -->
+        <a href="{{ url_for('resetar_historico') }}" class="btn-reset" onclick="return confirm('ATENÇÃO: Isso apagará TODOS os resultados do banco de dados. Tem certeza?');">
+            Limpar Histórico
+        </a>
+        
         <div class="info-geral">
             <h3>Seu Desempenho Geral</h3>
-            <p><strong>Maior Nota:</strong> <span id="maior-nota">95%</span></p>
-            <p><strong>Média de Pontuação:</strong> <span id="media-pontuacao">82%</span></p>
-            <p><strong>Total de Simulados Realizados:</strong> <span id="total-simulados">10</span></p>
+            <p><strong>Maior Nota:</strong> <span id="maior-nota">{{ maior_nota }}%</span></p>
+            <p><strong>Média de Pontuação:</strong> <span id="media-pontuacao">{{ media_pontuacao }}%</span></p>
+            <p><strong>Total de Simulados Realizados:</strong> <span id="total-simulados">{{ historico | length }}</span></p>
         </div>
 
         <h2>Resultados Detalhados</h2>
@@ -76,25 +105,25 @@
                 <tr>
                     <th>Simulado</th>
                     <th>Data</th>
+                    <th>Acertos</th>
+                    <th>Tempo</th>
                     <th>Pontuação</th>
                 </tr>
             </thead>
             <tbody>
+                {% for resultado in historico %}
                 <tr>
-                    <td>Simulado 1</td>
-                    <td>25/10/2025</td>
-                    <td>85%</td>
+                    <td>{{ resultado.titulo }}</td>
+                    <td>{{ resultado.data }}</td>
+                    <td>{{ resultado.acertos }} / {{ resultado.total }}</td>
+                    <td>{{ resultado.tempo_formatado }}</td>
+                    <td><strong style="color: {{ 'green' if resultado.percentual >= 70 else 'red' }};">{{ resultado.percentual }}%</strong></td>
                 </tr>
+                {% else %}
                 <tr>
-                    <td>Simulado 2</td>
-                    <td>01/11/2025</td>
-                    <td>78%</td>
+                    <td colspan="5" style="text-align: center;">Nenhum simulado finalizado ainda.</td>
                 </tr>
-                <tr>
-                    <td>Simulado 3</td>
-                    <td>08/11/2025</td>
-                    <td>95%</td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
 
