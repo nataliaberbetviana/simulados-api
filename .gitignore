@@ -24,6 +24,11 @@ __pycache__/
 # Arquivos de Mac OS (se usar macOS)
 .DS_Store
 
+# 4. Arquivos de Documentação Temporários ou Gerados
+# Arquivos temporários do Markdown
+*.md~
+esqueleto.md
+
 # ---------------------------------------------
 # 4. Dados Locais e Segredos (Se necessário)
 # ---------------------------------------------
