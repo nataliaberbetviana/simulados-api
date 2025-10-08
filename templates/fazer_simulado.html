@@ -19,35 +19,24 @@
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            position: relative;
+            position: relative; 
         }
+        /* Estilo base do Timer: Cor verde inicial para indicar segurança */
         .timer {
             position: absolute;
             top: 15px;
             right: 20px;
             font-size: 1.2em;
             font-weight: bold;
-            color: #d9534f;
+            color: #28a745; /* Verde inicial */
             padding: 5px 10px;
-            border: 2px solid #d9534f;
+            border: 2px solid #28a745; /* Borda verde */
             border-radius: 5px;
-        }
-        /* Badge indicando se a questão é pontuada */
-        .badge-pontuada {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            font-size: 0.9em;
-            font-weight: bold;
-            padding: 8px 12px;
-            border-radius: 5px;
-            background-color: {{ '#28a745' if questao_pontuada else '#6c757d' }};
-            color: white;
+            transition: color 0.5s, border-color 0.5s; /* Adiciona transição suave */
         }
         h1 {
             color: #2196f3;
             margin-bottom: 20px;
-            padding: 0 140px;
         }
         h3 {
             color: #555;
@@ -80,7 +69,7 @@
         li label:hover {
             background-color: #ddeeff;
         }
-        input[type="radio"] {
+        input[type="radio"], input[type="checkbox"] {
             margin-right: 10px;
         }
         button {
@@ -97,33 +86,47 @@
         button:hover {
             background-color: #0d47a1;
         }
+        .aviso-multipla {
+            font-size: 0.9em;
+            color: #e65100;
+            font-weight: bold;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Badge mostrando se a questão é pontuada -->
-        <div class="badge-pontuada">
-            {{ 'PONTUADA' if questao_pontuada else 'NÃO PONTUADA' }}
-        </div>
-        
-        <!-- Timer -->
+        <!-- Elemento para exibir o tempo -->
         <div id="timer" class="timer">00:00:00</div>
         
         <h1>{{ simulado.titulo }}</h1>
         
         <form method="POST" action="{{ url_for('processar_simulado', id_do_simulado=id_simulado) }}">
+
             <input type="hidden" name="questao_index" value="{{ questao_index }}">
-            <input type="hidden" name="tempo_decorrido" id="tempo_decorrido_input" value="0">
+            <!-- Campo oculto para salvar o tempo total decorrido -->
+            <input type="hidden" name="tempo_decorrido" id="tempo_decorrido_input" value="{{ tempo_gasto_previamente | default(0) }}">
 
             <div style="margin-bottom: 20px;">
                 <h3>Questão {{ questao_index + 1 }} de {{ total_questoes }}</h3>
                 <p>{{ questao.pergunta }}</p>
+
+                <!-- Aviso para Múltipla Resposta -->
+                {% if questao.tipo == 'multipla_resposta' %}
+                    <p class="aviso-multipla">Selecione todas as opções corretas.</p>
+                {% endif %}
                 
                 <ul>
                     {% for opcao in questao.opcoes %}
                     <li>
                         <label>
-                            <input type="radio" name="resposta" value="{{ opcao }}" required>
+                            {% if questao.tipo == 'multipla_resposta' %}
+                                <!-- O name deve ser uma lista para o Flask pegar todas as respostas -->
+                                <input type="checkbox" name="resposta_{{ questao_index }}" value="{{ opcao }}" >
+                            {% else %}
+                                <input type="radio" name="resposta" value="{{ opcao }}" required>
+                            {% endif %}
                             {{ opcao }}
                         </label>
                     </li>
@@ -138,17 +141,23 @@
     </div>
 
     <script>
-        const TEMPO_LIMITE = 5400; 
-        let tempoGastoPreviamente = {{ tempo_gasto_previamente | default(0) | tojson }}; 
-        let tempoRestante = TEMPO_LIMITE - tempoGastoPreviamente;
-        let tempoGastoNestaQuestao = 0;
+        // --- CONFIGURAÇÕES DE TEMPO ---
+        const TEMPO_LIMITE_SEGUNDOS = 5400; // 1 hora e 30 minutos
 
-        const timerDisplay = document.getElementById('timer');
+        // Puxando o valor do input oculto.
         const tempoInput = document.getElementById('tempo_decorrido_input');
+        
+        // Lê o valor do input com parseInt para garantir que é um número.
+        let tempoGastoPreviamente = parseInt(tempoInput.value) || 0;
+        
+        let tempoRestante = TEMPO_LIMITE_SEGUNDOS - tempoGastoPreviamente;
+        let tempoGastoNestaQuestao = 0; 
+        
+        const timerDisplay = document.getElementById('timer');
         const form = document.querySelector('form');
 
         function formatarTempo(totalSegundos) {
-            if (totalSegundos < 0) return "00:00:00";
+            if (totalSegundos < 0) totalSegundos = 0;
             
             const horas = Math.floor(totalSegundos / 3600);
             const minutos = Math.floor((totalSegundos % 3600) / 60);
@@ -162,24 +171,51 @@
             if (tempoRestante <= 0) {
                 timerDisplay.textContent = "00:00:00";
                 clearInterval(intervalId);
+                // Submissão automática do formulário
                 alert('O tempo acabou! O simulado será finalizado.');
                 form.submit();
                 return;
             }
 
+            // Lógica de contagem
             tempoRestante--;
-            tempoGastoNestaQuestao++;
+            tempoGastoNestaQuestao++; 
             
+            const novoTempoTotalDecorrido = tempoGastoPreviamente + tempoGastoNestaQuestao;
+
+            // --- LÓGICA DE MUDANÇA DE COR ---
+            const tempoPercentual = (tempoRestante / TEMPO_LIMITE_SEGUNDOS) * 100;
+            let cor = '#28a745'; // Verde padrão
+
+            if (tempoPercentual <= 10) { // Menos de 10% (5 minutos)
+                cor = '#dc3545'; // Vermelho Urgente
+            } else if (tempoPercentual <= 25) { // Entre 10% e 25% (15 minutos)
+                cor = '#ffc107'; // Amarelo/Atenção
+            } 
+            
+            timerDisplay.style.color = cor;
+            timerDisplay.style.borderColor = cor;
+            // -------------------------------
+
             timerDisplay.textContent = formatarTempo(tempoRestante);
-            tempoInput.value = tempoGastoPreviamente + tempoGastoNestaQuestao;
+            
+            // Atualiza o valor do input oculto para o Flask
+            tempoInput.value = novoTempoTotalDecorrido;
         }
 
+        // --- INICIALIZAÇÃO E EVENTOS ---
+
+        // Exibe o tempo inicial assim que a página carrega
         timerDisplay.textContent = formatarTempo(tempoRestante);
+
+        // Inicia o contador
         const intervalId = setInterval(atualizarContador, 1000);
         
+        // Garante que o valor final seja salvo ao enviar o formulário
         form.addEventListener('submit', () => {
             tempoInput.value = tempoGastoPreviamente + tempoGastoNestaQuestao;
         });
+
     </script>
 </body>
 </html>

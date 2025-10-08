@@ -8,9 +8,15 @@
             font-family: sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: {{ '#d4edda' if acertou else '#f8d7da' }};
             color: #333;
             text-align: center;
+        }
+        /* Classes para background dinâmico */
+        body.acertou {
+            background-color: #d4edda;
+        }
+        body.errou {
+            background-color: #f8d7da;
         }
         .container {
             max-width: 800px;
@@ -30,14 +36,24 @@
             font-weight: bold;
             padding: 8px 12px;
             border-radius: 5px;
-            background-color: {{ '#28a745' if questao_pontuada else '#6c757d' }};
             color: white;
+        }
+        .badge-pontuada.pontuada {
+            background-color: #28a745;
+        }
+        .badge-pontuada.nao-pontuada {
+            background-color: #6c757d;
         }
         .resultado {
             font-size: 2em;
             font-weight: bold;
             margin-bottom: 20px;
-            color: {{ '#155724' if acertou else '#721c24' }};
+        }
+        .resultado.acertou {
+            color: #155724;
+        }
+        .resultado.errou {
+            color: #721c24;
         }
         .icone {
             font-size: 3em;
@@ -53,11 +69,17 @@
             text-align: left;
         }
         .sua-resposta {
-            background-color: {{ '#c3e6cb' if acertou else '#f5c6cb' }};
             padding: 15px;
             border-radius: 5px;
             margin: 20px 0;
-            border-left: 4px solid {{ '#28a745' if acertou else '#dc3545' }};
+        }
+        .sua-resposta.acertou {
+            background-color: #c3e6cb;
+            border-left: 4px solid #28a745;
+        }
+        .sua-resposta.errou {
+            background-color: #f5c6cb;
+            border-left: 4px solid #dc3545;
         }
         .resposta-correta {
             background-color: #d1ecf1;
@@ -73,6 +95,13 @@
             margin: 20px 0;
             border-left: 4px solid #856404;
             text-align: left;
+        }
+        .aviso-nao-pontuada {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
         }
         button {
             background-color: #2196f3;
@@ -90,24 +119,24 @@
         }
     </style>
 </head>
-<body>
+<body class="{{ 'acertou' if acertou else 'errou' }}">
     <div class="container">
         <!-- Badge mostrando se a questão é pontuada -->
-        <div class="badge-pontuada">
+        <div class="badge-pontuada {{ 'pontuada' if questao_pontuada else 'nao-pontuada' }}">
             {{ 'PONTUADA' if questao_pontuada else 'NÃO PONTUADA' }}
         </div>
         
         <div class="icone">
             {{ '✅' if acertou else '❌' }}
         </div>
-        <div class="resultado">
+        <div class="resultado {{ 'acertou' if acertou else 'errou' }}">
             {{ 'Você acertou!' if acertou else 'Você errou!' }}
         </div>
 
         <h3>Questão {{ questao_numero }} de {{ total_questoes }}</h3>
         <p><strong>{{ questao.pergunta }}</strong></p>
 
-        <div class="sua-resposta">
+        <div class="sua-resposta {{ 'acertou' if acertou else 'errou' }}">
             <strong>Sua resposta:</strong> {{ resposta_usuario }}
         </div>
 
@@ -130,7 +159,7 @@
         {% endif %}
 
         {% if not questao_pontuada %}
-        <div style="background-color: #e7f3ff; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #2196f3;">
+        <div class="aviso-nao-pontuada">
             <strong>ℹ️ Atenção:</strong> Esta questão NÃO é pontuada neste simulado.
         </div>
         {% endif %}
