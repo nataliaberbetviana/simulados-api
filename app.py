@@ -96,6 +96,7 @@ def inicializar_simulado_embaralhado(id_do_simulado):
     # Salva o simulado embaralhado na sessão
     simulado_key = f'simulado_{id_do_simulado}_data'
     session[simulado_key] = simulado_embaralhado
+    session.modified = True  # ✅ ADICIONE ESTA LINHA
     
     return simulado_embaralhado, None
 
@@ -115,13 +116,18 @@ def fazer_simulado(id_do_simulado):
     simulado_key = f'simulado_{id_do_simulado}_progresso'
     simulado_data_key = f'simulado_{id_do_simulado}_data'
     
-    if simulado_key not in session:
-        # Primeira vez acessando, inicializa e embaralha
+    # ✅ SEMPRE buscar/criar o simulado_data primeiro
+    simulado_embaralhado = session.get(simulado_data_key)
+    
+    if not simulado_embaralhado:
+        # Inicializa o simulado embaralhado
         simulado_embaralhado, erro = inicializar_simulado_embaralhado(id_do_simulado)
         if erro:
             return erro, 404
-        
-        # Gera as questões não pontuadas aleatoriamente
+    
+    # Agora verifica o progresso
+    if simulado_key not in session:
+        # Primeira vez acessando, inicializa progresso
         total_questoes = len(simulado_embaralhado['questoes'])
         questoes_nao_pontuadas = gerar_questoes_nao_pontuadas(total_questoes, 15)
         
@@ -131,14 +137,8 @@ def fazer_simulado(id_do_simulado):
             'tempo_gasto': 0,
             'questoes_nao_pontuadas': list(questoes_nao_pontuadas)
         }
-    else:
-        # Usa o simulado embaralhado já salvo na sessão
-        simulado_embaralhado = session.get(simulado_data_key)
-        if not simulado_embaralhado:
-            simulado_embaralhado, erro = inicializar_simulado_embaralhado(id_do_simulado)
-            if erro:
-                return erro, 404
-        
+        session.modified = True  # ✅ ADICIONE ESTA LINHA
+    
     progresso = session[simulado_key]
     questao_index = progresso['questao_atual']
     
@@ -167,7 +167,10 @@ def processar_simulado(id_do_simulado):
     simulado_data = session.get(simulado_data_key)
     
     if not simulado_data:
-        return "Erro: Simulado não encontrado na sessão", 404
+        # ✅ Tente recarregar antes de dar erro
+        simulado_data, erro = inicializar_simulado_embaralhado(id_do_simulado)
+        if erro:
+            return f"Erro: Simulado não encontrado na sessão. {erro}", 404
     
     simulado_key = f'simulado_{id_do_simulado}_progresso'
     progresso = session.get(simulado_key, {
@@ -183,6 +186,7 @@ def processar_simulado(id_do_simulado):
     if ja_respondeu == 'true':
         progresso['questao_atual'] += 1
         session[simulado_key] = progresso
+        session.modified = True  # ✅ ADICIONE ESTA LINHA
         
         if progresso['questao_atual'] >= len(simulado_data['questoes']):
             return redirect(url_for('finalizar_simulado', id_do_simulado=id_do_simulado))
@@ -206,6 +210,7 @@ def processar_simulado(id_do_simulado):
     progresso['acertos'][str(questao_index)] = acertou
     progresso['tempo_gasto'] = tempo_total_gasto
     session[simulado_key] = progresso
+    session.modified = True  # ✅ ADICIONE ESTA LINHA
     
     if isinstance(resposta_usuario_raw, list):
         resposta_formatada = ', '.join(resposta_usuario_raw)

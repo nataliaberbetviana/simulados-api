@@ -4,7 +4,7 @@
 SIMULADOS_DISPONIVEIS = [
     {
         "id": 1,
-        "titulo": "Simulado 1: Fundamentos da Nuvem AWS",
+        "titulo": "Simulado 1: AWS Cloud Practitioner - Simulado Completo",
         "arquivo": "simulado_1"  # Nome do arquivo a ser importado dinamicamente
     },
     {

@@ -2,159 +2,538 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulado: {{ simulado.titulo }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: sans-serif;
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             padding: 20px;
-            background-color: #f7f7f7;
             color: #333;
-            text-align: center;
         }
+
         .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            position: relative; 
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
         }
-        /* Estilo base do Timer: Cor verde inicial para indicar segurança */
-        .timer {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #28a745; /* Verde inicial */
-            padding: 5px 10px;
-            border: 2px solid #28a745; /* Borda verde */
-            border-radius: 5px;
-            transition: color 0.5s, border-color 0.5s; /* Adiciona transição suave */
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        h1 {
-            color: #2196f3;
-            margin-bottom: 20px;
-        }
-        h3 {
-            color: #555;
-            margin-top: 25px;
-        }
-        p {
-            font-size: 1.1em;
-            margin-bottom: 20px;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-            text-align: left;
-        }
-        li {
-            margin: 10px 0;
-            background-color: #eef;
-            padding: 0;
-            border-radius: 5px;
-            cursor: pointer;
+
+        /* Header com Timer */
+        .header {
+            background: linear-gradient(135deg, #FF9800 0%, #FF5722 100%);
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            position: relative;
             overflow: hidden;
         }
-        li label {
-            display: block;
-            width: 100%;
-            cursor: pointer;
-            padding: 15px;
-            transition: background-color 0.3s;
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
         }
-        li label:hover {
-            background-color: #ddeeff;
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
-        input[type="radio"], input[type="checkbox"] {
-            margin-right: 10px;
+
+        .header-content {
+            position: relative;
+            z-index: 1;
         }
-        button {
-            background-color: #2196f3;
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .progress-info {
+            font-size: 14px;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        /* Timer Estilizado */
+        .timer-container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .timer-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .timer {
+            font-size: 28px;
+            font-weight: 700;
             color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.1em;
-            margin-top: 30px;
-            transition: background-color 0.3s;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        button:hover {
-            background-color: #0d47a1;
+
+        .timer.warning {
+            animation: warningPulse 1s ease-in-out infinite;
+            background: rgba(255, 193, 7, 0.3);
         }
+
+        .timer.danger {
+            animation: dangerPulse 0.5s ease-in-out infinite;
+            background: rgba(220, 53, 69, 0.3);
+        }
+
+        @keyframes warningPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes dangerPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4); }
+            50% { transform: scale(1.08); box-shadow: 0 6px 25px rgba(220, 53, 69, 0.6); }
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            height: 6px;
+            background: #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.4s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Content Area */
+        .content {
+            padding: 40px;
+        }
+
+        .question-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .question-badge .icon {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
         .aviso-multipla {
-            font-size: 0.9em;
-            color: #e65100;
-            font-weight: bold;
-            margin-top: -10px;
-            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #856404;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid #ffc107;
+            box-shadow: 0 2px 10px rgba(255, 193, 7, 0.2);
+        }
+
+        .aviso-multipla::before {
+            content: '⚠️';
+            font-size: 20px;
+        }
+
+        /* Options List */
+        .options-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-item {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .option-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .option-item:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .option-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .option-item.selected {
+            background: linear-gradient(135deg, #e8f0ff 0%, #dce7ff 100%);
+            border-color: #667eea;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .option-item.selected::before {
+            transform: scaleY(1);
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .option-input {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .option-text {
+            font-size: 16px;
+            color: #2c3e50;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        /* Button */
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .submit-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 20px 40px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer a:hover {
+            color: #764ba2;
+            gap: 12px;
+        }
+
+        .footer a::before {
+            content: '←';
+            font-size: 18px;
+        }
+
+        /* Badge de questão não pontuada */
+        .badge-nao-pontuada {
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .timer {
+                font-size: 24px;
+                padding: 8px 16px;
+            }
+
+            .content {
+                padding: 25px 20px;
+            }
+
+            .question-text {
+                font-size: 18px;
+            }
+
+            .submit-btn {
+                font-size: 16px;
+                padding: 15px 30px;
+            }
+        }
+
+        /* Animação de entrada das opções */
+        .option-item {
+            animation: slideInOption 0.4s ease-out backwards;
+        }
+
+        .option-item:nth-child(1) { animation-delay: 0.1s; }
+        .option-item:nth-child(2) { animation-delay: 0.2s; }
+        .option-item:nth-child(3) { animation-delay: 0.3s; }
+        .option-item:nth-child(4) { animation-delay: 0.4s; }
+        .option-item:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideInOption {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Elemento para exibir o tempo -->
-        <div id="timer" class="timer">00:00:00</div>
-        
-        <h1>{{ simulado.titulo }}</h1>
-        
-        <form method="POST" action="{{ url_for('processar_simulado', id_do_simulado=id_simulado) }}">
+        <!-- Header com Timer -->
+        <div class="header">
+            <div class="header-content">
+                <h1>{{ simulado.titulo }}</h1>
+                <div class="progress-info">
+                    Questão {{ questao_index + 1 }} de {{ total_questoes }}
+                </div>
+            </div>
+            <div class="timer-container">
+                <div class="timer-label">Tempo Restante</div>
+                <div id="timer" class="timer">00:00:00</div>
+            </div>
+        </div>
 
-            <input type="hidden" name="questao_index" value="{{ questao_index }}">
-            <!-- Campo oculto para salvar o tempo total decorrido -->
-            <input type="hidden" name="tempo_decorrido" id="tempo_decorrido_input" value="{{ tempo_gasto_previamente | default(0) }}">
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+            <div class="progress-bar" style="width: {{ ((questao_index + 1) / total_questoes * 100) }}%"></div>
+        </div>
 
-            <div style="margin-bottom: 20px;">
-                <h3>Questão {{ questao_index + 1 }} de {{ total_questoes }}</h3>
-                <p>{{ questao.pergunta }}</p>
+        <!-- Content -->
+        <div class="content">
+            <form method="POST" action="{{ url_for('processar_simulado', id_do_simulado=id_simulado) }}" id="quizForm">
+                <input type="hidden" name="questao_index" value="{{ questao_index }}">
+                <input type="hidden" name="tempo_decorrido" id="tempo_decorrido_input" value="{{ tempo_gasto_previamente | default(0) }}">
 
-                <!-- Aviso para Múltipla Resposta -->
-                {% if questao.tipo == 'multipla_resposta' %}
-                    <p class="aviso-multipla">Selecione todas as opções corretas.</p>
+                <div class="question-badge">
+                    <span class="icon">{{ questao_index + 1 }}</span>
+                    <span>Questão {{ questao_index + 1 }}</span>
+                    {% if not questao_pontuada %}
+                        <span class="badge-nao-pontuada">Não Pontuada</span>
+                    {% endif %}
+                </div>
+
+                <div class="question-text">{{ questao.pergunta }}</div>
+
+                {% if questao.tipo == 'multipla_resposta' or questao.multipla_escolha %}
+                    <div class="aviso-multipla">
+                        Selecione todas as opções corretas
+                    </div>
                 {% endif %}
-                
-                <ul>
+
+                <ul class="options-list">
                     {% for opcao in questao.opcoes %}
-                    <li>
-                        <label>
-                            {% if questao.tipo == 'multipla_resposta' %}
-                                <!-- O name deve ser uma lista para o Flask pegar todas as respostas -->
-                                <input type="checkbox" name="resposta_{{ questao_index }}" value="{{ opcao }}" >
+                    <li class="option-item" data-option="{{ loop.index }}">
+                        <label class="option-label">
+                            {% if questao.tipo == 'multipla_resposta' or questao.multipla_escolha %}
+                                <input type="checkbox" 
+                                       name="resposta_{{ questao_index }}" 
+                                       value="{{ opcao }}"
+                                       class="option-input">
                             {% else %}
-                                <input type="radio" name="resposta" value="{{ opcao }}" required>
+                                <input type="radio" 
+                                       name="resposta" 
+                                       value="{{ opcao }}" 
+                                       required
+                                       class="option-input">
                             {% endif %}
-                            {{ opcao }}
+                            <span class="option-text">{{ opcao }}</span>
                         </label>
                     </li>
                     {% endfor %}
                 </ul>
-            </div>
 
-            <button type="submit">Próxima Questão</button>
-        </form>
+                <button type="submit" class="submit-btn">
+                    {% if questao_index + 1 == total_questoes %}
+                        Finalizar Simulado
+                    {% else %}
+                        Próxima Questão →
+                    {% endif %}
+                </button>
+            </form>
+        </div>
 
-        <br><a href="{{ url_for('simulados') }}">Voltar para a lista de simulados</a>
+        <!-- Footer -->
+        <div class="footer">
+            <a href="{{ url_for('simulados') }}">Voltar para lista de simulados</a>
+        </div>
     </div>
 
     <script>
-        // --- CONFIGURAÇÕES DE TEMPO ---
-        const TEMPO_LIMITE_SEGUNDOS = 5400; // 1 hora e 30 minutos
-
-        // Puxando o valor do input oculto.
+        // Configurações
+        const TEMPO_LIMITE_SEGUNDOS = 5400; // 90 minutos
         const tempoInput = document.getElementById('tempo_decorrido_input');
-        
-        // Lê o valor do input com parseInt para garantir que é um número.
         let tempoGastoPreviamente = parseInt(tempoInput.value) || 0;
-        
         let tempoRestante = TEMPO_LIMITE_SEGUNDOS - tempoGastoPreviamente;
-        let tempoGastoNestaQuestao = 0; 
+        let tempoGastoNestaQuestao = 0;
         
         const timerDisplay = document.getElementById('timer');
-        const form = document.querySelector('form');
+        const form = document.getElementById('quizForm');
 
         function formatarTempo(totalSegundos) {
             if (totalSegundos < 0) totalSegundos = 0;
@@ -171,51 +550,66 @@
             if (tempoRestante <= 0) {
                 timerDisplay.textContent = "00:00:00";
                 clearInterval(intervalId);
-                // Submissão automática do formulário
-                alert('O tempo acabou! O simulado será finalizado.');
+                alert('⏰ O tempo acabou! O simulado será finalizado automaticamente.');
                 form.submit();
                 return;
             }
 
-            // Lógica de contagem
             tempoRestante--;
-            tempoGastoNestaQuestao++; 
+            tempoGastoNestaQuestao++;
             
             const novoTempoTotalDecorrido = tempoGastoPreviamente + tempoGastoNestaQuestao;
-
-            // --- LÓGICA DE MUDANÇA DE COR ---
             const tempoPercentual = (tempoRestante / TEMPO_LIMITE_SEGUNDOS) * 100;
-            let cor = '#28a745'; // Verde padrão
 
-            if (tempoPercentual <= 10) { // Menos de 10% (5 minutos)
-                cor = '#dc3545'; // Vermelho Urgente
-            } else if (tempoPercentual <= 25) { // Entre 10% e 25% (15 minutos)
-                cor = '#ffc107'; // Amarelo/Atenção
-            } 
-            
-            timerDisplay.style.color = cor;
-            timerDisplay.style.borderColor = cor;
-            // -------------------------------
+            // Atualizar classes do timer
+            timerDisplay.classList.remove('warning', 'danger');
+            if (tempoPercentual <= 10) {
+                timerDisplay.classList.add('danger');
+            } else if (tempoPercentual <= 25) {
+                timerDisplay.classList.add('warning');
+            }
 
             timerDisplay.textContent = formatarTempo(tempoRestante);
-            
-            // Atualiza o valor do input oculto para o Flask
             tempoInput.value = novoTempoTotalDecorrido;
         }
 
-        // --- INICIALIZAÇÃO E EVENTOS ---
+        // Destacar opção selecionada
+        document.querySelectorAll('.option-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const parent = this.closest('.option-item');
+                
+                if (this.type === 'radio') {
+                    // Remove selected de todos
+                    document.querySelectorAll('.option-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                }
+                
+                if (this.checked) {
+                    parent.classList.add('selected');
+                } else {
+                    parent.classList.remove('selected');
+                }
+            });
+        });
 
-        // Exibe o tempo inicial assim que a página carrega
+        // Inicialização
         timerDisplay.textContent = formatarTempo(tempoRestante);
-
-        // Inicia o contador
         const intervalId = setInterval(atualizarContador, 1000);
-        
-        // Garante que o valor final seja salvo ao enviar o formulário
-        form.addEventListener('submit', () => {
+
+        form.addEventListener('submit', (e) => {
             tempoInput.value = tempoGastoPreviamente + tempoGastoNestaQuestao;
         });
 
+        // Prevenir múltiplos submits
+        let isSubmitting = false;
+        form.addEventListener('submit', function(e) {
+            if (isSubmitting) {
+                e.preventDefault();
+                return;
+            }
+            isSubmitting = true;
+        });
     </script>
 </body>
 </html>
