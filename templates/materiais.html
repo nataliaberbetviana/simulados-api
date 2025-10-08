@@ -2,25 +2,286 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Simulados - AWS Practitioner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materiais de Estudo - AWS Practitioner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: sans-serif;
-            text-align: center;
-            background-color: #e6f7ff;
-            color: #004d66;
-            padding-top: 50px;
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --primary-light: #FFB84D;
+            --secondary: #232F3E;
+            --secondary-light: #37475A;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        h1 {
-            color: #0056b3;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-card h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out 0.2s backwards;
+        }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card h2 {
+            color: var(--secondary);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .content-card p {
+            color: var(--gray-700);
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .link-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: var(--white);
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            animation: fadeIn 0.6s ease-out 0.4s backwards;
+        }
+
+        .link-voltar::before {
+            content: '←';
+            font-size: 1.3em;
+        }
+
+        .link-voltar:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header-card {
+                padding: 35px 25px;
+            }
+
+            .header-card h1 {
+                font-size: 2em;
+            }
+
+            .header-card p {
+                font-size: 1.1em;
+            }
+
+            .content-card {
+                padding: 30px 20px;
+            }
+
+            .content-card h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-card h1 {
+                font-size: 1.6em;
+            }
+
+            .header-icon {
+                font-size: 3em;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Página de Materiais</h1>
-    <p>Aqui você vai encontrar os materiais de estudo para praticar!</p>
+    <div class="container">
+        <div class="header-card">
+            <div class="header-content">
+                <div class="header-icon">📚</div>
+                <h1>Materiais de Estudo</h1>
+                <p>Recursos para sua preparação AWS Cloud Practitioner</p>
+            </div>
+        </div>
 
-    <a class="link-voltar" href="{{ url_for('home') }}">Voltar para o Início</a>
+        <div class="content-card">
+            <h2>Em Breve</h2>
+            <p>
+                Aqui você vai encontrar os materiais de estudo para praticar e se preparar 
+                para a certificação AWS Cloud Practitioner. Estamos preparando conteúdos 
+                de qualidade para ajudar você nessa jornada!
+            </p>
+        </div>
 
+        <center>
+            <a class="link-voltar" href="{{ url_for('home') }}">Voltar para o Início</a>
+        </center>
+    </div>
 </body>
 </html>

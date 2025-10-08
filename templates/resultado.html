@@ -2,89 +2,443 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultado do Simulado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: sans-serif;
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --success: #2ECC71;
+            --success-dark: #27ae60;
+            --success-darker: #1e8449;
+            --danger: #E74C3C;
+            --danger-dark: #c0392b;
+            --secondary: #232F3E;
+            --white: #FFFFFF;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
             margin: 0;
-            padding: 20px;
-            color: #333;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
             text-align: center;
+            position: relative;
+            overflow-x: hidden;
         }
+
         body.aprovado {
-            background-color: #e8f5e9;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         }
+
         body.reprovado {
-            background-color: #ffebee;
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
         }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
         .container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 50px 40px;
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            z-index: 1;
+            animation: zoomIn 0.8s ease-out;
+            overflow: hidden;
         }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+        }
+
+        body.aprovado .container::before {
+            background: linear-gradient(90deg, var(--success) 0%, var(--success-dark) 100%);
+        }
+
+        body.reprovado .container::before {
+            background: linear-gradient(90deg, var(--danger) 0%, var(--danger-dark) 100%);
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .icon-container {
+            font-size: 6em;
+            margin-bottom: 25px;
+            animation: bounceIn 1s ease-out 0.3s backwards;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotate(-45deg);
+            }
+            50% {
+                transform: scale(1.1) rotate(5deg);
+            }
+            70% {
+                transform: scale(0.9) rotate(-3deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
         h1 {
-            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            animation: fadeIn 0.6s ease-out 0.5s backwards;
         }
+
         h1.aprovado {
-            color: #2e7d32;
+            color: var(--success-darker);
         }
+
         h1.reprovado {
-            color: #c62828;
+            color: var(--danger-dark);
         }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tempo-info {
+            font-size: 1.15em;
+            color: var(--gray-700);
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s ease-out 0.6s backwards;
+        }
+
+        .tempo-info strong {
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            color: var(--secondary);
+            margin-bottom: 25px;
+            font-weight: 700;
+            animation: fadeIn 0.6s ease-out 0.7s backwards;
+        }
+
         .score {
-            font-size: 3em;
-            font-weight: bold;
-            margin: 20px 0;
-            padding: 10px;
-            border: 3px solid;
-            border-radius: 5px;
+            font-size: 5em;
+            font-weight: 800;
+            margin: 30px 0;
+            padding: 30px;
+            border: 5px solid;
+            border-radius: var(--radius-lg);
             display: inline-block;
+            position: relative;
+            animation: scaleUp 0.8s ease-out 0.8s backwards;
+            box-shadow: var(--shadow-lg);
         }
+
+        @keyframes scaleUp {
+            from {
+                opacity: 0;
+                transform: scale(0.5) rotate(-10deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
         .score.aprovado {
-            color: #43a047;
-            border-color: #43a047;
+            color: var(--success-dark);
+            border-color: var(--success-dark);
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.05) 0%, rgba(39, 174, 96, 0.1) 100%);
         }
+
         .score.reprovado {
-            color: #d32f2f;
-            border-color: #d32f2f;
+            color: var(--danger-dark);
+            border-color: var(--danger-dark);
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.05) 0%, rgba(192, 57, 43, 0.1) 100%);
         }
-        p {
-            font-size: 1.1em;
-            margin-bottom: 15px;
+
+        .detalhes {
+            font-size: 1.2em;
+            color: var(--gray-700);
+            margin: 25px 0 35px;
+            animation: fadeIn 0.6s ease-out 1s backwards;
         }
+
+        .detalhes strong {
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
         .link-retorno {
-            display: block;
-            margin-top: 25px;
-            font-size: 1.1em;
-            color: #1976d2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 30px;
             text-decoration: none;
-            transition: color 0.3s;
+            border-radius: var(--radius-md);
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            animation: slideInUp 0.6s ease-out backwards;
         }
+
+        .link-retorno:first-of-type {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            animation-delay: 1.1s;
+        }
+
+        .link-retorno:first-of-type::before {
+            content: '🔄';
+            font-size: 1.2em;
+        }
+
+        .link-retorno:last-of-type {
+            background: var(--white);
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+            animation-delay: 1.2s;
+        }
+
+        .link-retorno:last-of-type::before {
+            content: '📊';
+            font-size: 1.2em;
+        }
+
+        .link-retorno.voltar {
+            background: var(--white);
+            color: var(--gray-800);
+            border: 2px solid #dee2e6;
+            animation-delay: 1.3s;
+        }
+
+        .link-retorno.voltar::before {
+            content: '←';
+            font-size: 1.4em;
+        }
+
+        .link-retorno.voltar:hover {
+            background: var(--gray-800);
+            color: var(--white);
+            border-color: var(--gray-800);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .link-retorno:hover {
-            color: #0d47a1;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .link-retorno:first-of-type:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #d35400 100%);
+        }
+
+        .link-retorno:last-of-type:hover {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .link-retorno:active {
+            transform: translateY(-1px);
+        }
+
+        /* Confete animado para aprovação */
+        body.aprovado::after {
+            content: '🎊 🎉 ⭐ 🌟 ✨ 🎊 🎉 ⭐ 🌟 ✨';
+            position: fixed;
+            top: -50px;
+            left: 0;
+            right: 0;
+            font-size: 2em;
+            animation: confetti 3s ease-in-out infinite;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        @keyframes confetti {
+            0% {
+                transform: translateY(-50px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .container {
+                padding: 40px 25px;
+            }
+
+            .icon-container {
+                font-size: 4.5em;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .tempo-info {
+                font-size: 1em;
+            }
+
+            h2 {
+                font-size: 1.3em;
+            }
+
+            .score {
+                font-size: 4em;
+                padding: 25px;
+            }
+
+            .detalhes {
+                font-size: 1.1em;
+            }
+
+            .link-retorno {
+                padding: 14px 25px;
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .icon-container {
+                font-size: 3.5em;
+            }
+
+            h1 {
+                font-size: 1.6em;
+            }
+
+            .score {
+                font-size: 3em;
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body class="{% if percentual >= 70 %}aprovado{% else %}reprovado{% endif %}">
     <div class="container">
+        <div class="icon-container">
+            {% if percentual >= 70 %}🎉{% else %}😔{% endif %}
+        </div>
+        
         <h1 class="{% if percentual >= 70 %}aprovado{% else %}reprovado{% endif %}">
-            {% if percentual >= 70 %}🎉 Parabéns! Você foi aprovado!{% else %}😔 Ops! Você foi reprovado.{% endif %}
+            {% if percentual >= 70 %}Parabéns! Você foi aprovado!{% else %}Ops! Você foi reprovado.{% endif %}
         </h1>
-        <p>Você completou o simulado em <strong>{{ tempo_final_formatado }}</strong>.</p>
+        
+        <p class="tempo-info">Você completou o simulado em <strong>{{ tempo_final_formatado }}</strong>.</p>
+        
         <h2>Sua Pontuação Final:</h2>
+        
         <div class="score {% if percentual >= 70 %}aprovado{% else %}reprovado{% endif %}">
             {{ percentual }}%
         </div>
-        <p>Você acertou <strong>{{ acertos }}</strong> de <strong>{{ total }}</strong> questões.</p>
-        <a class="link-retorno" href="{{ url_for('simulados') }}">
-            Fazer outro simulado
-        </a>
-        <a class="link-retorno" href="{{ url_for('historico') }}">
-            Ver Histórico
-        </a>
+        
+        <p class="detalhes">Você acertou <strong>{{ acertos }}</strong> de <strong>{{ total }}</strong> questões.</p>
+        
+        <div class="links-container">
+            <a class="link-retorno" href="{{ url_for('simulados') }}">
+                Fazer outro simulado
+            </a>
+            <a class="link-retorno" href="{{ url_for('historico') }}">
+                Ver Histórico
+            </a>
+            <a class="link-retorno voltar" href="{{ url_for('home') }}">
+                Voltar para o Início
+            </a>
+        </div>
     </div>
 </body>
 </html>

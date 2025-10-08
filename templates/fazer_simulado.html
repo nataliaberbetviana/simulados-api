@@ -461,7 +461,7 @@
 
         <!-- Progress Bar -->
         <div class="progress-bar-container">
-            <div class="progress-bar" style="width: {{ ((questao_index + 1) / total_questoes * 100) }}%"></div>
+            <div class="progress-bar" style="width: {{ ((questao_index + 1) / total_questoes * 100) | round(1) }}%"></div>
         </div>
 
         <!-- Content -->
@@ -473,9 +473,6 @@
                 <div class="question-badge">
                     <span class="icon">{{ questao_index + 1 }}</span>
                     <span>Questão {{ questao_index + 1 }}</span>
-                    {% if not questao_pontuada %}
-                        <span class="badge-nao-pontuada">Não Pontuada</span>
-                    {% endif %}
                 </div>
 
                 <div class="question-text">{{ questao.pergunta }}</div>

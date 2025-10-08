@@ -2,173 +2,449 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explicação da Questão</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: sans-serif;
+        /* ============================================
+           VARIÁVEIS GLOBAIS E RESET
+           ============================================ */
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --primary-light: #FFB84D;
+            --secondary: #232F3E;
+            --secondary-light: #37475A;
+            --success: #2ECC71;
+            --success-light: #D5F4E6;
+            --danger: #E74C3C;
+            --danger-light: #FADBD8;
+            --warning: #F39C12;
+            --warning-light: #FCF3CF;
+            --info: #3498DB;
+            --info-light: #D6EAF8;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-300: #DEE2E6;
+            --gray-400: #CED4DA;
+            --gray-500: #ADB5BD;
+            --gray-600: #6C757D;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --gray-900: #212529;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
             margin: 0;
-            padding: 20px;
-            color: #333;
-            text-align: center;
+            padding: 0;
+            box-sizing: border-box;
         }
-        /* Classes para background dinâmico */
-        body.acertou {
-            background-color: #d4edda;
-        }
-        body.errou {
-            background-color: #f8d7da;
-        }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
             position: relative;
+            overflow-x: hidden;
         }
+
+        /* Efeito de partículas no fundo */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        /* Background dinâmico baseado no resultado */
+        body.acertou::before {
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(46, 204, 113, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(46, 204, 113, 0.15) 0%, transparent 50%);
+        }
+
+        body.errou::before {
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(231, 76, 60, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(231, 76, 60, 0.15) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Card principal */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            transition: var(--transition);
+        }
+
+        body.acertou .card::before {
+            background: linear-gradient(90deg, var(--success) 0%, #27AE60 100%);
+        }
+
+        body.errou .card::before {
+            background: linear-gradient(90deg, var(--danger) 0%, #C0392B 100%);
+        }
+
         /* Badge pontuada */
         .badge-pontuada {
             position: absolute;
-            top: 15px;
+            top: 20px;
             right: 20px;
-            font-size: 0.9em;
-            font-weight: bold;
-            padding: 8px 12px;
-            border-radius: 5px;
-            color: white;
+            font-size: 0.85em;
+            font-weight: 700;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+            animation: slideInRight 0.6s ease-out;
         }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
         .badge-pontuada.pontuada {
-            background-color: #28a745;
+            background: linear-gradient(135deg, var(--success) 0%, #27AE60 100%);
         }
+
         .badge-pontuada.nao-pontuada {
-            background-color: #6c757d;
+            background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%);
         }
-        .resultado {
-            font-size: 2em;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .resultado.acertou {
-            color: #155724;
-        }
-        .resultado.errou {
-            color: #721c24;
-        }
+
+        /* Ícone e resultado */
         .icone {
-            font-size: 3em;
+            font-size: 5em;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.1); }
+        }
+
+        .resultado {
+            font-size: 2.5em;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-out 0.2s backwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .resultado.acertou {
+            color: var(--success);
+            text-shadow: 2px 2px 4px rgba(46, 204, 113, 0.2);
+        }
+
+        .resultado.errou {
+            color: var(--danger);
+            text-shadow: 2px 2px 4px rgba(231, 76, 60, 0.2);
+        }
+
+        /* Informações da questão */
+        .questao-info {
+            text-align: center;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            margin-bottom: 30px;
+            border: 2px solid var(--gray-200);
+        }
+
+        .questao-info h3 {
+            color: var(--secondary);
+            font-size: 1.3em;
             margin-bottom: 15px;
         }
-        h3 {
-            color: #555;
-            margin-top: 25px;
+
+        .questao-pergunta {
+            font-size: 1.15em;
+            font-weight: 600;
+            color: var(--gray-800);
+            line-height: 1.7;
         }
-        p {
+
+        /* Boxes de resposta */
+        .resposta-box {
+            padding: 25px;
+            border-radius: var(--radius-lg);
+            margin: 25px 0;
+            border-left: 5px solid;
+            animation: slideInLeft 0.6s ease-out backwards;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .resposta-box strong {
+            display: block;
             font-size: 1.1em;
-            margin: 15px 0;
-            text-align: left;
+            margin-bottom: 10px;
+            font-weight: 700;
         }
+
         .sua-resposta {
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
+            background: var(--success-light);
+            border-left-color: var(--success);
+            animation-delay: 0.2s;
         }
-        .sua-resposta.acertou {
-            background-color: #c3e6cb;
-            border-left: 4px solid #28a745;
-        }
+
         .sua-resposta.errou {
-            background-color: #f5c6cb;
-            border-left: 4px solid #dc3545;
+            background: var(--danger-light);
+            border-left-color: var(--danger);
         }
+
         .resposta-correta {
-            background-color: #d1ecf1;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-            border-left: 4px solid #0c5460;
+            background: var(--info-light);
+            border-left-color: var(--info);
+            animation-delay: 0.3s;
         }
+
         .explicacao {
-            background-color: #fff3cd;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-            border-left: 4px solid #856404;
-            text-align: left;
+            background: var(--warning-light);
+            border-left-color: var(--warning);
+            animation-delay: 0.4s;
         }
+
         .aviso-nao-pontuada {
-            background-color: #e7f3ff;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-            border-left: 4px solid #2196f3;
+            background: var(--gray-100);
+            border-left-color: var(--gray-500);
+            animation-delay: 0.5s;
         }
+
+        /* Botão */
         button {
-            background-color: #2196f3;
-            color: white;
-            padding: 12px 25px;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 18px 30px;
             border: none;
-            border-radius: 5px;
+            border-radius: var(--radius-lg);
             cursor: pointer;
-            font-size: 1.1em;
-            margin-top: 20px;
-            transition: background-color 0.3s;
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-top: 30px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
         }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
         button:hover {
-            background-color: #0d47a1;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .card {
+                padding: 30px 20px;
+            }
+
+            .badge-pontuada {
+                position: static;
+                display: inline-block;
+                margin-bottom: 20px;
+            }
+
+            .icone {
+                font-size: 4em;
+            }
+
+            .resultado {
+                font-size: 2em;
+            }
+
+            .questao-info h3 {
+                font-size: 1.1em;
+            }
+
+            .questao-pergunta {
+                font-size: 1em;
+            }
+
+            .resposta-box {
+                padding: 20px;
+            }
+
+            button {
+                padding: 16px 25px;
+                font-size: 1.1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .icone {
+                font-size: 3em;
+            }
+
+            .resultado {
+                font-size: 1.6em;
+            }
+
+            .resposta-box {
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body class="{{ 'acertou' if acertou else 'errou' }}">
     <div class="container">
-        <!-- Badge mostrando se a questão é pontuada -->
-        <div class="badge-pontuada {{ 'pontuada' if questao_pontuada else 'nao-pontuada' }}">
-            {{ 'PONTUADA' if questao_pontuada else 'NÃO PONTUADA' }}
-        </div>
-        
-        <div class="icone">
-            {{ '✅' if acertou else '❌' }}
-        </div>
-        <div class="resultado {{ 'acertou' if acertou else 'errou' }}">
-            {{ 'Você acertou!' if acertou else 'Você errou!' }}
-        </div>
+        <div class="card">
+            <!-- Badge mostrando se a questão é pontuada -->
+            <div class="badge-pontuada {{ 'pontuada' if questao_pontuada else 'nao-pontuada' }}">
+                {{ 'PONTUADA' if questao_pontuada else 'NÃO PONTUADA' }}
+            </div>
+            
+            <div class="icone">
+                {{ '✅' if acertou else '❌' }}
+            </div>
+            
+            <div class="resultado {{ 'acertou' if acertou else 'errou' }}">
+                {{ 'Você acertou!' if acertou else 'Você errou!' }}
+            </div>
 
-        <h3>Questão {{ questao_numero }} de {{ total_questoes }}</h3>
-        <p><strong>{{ questao.pergunta }}</strong></p>
+            <div class="questao-info">
+                <h3>Questão {{ questao_numero }} de {{ total_questoes }}</h3>
+                <p class="questao-pergunta"><strong>{{ questao.pergunta }}</strong></p>
+            </div>
 
-        <div class="sua-resposta {{ 'acertou' if acertou else 'errou' }}">
-            <strong>Sua resposta:</strong> {{ resposta_usuario }}
-        </div>
+            <div class="resposta-box sua-resposta {{ 'errou' if not acertou else '' }}">
+                <strong>Sua resposta:</strong> {{ resposta_usuario }}
+            </div>
 
-        {% if not acertou %}
-        <div class="resposta-correta">
-            <strong>Resposta correta:</strong> 
-            {% if questao.resposta_correta is string %}
-                {{ questao.resposta_correta }}
-            {% else %}
-                {{ questao.resposta_correta | join(', ') }}
+            {% if not acertou %}
+            <div class="resposta-box resposta-correta">
+                <strong>Resposta correta:</strong> 
+                {% if questao.resposta_correta is string %}
+                    {{ questao.resposta_correta }}
+                {% else %}
+                    {{ questao.resposta_correta | join(', ') }}
+                {% endif %}
+            </div>
             {% endif %}
-        </div>
-        {% endif %}
 
-        {% if questao.explicacao %}
-        <div class="explicacao">
-            <strong>📚 Explicação:</strong><br>
-            {{ questao.explicacao }}
-        </div>
-        {% endif %}
+            {% if questao.explicacao %}
+            <div class="resposta-box explicacao">
+                <strong>📚 Explicação:</strong><br>
+                {{ questao.explicacao }}
+            </div>
+            {% endif %}
 
-        {% if not questao_pontuada %}
-        <div class="aviso-nao-pontuada">
-            <strong>ℹ️ Atenção:</strong> Esta questão NÃO é pontuada neste simulado.
-        </div>
-        {% endif %}
+            {% if not questao_pontuada %}
+            <div class="resposta-box aviso-nao-pontuada">
+                <strong>ℹ️ Atenção:</strong> Esta questão NÃO é pontuada neste simulado.
+            </div>
+            {% endif %}
 
-        <form method="POST" action="{{ url_for('processar_simulado', id_do_simulado=id_simulado) }}">
-            <input type="hidden" name="ja_respondeu" value="true">
-            <input type="hidden" name="tempo_decorrido" value="{{ tempo_decorrido }}">
-            <button type="submit">Continuar</button>
-        </form>
+            <form method="POST" action="{{ url_for('processar_simulado', id_do_simulado=id_simulado) }}">
+                <input type="hidden" name="ja_respondeu" value="true">
+                <input type="hidden" name="tempo_decorrido" value="{{ tempo_decorrido }}">
+                <button type="submit">Continuar</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>

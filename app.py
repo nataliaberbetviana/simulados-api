@@ -2,7 +2,8 @@ import random
 import importlib
 from flask import Flask, render_template, request, session, redirect, url_for
 from dados.simulados import SIMULADOS_DISPONIVEIS
-from dados.simulado_logica import verificar_resposta, calcular_pontuacao, gerar_questoes_nao_pontuadas
+# Assumimos que verificar_resposta, calcular_pontuacao e gerar_questoes_nao_pontuadas usam o ID da questão original
+from dados.simulado_logica import verificar_resposta, calcular_pontuacao, gerar_questoes_nao_pontuadas 
 from flask_sqlalchemy import SQLAlchemy
 import os
 import uuid
@@ -56,12 +57,15 @@ def carregar_dados_simulado(id_do_simulado):
     except (ImportError, AttributeError):
         return None, f"Erro ao carregar dados do arquivo {simulado_info['arquivo']}.py."
         
-def pegar_resposta_do_form(questao_data, questao_index) -> Union[str, List[str], None]:
-    """Determina o tipo de resposta (única ou múltipla) e extrai do formulário."""
+def pegar_resposta_do_form(questao_data, questao_index_sequencial) -> Union[str, List[str], None]:
+    """Determina o tipo de resposta (única ou múltipla) e extrai do formulário.
+    Usa o índice sequencial para nomear o campo no caso de múltipla resposta."""
     if questao_data.get('tipo') == 'multipla_resposta':
-        campo_nome = f'resposta_{questao_index}'
+        # O nome do campo precisa ser corrigido para usar o índice sequencial
+        campo_nome = f'resposta_{questao_index_sequencial}'
         return request.form.getlist(campo_nome)
     else:
+        # Para rádio button, o nome do campo é 'resposta'
         return request.form.get('resposta')
 
 def embaralhar_opcoes(questao):
@@ -72,33 +76,33 @@ def embaralhar_opcoes(questao):
     questao_embaralhada['opcoes'] = opcoes
     return questao_embaralhada
 
-def embaralhar_questoes(simulado_data):
-    """Embaralha a ordem das questões do simulado."""
-    simulado_embaralhado = simulado_data.copy()
-    questoes = simulado_data['questoes'].copy()
-    random.shuffle(questoes)
-    simulado_embaralhado['questoes'] = questoes
-    return simulado_embaralhado
+# A função embaralhar_questoes não é mais necessária, pois embaralharemos apenas os índices.
 
 def inicializar_simulado_embaralhado(id_do_simulado):
-    """Carrega o simulado, embaralha questões e opções, e salva na sessão."""
-    simulado_data, erro = carregar_dados_simulado(id_do_simulado)
+    """Carrega o simulado, embaralha os índices das questões e salva o MAPA na sessão."""
+    simulado_data_completo, erro = carregar_dados_simulado(id_do_simulado)
     if erro:
         return None, erro
     
-    # Embaralha a ordem das questões
-    simulado_embaralhado = embaralhar_questoes(simulado_data)
+    # Obtém a lista de índices das questões originais (0, 1, 2, ...)
+    indices_originais = list(range(len(simulado_data_completo['questoes'])))
     
-    # Embaralha as opções de cada questão
-    for i in range(len(simulado_embaralhado['questoes'])):
-        simulado_embaralhado['questoes'][i] = embaralhar_opcoes(simulado_embaralhado['questoes'][i])
+    # Embaralha apenas os índices
+    random.shuffle(indices_originais)
     
-    # Salva o simulado embaralhado na sessão
-    simulado_key = f'simulado_{id_do_simulado}_data'
-    session[simulado_key] = simulado_embaralhado
-    session.modified = True  # ✅ ADICIONE ESTA LINHA
+    # Salva apenas o mapa de ordem (índices embaralhados) na sessão.
+    # ISSO REDUZ DRASTICAMENTE O TAMANHO DO COOKIE!
+    simulado_map_key = f'simulado_{id_do_simulado}_data_map'
+    session[simulado_map_key] = {
+        'titulo': simulado_data_completo['titulo'],
+        'ordem_questoes': indices_originais,
+    }
+    session.modified = True
     
-    return simulado_embaralhado, None
+    print(f"DEBUG: Simulado {id_do_simulado} (DATA MAP) inicializado e salvo na sessão. (TAMANHO REDUZIDO)")
+    
+    # Retorna o data completo, embora a sessão agora use apenas o mapa.
+    return simulado_data_completo, None
 
 
 # --- ROTAS PRINCIPAIS ---
@@ -114,21 +118,26 @@ def simulados():
 @app.route('/simulado/<int:id_do_simulado>', methods=['GET'])
 def fazer_simulado(id_do_simulado):
     simulado_key = f'simulado_{id_do_simulado}_progresso'
-    simulado_data_key = f'simulado_{id_do_simulado}_data'
+    simulado_map_key = f'simulado_{id_do_simulado}_data_map'
     
-    # ✅ SEMPRE buscar/criar o simulado_data primeiro
-    simulado_embaralhado = session.get(simulado_data_key)
+    # 1. Carrega os dados completos do arquivo (NÃO DA SESSÃO!)
+    simulado_data_completo, erro_data = carregar_dados_simulado(id_do_simulado)
+    if erro_data:
+        return erro_data, 404
+
+    # 2. Busca/Cria o MAPA de ordem das questões na sessão
+    simulado_map = session.get(simulado_map_key)
     
-    if not simulado_embaralhado:
-        # Inicializa o simulado embaralhado
-        simulado_embaralhado, erro = inicializar_simulado_embaralhado(id_do_simulado)
+    if not simulado_map:
+        # Inicializa o mapa de ordem (e salva na sessão)
+        _, erro = inicializar_simulado_embaralhado(id_do_simulado)
         if erro:
             return erro, 404
-    
-    # Agora verifica o progresso
+        simulado_map = session.get(simulado_map_key) # Recarrega o mapa recém-salvo
+
+    # 3. Verifica e inicializa o progresso
     if simulado_key not in session:
-        # Primeira vez acessando, inicializa progresso
-        total_questoes = len(simulado_embaralhado['questoes'])
+        total_questoes = len(simulado_map['ordem_questoes'])
         questoes_nao_pontuadas = gerar_questoes_nao_pontuadas(total_questoes, 15)
         
         session[simulado_key] = {
@@ -137,25 +146,35 @@ def fazer_simulado(id_do_simulado):
             'tempo_gasto': 0,
             'questoes_nao_pontuadas': list(questoes_nao_pontuadas)
         }
-        session.modified = True  # ✅ ADICIONE ESTA LINHA
+        session.modified = True
+        print(f"DEBUG: Progresso do Simulado {id_do_simulado} (PROGRESSO) inicializado.")
     
     progresso = session[simulado_key]
-    questao_index = progresso['questao_atual']
+    questao_index_sequencial = progresso['questao_atual']
     
-    if questao_index >= len(simulado_embaralhado['questoes']):
+    # Caso de redirecionamento para a página final
+    if questao_index_sequencial >= len(simulado_map['ordem_questoes']):
         return redirect(url_for('finalizar_simulado', id_do_simulado=id_do_simulado))
 
-    questao_data = simulado_embaralhado['questoes'][questao_index]
+    # 4. Obtém o índice ORIGINAL da questão (que estava embaralhado)
+    indice_original_da_questao = simulado_map['ordem_questoes'][questao_index_sequencial]
+    
+    # 5. Carrega a questão original e embaralha as opções dela (já que não salvamos na sessão)
+    questao_data_original = simulado_data_completo['questoes'][indice_original_da_questao]
+    questao_data_embaralhada = embaralhar_opcoes(questao_data_original)
+    
     tempo_gasto_previamente = progresso.get('tempo_gasto', 0)
     
     # Verifica se a questão atual é pontuada
-    questao_pontuada = questao_index not in progresso['questoes_nao_pontuadas']
+    questao_pontuada = questao_index_sequencial not in progresso['questoes_nao_pontuadas']
+
+    print(f"DEBUG: Carregando Questão {questao_index_sequencial + 1} (Original Index: {indice_original_da_questao}). Tempo acumulado: {tempo_gasto_previamente}s")
     
     return render_template('fazer_simulado.html', 
-                           simulado=simulado_embaralhado,
-                           questao=questao_data,
-                           questao_index=questao_index,
-                           total_questoes=len(simulado_embaralhado['questoes']),
+                           simulado={'titulo': simulado_map['titulo']},
+                           questao=questao_data_embaralhada,
+                           questao_index=questao_index_sequencial,
+                           total_questoes=len(simulado_map['ordem_questoes']),
                            id_simulado=id_do_simulado,
                            tempo_gasto_previamente=tempo_gasto_previamente,
                            questao_pontuada=questao_pontuada)
@@ -163,14 +182,20 @@ def fazer_simulado(id_do_simulado):
 
 @app.route('/processar_simulado/<int:id_do_simulado>', methods=['POST'])
 def processar_simulado(id_do_simulado):
-    simulado_data_key = f'simulado_{id_do_simulado}_data'
-    simulado_data = session.get(simulado_data_key)
+    simulado_map_key = f'simulado_{id_do_simulado}_data_map'
+    simulado_map = session.get(simulado_map_key)
     
-    if not simulado_data:
-        # ✅ Tente recarregar antes de dar erro
-        simulado_data, erro = inicializar_simulado_embaralhado(id_do_simulado)
+    if not simulado_map:
+        # Se o mapa não existe, tenta inicializar (caso a sessão tenha expirado)
+        _, erro = inicializar_simulado_embaralhado(id_do_simulado)
         if erro:
             return f"Erro: Simulado não encontrado na sessão. {erro}", 404
+        simulado_map = session.get(simulado_map_key) # Recarrega o mapa
+    
+    # Carrega os dados completos do arquivo para verificação
+    simulado_data_completo, erro_data = carregar_dados_simulado(id_do_simulado)
+    if erro_data:
+        return erro_data, 404
     
     simulado_key = f'simulado_{id_do_simulado}_progresso'
     progresso = session.get(simulado_key, {
@@ -180,22 +205,35 @@ def processar_simulado(id_do_simulado):
         'questoes_nao_pontuadas': []
     })
     
-    # Verifica se já viu a explicação
+    # -------------------------------------------------------------------
+    # FLUXO 2: O usuário viu a explicação e está avançando (POST de explicacao.html)
+    # -------------------------------------------------------------------
     ja_respondeu = request.form.get('ja_respondeu')
     
     if ja_respondeu == 'true':
         progresso['questao_atual'] += 1
-        session[simulado_key] = progresso
-        session.modified = True  # ✅ ADICIONE ESTA LINHA
         
-        if progresso['questao_atual'] >= len(simulado_data['questoes']):
+        session[simulado_key] = progresso
+        session.modified = True
+        
+        print(f"DEBUG: AVANÇANDO. Novo índice: {progresso['questao_atual']}. Tempo total salvo: {progresso['tempo_gasto']}s")
+        
+        if progresso['questao_atual'] >= len(simulado_map['ordem_questoes']):
             return redirect(url_for('finalizar_simulado', id_do_simulado=id_do_simulado))
         else:
             return redirect(url_for('fazer_simulado', id_do_simulado=id_do_simulado))
     
-    questao_index = progresso['questao_atual']
-    questao_data = simulado_data['questoes'][questao_index]
-    resposta_usuario_raw = pegar_resposta_do_form(questao_data, questao_index)
+    # -------------------------------------------------------------------
+    # FLUXO 1: O usuário acabou de responder (POST de fazer_simulado.html)
+    # -------------------------------------------------------------------
+    questao_index_sequencial = progresso['questao_atual']
+    
+    # Obtém o índice ORIGINAL para buscar a questão correta para verificação
+    indice_original_da_questao = simulado_map['ordem_questoes'][questao_index_sequencial]
+    questao_data_original = simulado_data_completo['questoes'][indice_original_da_questao]
+    
+    # Passamos o índice sequencial para que pegar_resposta_do_form possa nomear o campo de resposta corretamente
+    resposta_usuario_raw = pegar_resposta_do_form(questao_data_original, questao_index_sequencial)
     
     try:
         tempo_total_gasto = int(request.form.get('tempo_decorrido', 0))
@@ -205,12 +243,15 @@ def processar_simulado(id_do_simulado):
     if not resposta_usuario_raw or (isinstance(resposta_usuario_raw, list) and not resposta_usuario_raw):
         return redirect(url_for('fazer_simulado', id_do_simulado=id_do_simulado))
     
-    acertou = verificar_resposta(simulado_data, questao_index, resposta_usuario_raw)
+    # Verifica a resposta usando os dados COMPLETOS e o índice ORIGINAL da questão
+    acertou = verificar_resposta(simulado_data_completo, indice_original_da_questao, resposta_usuario_raw)
     
-    progresso['acertos'][str(questao_index)] = acertou
+    progresso['acertos'][str(questao_index_sequencial)] = acertou
     progresso['tempo_gasto'] = tempo_total_gasto
     session[simulado_key] = progresso
-    session.modified = True  # ✅ ADICIONE ESTA LINHA
+    session.modified = True
+    
+    print(f"DEBUG: RESPOSTA PROCESSADA (Questão {questao_index_sequencial + 1}). Tempo total salvo: {tempo_total_gasto}s")
     
     if isinstance(resposta_usuario_raw, list):
         resposta_formatada = ', '.join(resposta_usuario_raw)
@@ -218,30 +259,33 @@ def processar_simulado(id_do_simulado):
         resposta_formatada = resposta_usuario_raw
     
     # Verifica se a questão é pontuada
-    questao_pontuada = questao_index not in progresso['questoes_nao_pontuadas']
+    questao_pontuada = questao_index_sequencial not in progresso['questoes_nao_pontuadas']
     
+    # Retorna o template de explicação
     return render_template('explicacao.html',
-                          questao=questao_data,
-                          questao_numero=questao_index + 1,
-                          total_questoes=len(simulado_data['questoes']),
+                          questao=questao_data_original,
+                          questao_numero=questao_index_sequencial + 1,
+                          total_questoes=len(simulado_map['ordem_questoes']),
                           acertou=acertou,
                           resposta_usuario=resposta_formatada,
                           id_simulado=id_do_simulado,
-                          questao_index=questao_index,
+                          questao_index=questao_index_sequencial,
                           tempo_decorrido=tempo_total_gasto,
                           questao_pontuada=questao_pontuada)
 
 
 @app.route('/finalizar_simulado/<int:id_do_simulado>')
 def finalizar_simulado(id_do_simulado):
-    simulado_data_key = f'simulado_{id_do_simulado}_data'
-    simulado_data = session.get(simulado_data_key)
+    simulado_map_key = f'simulado_{id_do_simulado}_data_map'
+    simulado_map = session.get(simulado_map_key)
     
+    # Carrega os dados completos apenas para obter o título de forma robusta
     simulado_info = next((s for s in SIMULADOS_DISPONIVEIS if s["id"] == id_do_simulado), None)
 
     simulado_key = f'simulado_{id_do_simulado}_progresso'
+    # Remove e obtém o progresso da sessão para encerrar
     progresso = session.pop(simulado_key, None)
-    session.pop(simulado_data_key, None)
+    session.pop(simulado_map_key, None) # Limpa o mapa da sessão
     
     if progresso is None:
         return redirect(url_for('simulados'))
@@ -274,6 +318,8 @@ def finalizar_simulado(id_do_simulado):
         print(f"Erro ao salvar resultado no DB: {e}")
         db.session.rollback()
 
+    print(f"DEBUG: Simulado {id_do_simulado} FINALIZADO. Pontuação: {percentual}%. Tempo total: {tempo_final_segundos}s")
+    
     return render_template('resultado.html',
                            percentual=percentual,
                            acertos=acertos,

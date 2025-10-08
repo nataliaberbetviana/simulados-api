@@ -2,75 +2,336 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Simulados</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Simulados - AWS Practitioner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
-            text-align: center;
-            background-color: #f7f7f7;
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --secondary: #232F3E;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-200: #E9ECEF;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
         .container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-card h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .simulados-list {
+            list-style: none;
+            margin: 30px 0;
+        }
+
+        .simulado-item {
+            margin-bottom: 15px;
+            animation: slideIn 0.5s ease-out backwards;
+        }
+
+        .simulado-item:nth-child(1) { animation-delay: 0.1s; }
+        .simulado-item:nth-child(2) { animation-delay: 0.2s; }
+        .simulado-item:nth-child(3) { animation-delay: 0.3s; }
+        .simulado-item:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .simulado-link {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 25px 30px;
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            color: var(--secondary);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .simulado-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .simulado-link:hover {
+            transform: translateX(10px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .simulado-link:hover::before {
+            opacity: 1;
+        }
+
+        .simulado-link:hover .simulado-icon,
+        .simulado-link:hover .simulado-text {
+            color: var(--white);
+            position: relative;
+            z-index: 1;
+        }
+
+        .simulado-icon {
+            font-size: 2.5em;
+            transition: var(--transition);
+        }
+
+        .simulado-text {
+            flex: 1;
+            font-size: 1.2em;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .arrow {
+            font-size: 1.5em;
+            transition: var(--transition);
+        }
+
+        .simulado-link:hover .arrow {
+            transform: translateX(5px);
+            color: var(--white);
+            position: relative;
+            z-index: 1;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            transition: var(--transition);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        h1 {
-            color: #2196f3;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--white);
         }
-        ul {
-            list-style-type: none;
-            padding: 0;
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
-        li {
-            margin: 15px 0;
-            background-color: #e3f2fd;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+
+        .btn-outline {
+            background: var(--white);
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
         }
-        li:hover {
-            background-color: #bbdefb;
+
+        .btn-outline:hover {
+            background: var(--secondary);
+            color: var(--white);
+            transform: translateY(-2px);
         }
-        a {
-            display: block;
-            padding: 15px;
-            text-decoration: none;
-            color: #0d47a1;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        .link-voltar {
-            margin-top: 25px;
-            display: inline-block;
-            color: #616161;
-            text-decoration: none;
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header-card {
+                padding: 35px 25px;
+            }
+
+            .header-card h1 {
+                font-size: 2em;
+            }
+
+            .content-card {
+                padding: 25px;
+            }
+
+            .simulado-link {
+                padding: 20px;
+            }
+
+            .simulado-text {
+                font-size: 1.1em;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Escolha um Simulado</h1>
-        <p>Selecione um dos simulados abaixo para iniciar sua preparação.</p>
-        
-        <ul>
-            <!-- ESTA É A CONEXÃO COM O FLASK -->
-            {% for simulado in simulados_disponiveis %}
-            <li>
-                <!-- url_for('fazer_simulado') aponta para a função no app.py -->
-                <!-- id_do_simulado=simulado.id passa o ID 1, 2, etc. -->
-                <a href="{{ url_for('fazer_simulado', id_do_simulado=simulado.id) }}">
-                    {{ simulado.titulo }}
+        <div class="header-card">
+            <div class="header-content">
+                <div class="header-icon">📝</div>
+                <h1>Escolha um Simulado</h1>
+                <p>Selecione um simulado e teste seus conhecimentos AWS</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <ul class="simulados-list">
+                {% for simulado in simulados_disponiveis %}
+                <li class="simulado-item">
+                    <a href="{{ url_for('fazer_simulado', id_do_simulado=simulado.id) }}" class="simulado-link">
+                        <div class="simulado-icon">📋</div>
+                        <div class="simulado-text">{{ simulado.titulo }}</div>
+                        <div class="arrow">→</div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div class="action-buttons">
+                <a href="{{ url_for('historico') }}" class="btn btn-outline">
+                    📊 Acessar Histórico
                 </a>
-            </li>
-            {% endfor %}
-        </ul>
-        <a class="link-voltar" href="{{ url_for('historico') }}">Acessar o Histórico</a>
-        <a class="link-voltar" href="{{ url_for('home') }}">Voltar para o Início</a>
+                <a href="{{ url_for('home') }}" class="btn btn-secondary">
+                    ← Voltar para o Início
+                </a>
+            </div>
+        </div>
     </div>
 </body>
 </html>
