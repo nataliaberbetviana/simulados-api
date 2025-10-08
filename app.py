@@ -60,7 +60,7 @@ def carregar_dados_simulado(id_do_simulado):
 def pegar_resposta_do_form(questao_data, questao_index_sequencial) -> Union[str, List[str], None]:
     """Determina o tipo de resposta (única ou múltipla) e extrai do formulário.
     Usa o índice sequencial para nomear o campo no caso de múltipla resposta."""
-    if questao_data.get('tipo') == 'multipla_resposta':
+    if questao_data.get('multipla_escolha'):
         # O nome do campo precisa ser corrigido para usar o índice sequencial
         campo_nome = f'resposta_{questao_index_sequencial}'
         return request.form.getlist(campo_nome)
