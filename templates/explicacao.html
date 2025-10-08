@@ -8,8 +8,9 @@
             font-family: sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f7f7f7;
+            background-color: {{ '#d4edda' if acertou else '#f8d7da' }};
             color: #333;
+            text-align: center;
         }
         .container {
             max-width: 800px;
@@ -18,63 +19,60 @@
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
-        .resultado-box {
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            text-align: center;
-            font-size: 1.3em;
+        /* Badge pontuada */
+        .badge-pontuada {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 0.9em;
             font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background-color: {{ '#28a745' if questao_pontuada else '#6c757d' }};
+            color: white;
         }
-        .acertou {
-            background-color: #d4edda;
-            color: #155724;
-            border: 2px solid #c3e6cb;
+        .resultado {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: {{ '#155724' if acertou else '#721c24' }};
         }
-        .errou {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 2px solid #f5c6cb;
-        }
-        h2 {
-            color: #2196f3;
+        .icone {
+            font-size: 3em;
             margin-bottom: 15px;
         }
-        .pergunta {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            border-radius: 4px;
+        h3 {
+            color: #555;
+            margin-top: 25px;
         }
-        .sua-resposta, .resposta-correta {
-            padding: 15px;
+        p {
+            font-size: 1.1em;
             margin: 15px 0;
-            border-radius: 5px;
+            text-align: left;
         }
         .sua-resposta {
-            background-color: #fff3cd;
-            border-left: 4px solid #ffc107;
+            background-color: {{ '#c3e6cb' if acertou else '#f5c6cb' }};
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid {{ '#28a745' if acertou else '#dc3545' }};
         }
         .resposta-correta {
-            background-color: #d4edda;
-            border-left: 4px solid #28a745;
+            background-color: #d1ecf1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #0c5460;
         }
         .explicacao {
-            padding: 20px;
-            margin: 20px 0;
-            background-color: #f8f9fa;
-            border-left: 4px solid #6c757d;
+            background-color: #fff3cd;
+            padding: 15px;
             border-radius: 5px;
-            line-height: 1.6;
-        }
-        .explicacao strong {
-            color: #495057;
-        }
-        form {
-            text-align: center;
+            margin: 20px 0;
+            border-left: 4px solid #856404;
+            text-align: left;
         }
         button {
             background-color: #2196f3;
@@ -90,30 +88,24 @@
         button:hover {
             background-color: #0d47a1;
         }
-        .progresso {
-            text-align: center;
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 0.9em;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="progresso">
-            Questão {{ questao_numero }} de {{ total_questoes }}
+        <!-- Badge mostrando se a questão é pontuada -->
+        <div class="badge-pontuada">
+            {{ 'PONTUADA' if questao_pontuada else 'NÃO PONTUADA' }}
+        </div>
+        
+        <div class="icone">
+            {{ '✅' if acertou else '❌' }}
+        </div>
+        <div class="resultado">
+            {{ 'Você acertou!' if acertou else 'Você errou!' }}
         </div>
 
-        <div class="resultado-box {% if acertou %}acertou{% else %}errou{% endif %}">
-            {% if acertou %}
-                ✅ Parabéns! Você acertou!
-            {% else %}
-                ❌ Resposta incorreta
-            {% endif %}
-        </div>
-
-        <h2>Questão:</h2>
-        <div class="pergunta">{{ questao.pergunta }}</div>
+        <h3>Questão {{ questao_numero }} de {{ total_questoes }}</h3>
+        <p><strong>{{ questao.pergunta }}</strong></p>
 
         <div class="sua-resposta">
             <strong>Sua resposta:</strong> {{ resposta_usuario }}
@@ -121,20 +113,32 @@
 
         {% if not acertou %}
         <div class="resposta-correta">
-            <strong>✓ Resposta correta:</strong> {{ questao.resposta_correta }}
+            <strong>Resposta correta:</strong> 
+            {% if questao.resposta_correta is string %}
+                {{ questao.resposta_correta }}
+            {% else %}
+                {{ questao.resposta_correta | join(', ') }}
+            {% endif %}
         </div>
         {% endif %}
 
+        {% if questao.explicacao %}
         <div class="explicacao">
-            <strong>💡 Explicação:</strong><br>
+            <strong>📚 Explicação:</strong><br>
             {{ questao.explicacao }}
         </div>
+        {% endif %}
+
+        {% if not questao_pontuada %}
+        <div style="background-color: #e7f3ff; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #2196f3;">
+            <strong>ℹ️ Atenção:</strong> Esta questão NÃO é pontuada neste simulado.
+        </div>
+        {% endif %}
 
         <form method="POST" action="{{ url_for('processar_simulado', id_do_simulado=id_simulado) }}">
-            <input type="hidden" name="questao_index" value="{{ questao_index }}">
-            <input type="hidden" name="tempo_decorrido" value="{{ tempo_decorrido }}">
             <input type="hidden" name="ja_respondeu" value="true">
-            <button type="submit">Próxima Questão ➜</button>
+            <input type="hidden" name="tempo_decorrido" value="{{ tempo_decorrido }}">
+            <button type="submit">Continuar</button>
         </form>
     </div>
 </body>

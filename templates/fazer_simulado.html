@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Simulado: {{ simulado.titulo }}</title>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -20,7 +19,7 @@
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            position: relative; 
+            position: relative;
         }
         .timer {
             position: absolute;
@@ -28,15 +27,27 @@
             right: 20px;
             font-size: 1.2em;
             font-weight: bold;
+            color: #d9534f;
             padding: 5px 10px;
-            border: 2px solid;
+            border: 2px solid #d9534f;
             border-radius: 5px;
-            transition: all 0.3s;
+        }
+        /* Badge indicando se a questão é pontuada */
+        .badge-pontuada {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background-color: {{ '#28a745' if questao_pontuada else '#6c757d' }};
+            color: white;
         }
         h1 {
             color: #2196f3;
             margin-bottom: 20px;
-            padding-right: 120px;
+            padding: 0 140px;
         }
         h3 {
             color: #555;
@@ -69,7 +80,7 @@
         li label:hover {
             background-color: #ddeeff;
         }
-        input[type="radio"], input[type="checkbox"] {
+        input[type="radio"] {
             margin-right: 10px;
         }
         button {
@@ -86,48 +97,33 @@
         button:hover {
             background-color: #0d47a1;
         }
-        .aviso-multipla {
-            font-size: 0.9em;
-            color: #e65100;
-            font-weight: bold;
-            margin-top: -10px;
-            margin-bottom: 10px;
-        }
     </style>
 </head>
 <body>
-    <div class="container" x-data="cronometro()">
-        <div class="timer" 
-             x-text="formatarTempo()" 
-             :style="'color: ' + getCor() + '; border-color: ' + getCor()">
+    <div class="container">
+        <!-- Badge mostrando se a questão é pontuada -->
+        <div class="badge-pontuada">
+            {{ 'PONTUADA' if questao_pontuada else 'NÃO PONTUADA' }}
         </div>
+        
+        <!-- Timer -->
+        <div id="timer" class="timer">00:00:00</div>
         
         <h1>{{ simulado.titulo }}</h1>
         
-        <form method="POST" 
-              action="{{ url_for('processar_simulado', id_do_simulado=id_simulado) }}"
-              @submit="salvarTempo()">
-
+        <form method="POST" action="{{ url_for('processar_simulado', id_do_simulado=id_simulado) }}">
             <input type="hidden" name="questao_index" value="{{ questao_index }}">
-            <input type="hidden" name="tempo_decorrido" x-ref="tempoInput" value="{{ tempo_gasto_previamente | default(0) }}">
+            <input type="hidden" name="tempo_decorrido" id="tempo_decorrido_input" value="0">
 
             <div style="margin-bottom: 20px;">
                 <h3>Questão {{ questao_index + 1 }} de {{ total_questoes }}</h3>
                 <p>{{ questao.pergunta }}</p>
-
-                {% if questao.tipo == 'multipla_resposta' %}
-                    <p class="aviso-multipla">Selecione todas as opções corretas.</p>
-                {% endif %}
                 
                 <ul>
                     {% for opcao in questao.opcoes %}
                     <li>
                         <label>
-                            {% if questao.tipo == 'multipla_resposta' %}
-                                <input type="checkbox" name="resposta_{{ questao_index }}" value="{{ opcao }}">
-                            {% else %}
-                                <input type="radio" name="resposta" value="{{ opcao }}" required>
-                            {% endif %}
+                            <input type="radio" name="resposta" value="{{ opcao }}" required>
                             {{ opcao }}
                         </label>
                     </li>
@@ -142,48 +138,48 @@
     </div>
 
     <script>
-        function cronometro() {
-            return {
-                TEMPO_LIMITE: 5400,
-                tempoGastoPreviamente: parseInt('{{ tempo_gasto_previamente | default(0) }}') || 0,
-                tempoRestante: 0,
-                tempoGastoNestaQuestao: 0,
-                
-                init() {
-                    this.tempoRestante = this.TEMPO_LIMITE - this.tempoGastoPreviamente;
-                    setInterval(() => {
-                        if (this.tempoRestante > 0) {
-                            this.tempoRestante--;
-                            this.tempoGastoNestaQuestao++;
-                        } else {
-                            alert('O tempo acabou! O simulado será finalizado.');
-                            this.$el.querySelector('form').submit();
-                        }
-                    }, 1000);
-                },
-                
-                formatarTempo() {
-                    if (this.tempoRestante < 0) return '00:00:00';
-                    const h = Math.floor(this.tempoRestante / 3600);
-                    const m = Math.floor((this.tempoRestante % 3600) / 60);
-                    const s = this.tempoRestante % 60;
-                    const pad = (n) => (n < 10 ? '0' : '') + n;
-                    return pad(h) + ':' + pad(m) + ':' + pad(s);
-                },
-                
-                getCor() {
-                    const pct = (this.tempoRestante / this.TEMPO_LIMITE) * 100;
-                    if (pct > 66) return '#10b981';
-                    if (pct > 33) return '#f59e0b';
-                    if (pct > 10) return '#f97316';
-                    return '#ef4444';
-                },
-                
-                salvarTempo() {
-                    this.$refs.tempoInput.value = this.tempoGastoPreviamente + this.tempoGastoNestaQuestao;
-                }
-            }
+        const TEMPO_LIMITE = 5400; 
+        let tempoGastoPreviamente = {{ tempo_gasto_previamente | default(0) | tojson }}; 
+        let tempoRestante = TEMPO_LIMITE - tempoGastoPreviamente;
+        let tempoGastoNestaQuestao = 0;
+
+        const timerDisplay = document.getElementById('timer');
+        const tempoInput = document.getElementById('tempo_decorrido_input');
+        const form = document.querySelector('form');
+
+        function formatarTempo(totalSegundos) {
+            if (totalSegundos < 0) return "00:00:00";
+            
+            const horas = Math.floor(totalSegundos / 3600);
+            const minutos = Math.floor((totalSegundos % 3600) / 60);
+            const segundos = totalSegundos % 60;
+
+            const pad = (num) => String(num).padStart(2, '0');
+            return `${pad(horas)}:${pad(minutos)}:${pad(segundos)}`;
         }
+
+        function atualizarContador() {
+            if (tempoRestante <= 0) {
+                timerDisplay.textContent = "00:00:00";
+                clearInterval(intervalId);
+                alert('O tempo acabou! O simulado será finalizado.');
+                form.submit();
+                return;
+            }
+
+            tempoRestante--;
+            tempoGastoNestaQuestao++;
+            
+            timerDisplay.textContent = formatarTempo(tempoRestante);
+            tempoInput.value = tempoGastoPreviamente + tempoGastoNestaQuestao;
+        }
+
+        timerDisplay.textContent = formatarTempo(tempoRestante);
+        const intervalId = setInterval(atualizarContador, 1000);
+        
+        form.addEventListener('submit', () => {
+            tempoInput.value = tempoGastoPreviamente + tempoGastoNestaQuestao;
+        });
     </script>
 </body>
 </html>

@@ -2,14 +2,13 @@ import random
 import importlib
 from flask import Flask, render_template, request, session, redirect, url_for
 from dados.simulados import SIMULADOS_DISPONIVEIS
-from dados.simulado_logica import verificar_resposta, calcular_pontuacao
+from dados.simulado_logica import verificar_resposta, calcular_pontuacao, gerar_questoes_nao_pontuadas
 from flask_sqlalchemy import SQLAlchemy
 import os
 import uuid
 from typing import Union, List
 from datetime import datetime
 
-# Define a chave secreta para usar as sessões
 app = Flask(__name__)
 
 # --- CONFIGURAÇÃO DO BANCO DE DADOS (SQLite) ---
@@ -17,11 +16,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# Define a chave secreta para as sessões (obrigatório para usar 'session')
 app.secret_key = os.environ.get('SECRET_KEY', str(uuid.uuid4()))
 
 # --- MODELO DO BANCO DE DADOS ---
-# Tabela para salvar o histórico de resultados de cada simulado
 class ResultadoSimulado(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     simulado_id = db.Column(db.Integer, nullable=False)
@@ -38,9 +35,7 @@ class ResultadoSimulado(db.Model):
 # --- FUNÇÕES AUXILIARES ---
 
 def formatar_tempo(total_segundos):
-    """
-    Formata segundos totais no formato H:MM:SS.
-    """
+    """Formata segundos totais no formato H:MM:SS."""
     if total_segundos < 0:
         total_segundos = 0
         
@@ -51,39 +46,26 @@ def formatar_tempo(total_segundos):
     return f"{horas:01d}:{minutos:02d}:{segundos:02d}"
 
 def carregar_dados_simulado(id_do_simulado):
-    """
-    Carrega dinamicamente os dados completos de um simulado a partir do seu arquivo.
-    """
+    """Carrega dinamicamente os dados completos de um simulado a partir do seu arquivo."""
     simulado_info = next((s for s in SIMULADOS_DISPONIVEIS if s["id"] == id_do_simulado), None)
     if simulado_info is None:
         return None, "Simulado não encontrado!"
     try:
-        # Importa o módulo (ex: dados.simulado_1)
         modulo_simulado = importlib.import_module(f"dados.{simulado_info['arquivo']}")
-        # Retorna os dados brutos (DADOS_SIMULADO)
-        # CORRIGIDO: O nome da variável agora é 'modulo_simulado'
-        return modulo_simulado.DADOS_SIMULADO, None 
+        return modulo_simulado.DADOS_SIMULADO, None
     except (ImportError, AttributeError):
         return None, f"Erro ao carregar dados do arquivo {simulado_info['arquivo']}.py."
         
 def pegar_resposta_do_form(questao_data, questao_index) -> Union[str, List[str], None]:
-    """
-    Determina o tipo de resposta (única ou múltipla) e extrai do formulário.
-    """
+    """Determina o tipo de resposta (única ou múltipla) e extrai do formulário."""
     if questao_data.get('tipo') == 'multipla_resposta':
-        # Se for checkbox, o nome do campo é dinâmico (ex: resposta_0)
         campo_nome = f'resposta_{questao_index}'
-        # request.form.getlist é usado para capturar todos os valores de um checkbox
         return request.form.getlist(campo_nome)
     else:
-        # Se for radio, o nome do campo é 'resposta'
         return request.form.get('resposta')
 
 def embaralhar_opcoes(questao):
-    """
-    Embaralha as opções de uma questão mantendo a resposta correta rastreável.
-    Retorna a questão modificada com opções embaralhadas.
-    """
+    """Embaralha as opções de uma questão mantendo a resposta correta rastreável."""
     questao_embaralhada = questao.copy()
     opcoes = questao['opcoes'].copy()
     random.shuffle(opcoes)
@@ -91,10 +73,7 @@ def embaralhar_opcoes(questao):
     return questao_embaralhada
 
 def embaralhar_questoes(simulado_data):
-    """
-    Embaralha a ordem das questões do simulado.
-    Retorna uma cópia do simulado com questões embaralhadas.
-    """
+    """Embaralha a ordem das questões do simulado."""
     simulado_embaralhado = simulado_data.copy()
     questoes = simulado_data['questoes'].copy()
     random.shuffle(questoes)
@@ -102,9 +81,7 @@ def embaralhar_questoes(simulado_data):
     return simulado_embaralhado
 
 def inicializar_simulado_embaralhado(id_do_simulado):
-    """
-    Carrega o simulado, embaralha questões e opções, e salva na sessão.
-    """
+    """Carrega o simulado, embaralha questões e opções, e salva na sessão."""
     simulado_data, erro = carregar_dados_simulado(id_do_simulado)
     if erro:
         return None, erro
@@ -125,20 +102,16 @@ def inicializar_simulado_embaralhado(id_do_simulado):
 
 # --- ROTAS PRINCIPAIS ---
 
-# Rota para a página inicial
 @app.route('/')
 def home():
     return render_template('home.html')
 
-# Rota para o índice de simulados (lista de opções)
 @app.route('/simulados')
 def simulados():
     return render_template('simulados.html', simulados_disponiveis=SIMULADOS_DISPONIVEIS)
 
-# Rota dinâmica para fazer um simulado específico
 @app.route('/simulado/<int:id_do_simulado>', methods=['GET'])
 def fazer_simulado(id_do_simulado):
-    # 1. Gerenciamento de sessão
     simulado_key = f'simulado_{id_do_simulado}_progresso'
     simulado_data_key = f'simulado_{id_do_simulado}_data'
     
@@ -147,12 +120,21 @@ def fazer_simulado(id_do_simulado):
         simulado_embaralhado, erro = inicializar_simulado_embaralhado(id_do_simulado)
         if erro:
             return erro, 404
-        session[simulado_key] = {'acertos': {}, 'questao_atual': 0, 'tempo_gasto': 0}
+        
+        # Gera as questões não pontuadas aleatoriamente
+        total_questoes = len(simulado_embaralhado['questoes'])
+        questoes_nao_pontuadas = gerar_questoes_nao_pontuadas(total_questoes, 15)
+        
+        session[simulado_key] = {
+            'acertos': {},
+            'questao_atual': 0,
+            'tempo_gasto': 0,
+            'questoes_nao_pontuadas': list(questoes_nao_pontuadas)
+        }
     else:
         # Usa o simulado embaralhado já salvo na sessão
         simulado_embaralhado = session.get(simulado_data_key)
         if not simulado_embaralhado:
-            # Se por algum motivo não existe, recria
             simulado_embaralhado, erro = inicializar_simulado_embaralhado(id_do_simulado)
             if erro:
                 return erro, 404
@@ -160,13 +142,14 @@ def fazer_simulado(id_do_simulado):
     progresso = session[simulado_key]
     questao_index = progresso['questao_atual']
     
-    # 2. Verifica se o simulado já terminou
     if questao_index >= len(simulado_embaralhado['questoes']):
         return redirect(url_for('finalizar_simulado', id_do_simulado=id_do_simulado))
 
-    # 3. Exibe a questão atual
     questao_data = simulado_embaralhado['questoes'][questao_index]
     tempo_gasto_previamente = progresso.get('tempo_gasto', 0)
+    
+    # Verifica se a questão atual é pontuada
+    questao_pontuada = questao_index not in progresso['questoes_nao_pontuadas']
     
     return render_template('fazer_simulado.html', 
                            simulado=simulado_embaralhado,
@@ -174,13 +157,12 @@ def fazer_simulado(id_do_simulado):
                            questao_index=questao_index,
                            total_questoes=len(simulado_embaralhado['questoes']),
                            id_simulado=id_do_simulado,
-                           tempo_gasto_previamente=tempo_gasto_previamente)
+                           tempo_gasto_previamente=tempo_gasto_previamente,
+                           questao_pontuada=questao_pontuada)
 
 
-# Rota para processar a resposta do usuário (POST)
 @app.route('/processar_simulado/<int:id_do_simulado>', methods=['POST'])
 def processar_simulado(id_do_simulado):
-    # Usa o simulado embaralhado da sessão
     simulado_data_key = f'simulado_{id_do_simulado}_data'
     simulado_data = session.get(simulado_data_key)
     
@@ -188,13 +170,17 @@ def processar_simulado(id_do_simulado):
         return "Erro: Simulado não encontrado na sessão", 404
     
     simulado_key = f'simulado_{id_do_simulado}_progresso'
-    progresso = session.get(simulado_key, {'acertos': {}, 'questao_atual': 0, 'tempo_gasto': 0})
+    progresso = session.get(simulado_key, {
+        'acertos': {},
+        'questao_atual': 0,
+        'tempo_gasto': 0,
+        'questoes_nao_pontuadas': []
+    })
     
-    # Verifica se já viu a explicação e deve avançar
+    # Verifica se já viu a explicação
     ja_respondeu = request.form.get('ja_respondeu')
     
     if ja_respondeu == 'true':
-        # Já viu a explicação, avança para próxima questão
         progresso['questao_atual'] += 1
         session[simulado_key] = progresso
         
@@ -203,7 +189,6 @@ def processar_simulado(id_do_simulado):
         else:
             return redirect(url_for('fazer_simulado', id_do_simulado=id_do_simulado))
     
-    # Primeira vez respondendo a questão
     questao_index = progresso['questao_atual']
     questao_data = simulado_data['questoes'][questao_index]
     resposta_usuario_raw = pegar_resposta_do_form(questao_data, questao_index)
@@ -213,25 +198,23 @@ def processar_simulado(id_do_simulado):
     except ValueError:
         tempo_total_gasto = progresso.get('tempo_gasto', 0)
     
-    # Verifica se selecionou algo
     if not resposta_usuario_raw or (isinstance(resposta_usuario_raw, list) and not resposta_usuario_raw):
         return redirect(url_for('fazer_simulado', id_do_simulado=id_do_simulado))
     
-    # Verifica se acertou
     acertou = verificar_resposta(simulado_data, questao_index, resposta_usuario_raw)
     
-    # Salva o resultado
     progresso['acertos'][str(questao_index)] = acertou
     progresso['tempo_gasto'] = tempo_total_gasto
     session[simulado_key] = progresso
     
-    # Formata a resposta do usuário para exibição
     if isinstance(resposta_usuario_raw, list):
         resposta_formatada = ', '.join(resposta_usuario_raw)
     else:
         resposta_formatada = resposta_usuario_raw
     
-    # Redireciona para a tela de explicação
+    # Verifica se a questão é pontuada
+    questao_pontuada = questao_index not in progresso['questoes_nao_pontuadas']
+    
     return render_template('explicacao.html',
                           questao=questao_data,
                           questao_numero=questao_index + 1,
@@ -240,38 +223,42 @@ def processar_simulado(id_do_simulado):
                           resposta_usuario=resposta_formatada,
                           id_simulado=id_do_simulado,
                           questao_index=questao_index,
-                          tempo_decorrido=tempo_total_gasto)
+                          tempo_decorrido=tempo_total_gasto,
+                          questao_pontuada=questao_pontuada)
 
 
-# Rota para a tela final (resultado)
 @app.route('/finalizar_simulado/<int:id_do_simulado>')
 def finalizar_simulado(id_do_simulado):
     simulado_data_key = f'simulado_{id_do_simulado}_data'
     simulado_data = session.get(simulado_data_key)
     
-    # Busca informações do simulado original para salvar
     simulado_info = next((s for s in SIMULADOS_DISPONIVEIS if s["id"] == id_do_simulado), None)
 
     simulado_key = f'simulado_{id_do_simulado}_progresso'
     progresso = session.pop(simulado_key, None)
-    
-    # Remove também o simulado embaralhado da sessão
     session.pop(simulado_data_key, None)
     
     if progresso is None:
         return redirect(url_for('simulados'))
 
-    percentual, acertos = calcular_pontuacao(progresso['acertos'])
+    # Converte lista para set
+    questoes_nao_pontuadas = set(progresso.get('questoes_nao_pontuadas', []))
+    
+    # Calcula pontuação considerando apenas questões pontuadas
+    percentual, acertos, total_pontuadas = calcular_pontuacao(
+        progresso['acertos'],
+        questoes_nao_pontuadas
+    )
+    
     tempo_final_segundos = progresso.get('tempo_gasto', 0)
     tempo_final_formatado = formatar_tempo(tempo_final_segundos)
     
-    # --- SALVAR NO BANCO DE DADOS ---
     novo_resultado = ResultadoSimulado(
         simulado_id=id_do_simulado,
         titulo=simulado_info['titulo'] if simulado_info else "Simulado Desconhecido",
         percentual=percentual,
         acertos=acertos,
-        total_questoes=len(progresso['acertos']),
+        total_questoes=total_pontuadas,
         tempo_gasto_segundos=tempo_final_segundos
     )
     
@@ -285,27 +272,22 @@ def finalizar_simulado(id_do_simulado):
     return render_template('resultado.html',
                            percentual=percentual,
                            acertos=acertos,
-                           total=len(progresso['acertos']),
+                           total=total_pontuadas,
                            tempo_final_formatado=tempo_final_formatado)
 
-# Rota de materiais
 @app.route('/materiais')
 def materiais():
     return render_template('materiais.html')
 
-# Rota de links
 @app.route('/links')
 def links():
     return render_template('links.html')
 
-# Rota de histórico (busca no banco de dados)
 @app.route('/historico')
 def historico():
-    # Busca todos os resultados salvos, ordenados por data de conclusão
     with app.app_context():
         resultados = ResultadoSimulado.query.order_by(ResultadoSimulado.data_conclusao.desc()).all()
     
-    # --- CÁLCULO DE DESEMPENHO GERAL ---
     maior_nota = 0.0
     media_pontuacao = 0.0
     media_tempo_gasto = "00:00:00"
@@ -317,13 +299,10 @@ def historico():
         maior_nota = round(max(pontuacoes), 1)
         media_pontuacao = round(sum(pontuacoes) / len(pontuacoes), 1)
         
-        # Calcula a média de tempo
         total_segundos_acumulados = sum(tempos_gasto)
         media_segundos = round(total_segundos_acumulados / len(resultados))
         media_tempo_gasto = formatar_tempo(media_segundos)
-    # ------------------------------------
 
-    # Formata o tempo de cada resultado antes de enviar para o template
     historico_formatado = [{
         'titulo': r.titulo,
         'percentual': r.percentual,
@@ -340,7 +319,6 @@ def historico():
                            media_tempo_gasto=media_tempo_gasto)
 
 
-# ROTA DE ADMINISTRAÇÃO PARA RESETAR O BANCO DE DADOS
 @app.route('/resetar-historico')
 def resetar_historico():
     """Apaga todas as tabelas e as recria (reset completo do histórico)."""
@@ -348,15 +326,12 @@ def resetar_historico():
         with app.app_context():
             db.drop_all()
             db.create_all()
-        return redirect(url_for('historico')) # Redireciona de volta para a página de histórico limpa
+        return redirect(url_for('historico'))
     except Exception as e:
         return f"Erro ao resetar o banco de dados: {e}", 500
 
 
-# --- EXECUÇÃO PRINCIPAL ---
-
 if __name__ == '__main__':
-    # Cria o contexto de aplicação e o banco de dados se não existir
     if not os.path.exists('site.db'):
         with app.app_context():
             db.create_all()

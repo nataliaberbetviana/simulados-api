@@ -1,16 +1,34 @@
 # Arquivo: dados/simulado_logica.py
 # Contém as funções de LÓGICA de verificação e cálculo de pontuação do simulado.
 import collections
+import random
 
 def normalizar_resposta(resposta):
     """Garante que a resposta seja sempre uma lista para fácil comparação."""
     if isinstance(resposta, str):
-        # Se for string (resposta única), transforma em lista
         return [resposta]
     elif resposta is None:
         return []
-    # Se já for uma lista (checkbox), retorna a própria lista
     return resposta
+
+
+def gerar_questoes_nao_pontuadas(total_questoes, quantidade_nao_pontuadas=15):
+    """
+    Gera aleatoriamente os índices das questões que NÃO serão pontuadas.
+    
+    Args:
+        total_questoes (int): Total de questões do simulado (ex: 65)
+        quantidade_nao_pontuadas (int): Quantas questões não devem pontuar (ex: 15)
+    
+    Returns:
+        set: Conjunto com os índices (base 0) das questões não pontuadas
+    """
+    if quantidade_nao_pontuadas >= total_questoes:
+        return set()
+    
+    indices = list(range(total_questoes))
+    nao_pontuadas = random.sample(indices, quantidade_nao_pontuadas)
+    return set(nao_pontuadas)
 
 
 def verificar_resposta(simulado_data, questao_atual, resposta_usuario_raw):
@@ -27,15 +45,9 @@ def verificar_resposta(simulado_data, questao_atual, resposta_usuario_raw):
     """
     try:
         questao = simulado_data['questoes'][questao_atual]
-        
-        # Pega a resposta correta e garante que seja uma lista para padronização
         resposta_correta = normalizar_resposta(questao['resposta_correta'])
-        
-        # Pega a resposta do usuário e garante que seja uma lista
         resposta_usuario = normalizar_resposta(resposta_usuario_raw)
         
-        # A comparação de múltiplas respostas exige que as listas sejam idênticas,
-        # independentemente da ordem.
         return collections.Counter(resposta_usuario) == collections.Counter(resposta_correta)
         
     except IndexError:
@@ -46,16 +58,38 @@ def verificar_resposta(simulado_data, questao_atual, resposta_usuario_raw):
         return False
 
 
-def calcular_pontuacao(resultados_simulado):
+def calcular_pontuacao(resultados_simulado, questoes_nao_pontuadas=None):
     """
-    Calcula a pontuação final com base no dicionário de resultados.
+    Calcula a pontuação final considerando apenas as questões pontuadas.
+    
+    Args:
+        resultados_simulado (dict): Dicionário com índices e resultados (True/False)
+        questoes_nao_pontuadas (set): Conjunto com índices das questões não pontuadas
+    
+    Returns:
+        tuple: (percentual, acertos_pontuados, total_pontuadas)
     """
+    if questoes_nao_pontuadas is None:
+        questoes_nao_pontuadas = set()
+    
     total_questoes = len(resultados_simulado)
-    acertos = sum(1 for resultado in resultados_simulado.values() if resultado is True)
     
-    if total_questoes == 0:
-        return 0.0, 0
+    # Filtra apenas as questões que são pontuadas
+    acertos_pontuados = 0
+    total_pontuadas = 0
+    
+    for indice_str, acertou in resultados_simulado.items():
+        indice = int(indice_str)
         
-    percentual = (acertos / total_questoes) * 100
+        # Se a questão NÃO está no conjunto de não pontuadas, ela conta
+        if indice not in questoes_nao_pontuadas:
+            total_pontuadas += 1
+            if acertou:
+                acertos_pontuados += 1
     
-    return round(percentual, 1), acertos
+    if total_pontuadas == 0:
+        return 0.0, 0, 0
+        
+    percentual = (acertos_pontuados / total_pontuadas) * 100
+    
+    return round(percentual, 1), acertos_pontuados, total_pontuadas
