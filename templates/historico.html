@@ -67,13 +67,13 @@
             margin-top: 10px;
         }
         .btn-reset {
-            background-color: #d9534f; /* Vermelho para reset */
+            background-color: #d9534f;
             color: white;
             padding: 8px 15px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            text-decoration: none; /* Remove sublinhado */
+            text-decoration: none;
             display: inline-block;
             margin-top: 20px;
             transition: background-color 0.3s;
@@ -81,13 +81,20 @@
         .btn-reset:hover {
             background-color: #c9302c;
         }
+        .pontuacao-alta {
+            color: green;
+            font-weight: bold;
+        }
+        .pontuacao-baixa {
+            color: red;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Histórico de Simulados</h1>
 
-        <!-- BOTÃO DE RESET -->
         <a href="{{ url_for('resetar_historico') }}" class="btn-reset" onclick="return confirm('ATENÇÃO: Isso apagará TODOS os resultados do banco de dados. Tem certeza?');">
             Limpar Histórico
         </a>
@@ -117,7 +124,11 @@
                     <td>{{ resultado.data }}</td>
                     <td>{{ resultado.acertos }} / {{ resultado.total }}</td>
                     <td>{{ resultado.tempo_formatado }}</td>
-                    <td><strong style="color: {{ 'green' if resultado.percentual >= 70 else 'red' }};">{{ resultado.percentual }}%</strong></td>
+                    <td>
+                        <span class="{% if resultado.percentual >= 70 %}pontuacao-alta{% else %}pontuacao-baixa{% endif %}">
+                            {{ resultado.percentual }}%
+                        </span>
+                    </td>
                 </tr>
                 {% else %}
                 <tr>

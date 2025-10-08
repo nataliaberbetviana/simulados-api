@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Simulado: {{ simulado.titulo }}</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -19,24 +20,23 @@
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            position: relative; /* Para posicionar o timer */
+            position: relative; 
         }
-        /* Estilo para o Contador de Tempo */
         .timer {
             position: absolute;
             top: 15px;
             right: 20px;
             font-size: 1.2em;
             font-weight: bold;
-            color: #d9534f; /* Cor vermelha para destacar */
             padding: 5px 10px;
-            border: 2px solid #d9534f;
+            border: 2px solid;
             border-radius: 5px;
+            transition: all 0.3s;
         }
         h1 {
             color: #2196f3;
             margin-bottom: 20px;
-            padding-right: 120px; /* Espaço para o timer */
+            padding-right: 120px;
         }
         h3 {
             color: #555;
@@ -69,7 +69,7 @@
         li label:hover {
             background-color: #ddeeff;
         }
-        input[type="radio"] {
+        input[type="radio"], input[type="checkbox"] {
             margin-right: 10px;
         }
         button {
@@ -86,30 +86,48 @@
         button:hover {
             background-color: #0d47a1;
         }
+        .aviso-multipla {
+            font-size: 0.9em;
+            color: #e65100;
+            font-weight: bold;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Elemento para exibir o tempo -->
-        <div id="timer" class="timer">00:00:00</div>
+    <div class="container" x-data="cronometro()">
+        <div class="timer" 
+             x-text="formatarTempo()" 
+             :style="'color: ' + getCor() + '; border-color: ' + getCor()">
+        </div>
         
         <h1>{{ simulado.titulo }}</h1>
         
-        <form method="POST" action="{{ url_for('processar_simulado', id_do_simulado=id_simulado) }}">
+        <form method="POST" 
+              action="{{ url_for('processar_simulado', id_do_simulado=id_simulado) }}"
+              @submit="salvarTempo()">
 
             <input type="hidden" name="questao_index" value="{{ questao_index }}">
-            <!-- Campo oculto para salvar o tempo total decorrido -->
-            <input type="hidden" name="tempo_decorrido" id="tempo_decorrido_input" value="0">
+            <input type="hidden" name="tempo_decorrido" x-ref="tempoInput" value="{{ tempo_gasto_previamente | default(0) }}">
 
             <div style="margin-bottom: 20px;">
                 <h3>Questão {{ questao_index + 1 }} de {{ total_questoes }}</h3>
                 <p>{{ questao.pergunta }}</p>
+
+                {% if questao.tipo == 'multipla_resposta' %}
+                    <p class="aviso-multipla">Selecione todas as opções corretas.</p>
+                {% endif %}
                 
                 <ul>
                     {% for opcao in questao.opcoes %}
                     <li>
                         <label>
-                            <input type="radio" name="resposta" value="{{ opcao }}" required>
+                            {% if questao.tipo == 'multipla_resposta' %}
+                                <input type="checkbox" name="resposta_{{ questao_index }}" value="{{ opcao }}">
+                            {% else %}
+                                <input type="radio" name="resposta" value="{{ opcao }}" required>
+                            {% endif %}
                             {{ opcao }}
                         </label>
                     </li>
@@ -124,61 +142,48 @@
     </div>
 
     <script>
-        // Tempo total do simulado em segundos (1h30 = 5400 segundos)
-        const TEMPO_LIMITE = 5400; 
-        
-        // Flask DEVE fornecer esta variável (tempo já gasto em questões anteriores)
-        let tempoGastoPreviamente = {{ tempo_gasto_previamente | default(0) | tojson }}; 
-
-        let tempoRestante = TEMPO_LIMITE - tempoGastoPreviamente;
-        const tempoGastoNestaQuestao = 0; // Contagem começa em 0 para a questao atual
-
-        const timerDisplay = document.getElementById('timer');
-        const tempoInput = document.getElementById('tempo_decorrido_input');
-        const form = document.querySelector('form');
-
-        function formatarTempo(totalSegundos) {
-            if (totalSegundos < 0) return "00:00:00";
-            
-            const horas = Math.floor(totalSegundos / 3600);
-            const minutos = Math.floor((totalSegundos % 3600) / 60);
-            const segundos = totalSegundos % 60;
-
-            const pad = (num) => String(num).padStart(2, '0');
-            return `${pad(horas)}:${pad(minutos)}:${pad(segundos)}`;
-        }
-
-        function atualizarContador() {
-            if (tempoRestante <= 0) {
-                timerDisplay.textContent = "00:00:00";
-                clearInterval(intervalId);
-                // O tempo acabou, envia o formulário automaticamente
-                alert('O tempo acabou! O simulado será finalizado.');
-                form.submit();
-                return;
+        function cronometro() {
+            return {
+                TEMPO_LIMITE: 5400,
+                tempoGastoPreviamente: parseInt('{{ tempo_gasto_previamente | default(0) }}') || 0,
+                tempoRestante: 0,
+                tempoGastoNestaQuestao: 0,
+                
+                init() {
+                    this.tempoRestante = this.TEMPO_LIMITE - this.tempoGastoPreviamente;
+                    setInterval(() => {
+                        if (this.tempoRestante > 0) {
+                            this.tempoRestante--;
+                            this.tempoGastoNestaQuestao++;
+                        } else {
+                            alert('O tempo acabou! O simulado será finalizado.');
+                            this.$el.querySelector('form').submit();
+                        }
+                    }, 1000);
+                },
+                
+                formatarTempo() {
+                    if (this.tempoRestante < 0) return '00:00:00';
+                    const h = Math.floor(this.tempoRestante / 3600);
+                    const m = Math.floor((this.tempoRestante % 3600) / 60);
+                    const s = this.tempoRestante % 60;
+                    const pad = (n) => (n < 10 ? '0' : '') + n;
+                    return pad(h) + ':' + pad(m) + ':' + pad(s);
+                },
+                
+                getCor() {
+                    const pct = (this.tempoRestante / this.TEMPO_LIMITE) * 100;
+                    if (pct > 66) return '#10b981';
+                    if (pct > 33) return '#f59e0b';
+                    if (pct > 10) return '#f97316';
+                    return '#ef4444';
+                },
+                
+                salvarTempo() {
+                    this.$refs.tempoInput.value = this.tempoGastoPreviamente + this.tempoGastoNestaQuestao;
+                }
             }
-
-            tempoRestante--;
-            tempoGastoNestaQuestao++; // Acompanha o tempo gasto na questao atual
-            
-            timerDisplay.textContent = formatarTempo(tempoRestante);
-            
-            // Salva o tempo TOTAL gasto (previamente + agora) no campo oculto do formulário
-            tempoInput.value = tempoGastoPreviamente + tempoGastoNestaQuestao;
         }
-
-        // Exibe o tempo inicial assim que a página carrega
-        timerDisplay.textContent = formatarTempo(tempoRestante);
-
-        // Inicia o contador
-        const intervalId = setInterval(atualizarContador, 1000);
-        
-        // Certifica-se de que o valor final é salvo ao enviar o formulário
-        form.addEventListener('submit', () => {
-            // Garante que o valor final do tempo gasto (total) seja enviado
-            tempoInput.value = tempoGastoPreviamente + tempoGastoNestaQuestao;
-        });
-
     </script>
 </body>
 </html>

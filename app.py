@@ -1,3 +1,4 @@
+import random
 import importlib
 from flask import Flask, render_template, request, session, redirect, url_for
 from dados.simulados import SIMULADOS_DISPONIVEIS
@@ -60,7 +61,8 @@ def carregar_dados_simulado(id_do_simulado):
         # Importa o módulo (ex: dados.simulado_1)
         modulo_simulado = importlib.import_module(f"dados.{simulado_info['arquivo']}")
         # Retorna os dados brutos (DADOS_SIMULADO)
-        return modulo_simulado.DADOS_SIMULADO, None
+        # CORRIGIDO: O nome da variável agora é 'modulo_simulado'
+        return modulo_simulado.DADOS_SIMULADO, None 
     except (ImportError, AttributeError):
         return None, f"Erro ao carregar dados do arquivo {simulado_info['arquivo']}.py."
         
@@ -76,6 +78,49 @@ def pegar_resposta_do_form(questao_data, questao_index) -> Union[str, List[str],
     else:
         # Se for radio, o nome do campo é 'resposta'
         return request.form.get('resposta')
+
+def embaralhar_opcoes(questao):
+    """
+    Embaralha as opções de uma questão mantendo a resposta correta rastreável.
+    Retorna a questão modificada com opções embaralhadas.
+    """
+    questao_embaralhada = questao.copy()
+    opcoes = questao['opcoes'].copy()
+    random.shuffle(opcoes)
+    questao_embaralhada['opcoes'] = opcoes
+    return questao_embaralhada
+
+def embaralhar_questoes(simulado_data):
+    """
+    Embaralha a ordem das questões do simulado.
+    Retorna uma cópia do simulado com questões embaralhadas.
+    """
+    simulado_embaralhado = simulado_data.copy()
+    questoes = simulado_data['questoes'].copy()
+    random.shuffle(questoes)
+    simulado_embaralhado['questoes'] = questoes
+    return simulado_embaralhado
+
+def inicializar_simulado_embaralhado(id_do_simulado):
+    """
+    Carrega o simulado, embaralha questões e opções, e salva na sessão.
+    """
+    simulado_data, erro = carregar_dados_simulado(id_do_simulado)
+    if erro:
+        return None, erro
+    
+    # Embaralha a ordem das questões
+    simulado_embaralhado = embaralhar_questoes(simulado_data)
+    
+    # Embaralha as opções de cada questão
+    for i in range(len(simulado_embaralhado['questoes'])):
+        simulado_embaralhado['questoes'][i] = embaralhar_opcoes(simulado_embaralhado['questoes'][i])
+    
+    # Salva o simulado embaralhado na sessão
+    simulado_key = f'simulado_{id_do_simulado}_data'
+    session[simulado_key] = simulado_embaralhado
+    
+    return simulado_embaralhado, None
 
 
 # --- ROTAS PRINCIPAIS ---
@@ -93,83 +138,126 @@ def simulados():
 # Rota dinâmica para fazer um simulado específico
 @app.route('/simulado/<int:id_do_simulado>', methods=['GET'])
 def fazer_simulado(id_do_simulado):
-    simulado_data, erro = carregar_dados_simulado(id_do_simulado)
-    if erro:
-        return erro, 404
-    # 1. Gerenciamento de sessão e estado (inicia o simulado)
+    # 1. Gerenciamento de sessão
     simulado_key = f'simulado_{id_do_simulado}_progresso'
+    simulado_data_key = f'simulado_{id_do_simulado}_data'
+    
     if simulado_key not in session:
-        # Inicializa a sessão, incluindo o tempo gasto
+        # Primeira vez acessando, inicializa e embaralha
+        simulado_embaralhado, erro = inicializar_simulado_embaralhado(id_do_simulado)
+        if erro:
+            return erro, 404
         session[simulado_key] = {'acertos': {}, 'questao_atual': 0, 'tempo_gasto': 0}
+    else:
+        # Usa o simulado embaralhado já salvo na sessão
+        simulado_embaralhado = session.get(simulado_data_key)
+        if not simulado_embaralhado:
+            # Se por algum motivo não existe, recria
+            simulado_embaralhado, erro = inicializar_simulado_embaralhado(id_do_simulado)
+            if erro:
+                return erro, 404
         
     progresso = session[simulado_key]
-    
-    # Obtém o índice da questão atual
     questao_index = progresso['questao_atual']
     
     # 2. Verifica se o simulado já terminou
-    if questao_index >= len(simulado_data['questoes']):
+    if questao_index >= len(simulado_embaralhado['questoes']):
         return redirect(url_for('finalizar_simulado', id_do_simulado=id_do_simulado))
 
     # 3. Exibe a questão atual
-    questao_data = simulado_data['questoes'][questao_index]
-    
-    # 4. Envia o tempo gasto acumulado para o template
+    questao_data = simulado_embaralhado['questoes'][questao_index]
     tempo_gasto_previamente = progresso.get('tempo_gasto', 0)
     
     return render_template('fazer_simulado.html', 
-                           simulado=simulado_data,
+                           simulado=simulado_embaralhado,
                            questao=questao_data,
                            questao_index=questao_index,
-                           total_questoes=len(simulado_data['questoes']),
+                           total_questoes=len(simulado_embaralhado['questoes']),
                            id_simulado=id_do_simulado,
                            tempo_gasto_previamente=tempo_gasto_previamente)
+
 
 # Rota para processar a resposta do usuário (POST)
 @app.route('/processar_simulado/<int:id_do_simulado>', methods=['POST'])
 def processar_simulado(id_do_simulado):
-    simulado_data, erro = carregar_dados_simulado(id_do_simulado)
-    if erro:
-        return erro, 404
+    # Usa o simulado embaralhado da sessão
+    simulado_data_key = f'simulado_{id_do_simulado}_data'
+    simulado_data = session.get(simulado_data_key)
+    
+    if not simulado_data:
+        return "Erro: Simulado não encontrado na sessão", 404
+    
     simulado_key = f'simulado_{id_do_simulado}_progresso'
     progresso = session.get(simulado_key, {'acertos': {}, 'questao_atual': 0, 'tempo_gasto': 0})
     
-    questao_index = progresso['questao_atual']
+    # Verifica se já viu a explicação e deve avançar
+    ja_respondeu = request.form.get('ja_respondeu')
     
-    # NOVO: Usa a função auxiliar para pegar a resposta correta (string ou lista)
+    if ja_respondeu == 'true':
+        # Já viu a explicação, avança para próxima questão
+        progresso['questao_atual'] += 1
+        session[simulado_key] = progresso
+        
+        if progresso['questao_atual'] >= len(simulado_data['questoes']):
+            return redirect(url_for('finalizar_simulado', id_do_simulado=id_do_simulado))
+        else:
+            return redirect(url_for('fazer_simulado', id_do_simulado=id_do_simulado))
+    
+    # Primeira vez respondendo a questão
+    questao_index = progresso['questao_atual']
     questao_data = simulado_data['questoes'][questao_index]
     resposta_usuario_raw = pegar_resposta_do_form(questao_data, questao_index)
     
     try:
         tempo_total_gasto = int(request.form.get('tempo_decorrido', 0))
     except ValueError:
-        tempo_total_gasto = progresso.get('tempo_gasto', 0) # Usa o valor anterior se falhar
-
-    # Verifica se o usuário selecionou alguma coisa (obrigatório)
+        tempo_total_gasto = progresso.get('tempo_gasto', 0)
+    
+    # Verifica se selecionou algo
     if not resposta_usuario_raw or (isinstance(resposta_usuario_raw, list) and not resposta_usuario_raw):
         return redirect(url_for('fazer_simulado', id_do_simulado=id_do_simulado))
-
-    # Executa a Lógica de Verificação (agora compatível com listas)
+    
+    # Verifica se acertou
     acertou = verificar_resposta(simulado_data, questao_index, resposta_usuario_raw)
     
+    # Salva o resultado
     progresso['acertos'][str(questao_index)] = acertou
-    progresso['questao_atual'] += 1 
     progresso['tempo_gasto'] = tempo_total_gasto
     session[simulado_key] = progresso
-
-    if progresso['questao_atual'] >= len(simulado_data['questoes']):
-        return redirect(url_for('finalizar_simulado', id_do_simulado=id_do_simulado))
+    
+    # Formata a resposta do usuário para exibição
+    if isinstance(resposta_usuario_raw, list):
+        resposta_formatada = ', '.join(resposta_usuario_raw)
     else:
-        return redirect(url_for('fazer_simulado', id_do_simulado=id_do_simulado))
+        resposta_formatada = resposta_usuario_raw
+    
+    # Redireciona para a tela de explicação
+    return render_template('explicacao.html',
+                          questao=questao_data,
+                          questao_numero=questao_index + 1,
+                          total_questoes=len(simulado_data['questoes']),
+                          acertou=acertou,
+                          resposta_usuario=resposta_formatada,
+                          id_simulado=id_do_simulado,
+                          questao_index=questao_index,
+                          tempo_decorrido=tempo_total_gasto)
+
 
 # Rota para a tela final (resultado)
 @app.route('/finalizar_simulado/<int:id_do_simulado>')
 def finalizar_simulado(id_do_simulado):
-    simulado_data, erro = carregar_dados_simulado(id_do_simulado)
+    simulado_data_key = f'simulado_{id_do_simulado}_data'
+    simulado_data = session.get(simulado_data_key)
+    
+    # Busca informações do simulado original para salvar
     simulado_info = next((s for s in SIMULADOS_DISPONIVEIS if s["id"] == id_do_simulado), None)
 
     simulado_key = f'simulado_{id_do_simulado}_progresso'
-    progresso = session.pop(simulado_key, None) 
+    progresso = session.pop(simulado_key, None)
+    
+    # Remove também o simulado embaralhado da sessão
+    session.pop(simulado_data_key, None)
+    
     if progresso is None:
         return redirect(url_for('simulados'))
 
@@ -191,7 +279,6 @@ def finalizar_simulado(id_do_simulado):
         db.session.add(novo_resultado)
         db.session.commit()
     except Exception as e:
-        # Em caso de erro (ex: banco não criado), imprime no console
         print(f"Erro ao salvar resultado no DB: {e}")
         db.session.rollback()
 
@@ -200,7 +287,6 @@ def finalizar_simulado(id_do_simulado):
                            acertos=acertos,
                            total=len(progresso['acertos']),
                            tempo_final_formatado=tempo_final_formatado)
-
 
 # Rota de materiais
 @app.route('/materiais')
@@ -222,11 +308,19 @@ def historico():
     # --- CÁLCULO DE DESEMPENHO GERAL ---
     maior_nota = 0.0
     media_pontuacao = 0.0
+    media_tempo_gasto = "00:00:00"
     
     if resultados:
         pontuacoes = [r.percentual for r in resultados]
+        tempos_gasto = [r.tempo_gasto_segundos for r in resultados]
+        
         maior_nota = round(max(pontuacoes), 1)
         media_pontuacao = round(sum(pontuacoes) / len(pontuacoes), 1)
+        
+        # Calcula a média de tempo
+        total_segundos_acumulados = sum(tempos_gasto)
+        media_segundos = round(total_segundos_acumulados / len(resultados))
+        media_tempo_gasto = formatar_tempo(media_segundos)
     # ------------------------------------
 
     # Formata o tempo de cada resultado antes de enviar para o template
@@ -242,7 +336,8 @@ def historico():
     return render_template('historico.html', 
                            historico=historico_formatado,
                            maior_nota=maior_nota,
-                           media_pontuacao=media_pontuacao)
+                           media_pontuacao=media_pontuacao,
+                           media_tempo_gasto=media_tempo_gasto)
 
 
 # ROTA DE ADMINISTRAÇÃO PARA RESETAR O BANCO DE DADOS

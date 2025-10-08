@@ -2,47 +2,158 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Plataforma de Estudo</title>
+    <title>Plataforma de Estudos AWS</title>
     <style>
-        body {
-            font-family: sans-serif;
-            text-align: center;
-            background-color: #f0f0f0;
-            color: #333;
-            margin-top: 50px;
+        :root {
+            --color-primary: #FF9900; /* Laranja AWS principal */
+            --color-secondary: #232F3E; /* Azul escuro AWS */
+            --color-background: #f8f9fa; /* Fundo mais claro */
+            --color-card-border: #dee2e6;
         }
-        h1 {
-            color: #0056b3;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-background);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            margin: 0;
         }
         .container {
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            display: inline-block;
+            width: 95%;
+            max-width: 1000px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Espaço entre os cards */
+        }
+        .card {
             background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); /* Sombra mais suave */
+            transition: transform 0.3s ease;
+            box-sizing: border-box;
+            text-align: center;
+            border: 1px solid var(--color-card-border);
+        }
+        .card:hover {
+            transform: translateY(-5px); /* Efeito de elevação ao passar o mouse */
+        }
+        .card.welcome-box {
+            flex: 1 1 400px;
+            text-align: left;
+            border-left: 5px solid var(--color-primary); /* Borda lateral laranja */
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .card.about-me {
+            flex: 1 1 400px;
+        }
+        .card.resources {
+            flex: 1 1 90%; /* Ocupa quase toda a largura para os botões */
+            margin-top: 20px;
+        }
+        h2 {
+            color: var(--color-secondary);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        p {
+            color: #495057;
+            line-height: 1.6;
+        }
+        .welcome-box h2 {
+            color: var(--color-primary);
+            font-size: 2em;
+        }
+        /* Estilo para links de contato (GitHub, LinkedIn) */
+        .link-group a.contact-link {
+            display: inline-block;
+            margin: 5px 8px;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: var(--color-secondary);
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+        .link-group a.contact-link:hover {
+            background-color: #f1f3f5;
+            color: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+        /* Estilo para Botões de Recursos */
+        .link-group a.resource-button {
+            display: inline-block;
+            margin: 10px 10px;
+            padding: 15px 25px;
+            text-decoration: none;
+            color: white;
+            background-color: var(--color-primary);
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: bold;
+            font-size: 1.05em;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+        .link-group a.resource-button:hover {
+            background-color: #e68a00; /* Laranja mais escuro ao passar o mouse */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .card {
+                flex: 1 1 100%;
+            }
+            .link-group a.resource-button {
+                display: block; /* Botões empilhados no mobile */
+                margin: 10px 0;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Bem-vindo(a) à minha plataforma de estudos!</h1>
-        <p>Esta plataforma foi criada para ajudar a estudar pro certificado AWS practitioner.</p>
-    </div>
-    <div class="container" style="margin-top: 20px;">
-        <h2>Sobre Mim</h2>
-        <p>Meu nome é Natalia, formada em Análise e Desenvolvimento de Sistemas e estou, atualmente, estudando para a certificação da AWS practitioner.</p>
-        <p>Estou desenvolvendo esta plataforma para aprimorar minhas habilidades em desenvolvimento web e ajudar outros estudantes.</p>
-        <a href="https://github.com/nataliaberbetviana" target="_blank">Meu GitHub</a>
-        <a href="https://www.linkedin.com/in/nataliaberbetviana/" target="_blank" style="margin-left: 15px;">Meu LinkedIn</a>
-        <a href=mailto:nabevia@gmail.com target="_blank" style="margin-left: 15px;">Meu Email</a>
-    </div>
-    <div class="container" style="margin-top: 20px;">
-        <h2>Recursos</h2>
-        <p>Explore os simulados e materiais de estudo disponíveis na plataforma para se preparar para a certificação AWS.</p>
-        <a href="{{ url_for('simulados') }}">Acessar Simulados</a>
-        <a href="{{ url_for('materiais') }}" style="margin-left: 15px;">Acessar Materiais de Estudo</a>
-        <a href="{{ url_for('links') }}" style="margin-left: 15px;">Acessar Links Úteis</a>
+        <!-- Caixa de Boas-Vindas -->
+        <div class="card welcome-box">
+            <h2>Bem-vindo(a) à minha plataforma de estudos!</h2>
+            <p>Esta plataforma foi criada para ajudar a estudar pro certificado AWS Practitioner.</p>
+        </div>
+
+        <!-- Sobre Mim -->
+        <div class="card about-me">
+            <h2>Sobre Mim</h2>
+            <p>Meu nome é Natalia, formada em Análise e Desenvolvimento de Sistemas e estou, atualmente, estudando para a certificação da AWS Practitioner.
+                Estou desenvolvendo esta plataforma para aprimorar minhas habilidades em desenvolvimento web e ajudar outros estudantes.
+            </p>
+            <div class="link-group">
+                <a href="https://github.com/nataliaberbetviana" target="_blank" class="contact-link">Meu GitHub</a>
+                <a href="https://www.linkedin.com/in/nataliaberbetviana/" target="_blank" class="contact-link">Meu LinkedIn</a>
+                <a href="mailto:nabevia@gmail.com" class="contact-link">Meu Email</a>
+            </div>
+        </div>
+
+        <!-- Recursos -->
+        <div class="card resources">
+            <h2>Recursos</h2>
+            <p>Explore os simulados e materiais de estudo disponíveis na plataforma para se preparar para a certificação AWS.</p>
+            <div class="link-group">
+                
+                <a href="{{ url_for('simulados') }}" class="resource-button">Acessar Simulados</a>
+                <a href="{{ url_for('historico') }}" class="resource-button">Acessar Histórico</a>
+
+                <a href="{{ url_for('materiais') }}" class="resource-button">Acessar Materiais de Estudo</a>
+                <a href="{{ url_for('links') }}" class="resource-button">Acessar Links Úteis</a>
+            </div>
+        </div>
     </div>
 </body>
 </html>
