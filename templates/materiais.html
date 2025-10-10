@@ -65,7 +65,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
@@ -90,7 +90,7 @@
             padding: 50px 40px;
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-xl);
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             position: relative;
             overflow: hidden;
         }
@@ -139,18 +139,33 @@
             opacity: 0.95;
         }
 
-        .content-card {
-            background: var(--white);
-            border-radius: var(--radius-xl);
-            padding: 40px;
-            box-shadow: var(--shadow-xl);
-            margin-bottom: 25px;
-            position: relative;
-            overflow: hidden;
-            animation: slideIn 0.6s ease-out 0.2s backwards;
+        .materiais-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
         }
 
-        .content-card::before {
+        .material-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 35px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            animation: slideIn 0.6s ease-out backwards;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .material-card:nth-child(1) { animation-delay: 0.1s; }
+        .material-card:nth-child(2) { animation-delay: 0.2s; }
+        .material-card:nth-child(3) { animation-delay: 0.3s; }
+        .material-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .material-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -158,6 +173,16 @@
             right: 0;
             height: 5px;
             background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            transition: var(--transition);
+        }
+
+        .material-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .material-card:hover::before {
+            height: 8px;
         }
 
         @keyframes slideIn {
@@ -171,17 +196,46 @@
             }
         }
 
-        .content-card h2 {
+        .material-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .material-card:hover .material-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .material-card h3 {
             color: var(--secondary);
-            font-size: 1.8em;
+            font-size: 1.6em;
             font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .material-card p {
+            color: var(--gray-700);
+            line-height: 1.7;
+            font-size: 1.05em;
             margin-bottom: 20px;
         }
 
-        .content-card p {
-            color: var(--gray-700);
-            line-height: 1.8;
-            font-size: 1.1em;
+        .material-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: var(--white);
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .material-status::before {
+            content: '✓';
+            font-size: 1.2em;
         }
 
         .link-voltar {
@@ -197,7 +251,7 @@
             font-size: 1.1em;
             box-shadow: var(--shadow-md);
             transition: var(--transition);
-            animation: fadeIn 0.6s ease-out 0.4s backwards;
+            animation: fadeIn 0.6s ease-out 0.5s backwards;
         }
 
         .link-voltar::before {
@@ -240,12 +294,17 @@
                 font-size: 1.1em;
             }
 
-            .content-card {
-                padding: 30px 20px;
+            .materiais-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
             }
 
-            .content-card h2 {
-                font-size: 1.5em;
+            .material-card {
+                padding: 25px;
+            }
+
+            .material-card h3 {
+                font-size: 1.4em;
             }
         }
 
@@ -256,6 +315,10 @@
 
             .header-icon {
                 font-size: 3em;
+            }
+
+            .material-icon {
+                font-size: 2.8em;
             }
         }
     </style>
@@ -270,17 +333,20 @@
             </div>
         </div>
 
-        <div class="content-card">
-            <h2>Em Breve</h2>
-            <p>
-                Aqui você vai encontrar os materiais de estudo para praticar e se preparar 
-                para a certificação AWS Cloud Practitioner. Estamos preparando conteúdos 
-                de qualidade para ajudar você nessa jornada!
-            </p>
+        <div class="materiais-grid">
+            <a href="/servicos_aws" class="material-card">
+                <span class="material-icon">🔧</span>
+                <h3>Serviços AWS</h3>
+                <p>Conheça os serviços essenciais da AWS.</p>
+                <span class="material-status">Disponível</span>
+            </a>
+
+            <!-- Adicione mais cards aqui conforme criar novos materiais -->
+            
         </div>
 
         <center>
-            <a class="link-voltar" href="{{ url_for('home') }}">Voltar para o Início</a>
+            <a class="link-voltar" href="/">Voltar para o Início</a>
         </center>
     </div>
 </body>
