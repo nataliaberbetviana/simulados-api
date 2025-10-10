@@ -572,58 +572,146 @@
 
         <div class="content-card">
             <h2>🎯 Casos de Uso Comuns</h2>
-
-            <p><strong>Hospedagem de Aplicações Web:</strong> Crie arquitetura multi-tier com servidores web em sub-redes públicas e bancos de dados em sub-redes privadas.</p>
-            
-            <p><strong>Ambientes Híbridos:</strong> Estenda data center on-premises para nuvem usando VPN ou Direct Connect, mantendo comunicação segura.</p>
-            
-            <p><strong>Disaster Recovery:</strong> Configure ambiente de backup em outra região conectado via VPC Peering para failover rápido.</p>
-            
-            <p><strong>Isolamento de Ambientes:</strong> Separe desenvolvimento, homologação e produção em VPCs distintas com controles de acesso específicos.</p>
-            
-            <p><strong>Conformidade Regulatória:</strong> Implemente requisitos de isolamento de rede e controle de dados para atender normas como PCI-DSS, HIPAA.</p>
-            
-            <p><strong>Microserviços:</strong> Organize microserviços em sub-redes com políticas de segurança granulares e comunicação controlada.</p>
+            <div class="pricing-box">
+                <h4>Hospedagem de Aplicações Web:</h4>
+                <p>
+                    Crie arquitetura multi-tier com servidores web em sub-redes públicas e bancos de dados em sub-redes privadas.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Ambientes Híbridos:</h4>
+                <p>
+                    Estenda data center on-premises para nuvem usando VPN ou Direct Connect, mantendo comunicação segura.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Disaster Recovery:</h4>
+                <p>
+                    Configure ambiente de backup em outra região conectado via VPC Peering para failover rápido.</p>
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Isolamento de Ambientes:</h4>
+                <p>
+                    Separe desenvolvimento, homologação e produção em VPCs distintas com controles de acesso específicos.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Conformidade Regulatória:</h4>
+                <p>
+                    Implemente requisitos de isolamento de rede e controle de dados para atender normas como PCI-DSS, HIPAA.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Microserviços:</h4>
+                <p>
+                    Organize microserviços em sub-redes com políticas de segurança granulares e comunicação controlada.
+                </p>
+            </div>
         </div>
 
         <div class="content-card">
             <h2>💰 Modelo de Precificação</h2>
-
-            <p><strong>VPC Básica:</strong> Sem custo. A VPC em si não tem cobrança.</p>
-            
-            <p><strong>NAT Gateway:</strong> Cobrado por hora de uso e por GB de dados processados.</p>
-            
-            <p><strong>VPN Site-to-Site:</strong> Cobrado por hora de conexão VPN ativa.</p>
-            
-            <p><strong>VPC Endpoints:</strong> Interface Endpoints cobrados por hora. Gateway Endpoints são gratuitos.</p>
-            
-            <p><strong>Transit Gateway:</strong> Cobrado por hora de conexão e por GB de dados processados.</p>
-            
-            <p><strong>Transferência de Dados:</strong> Dados entre AZs, regiões ou para internet são cobrados. Dentro da mesma AZ geralmente é gratuito.</p>
-            
-            <p><strong>Elastic IPs:</strong> Gratuitos quando associados a instância em execução. Cobrados quando não utilizados ou instância está parada.</p>
+            <div class="service-box">
+                <h4>VPC Básica:</h4>
+                <p>
+                    Sem custo. A VPC em si não tem cobrança.
+                </p>
+            </div>
+            <div class="service-box">
+                <h4>NAT Gateway:</h4>
+                <p>
+                    Cobrado por hora de uso e por GB de dados processados.
+                </p>
+            </div>
+            <div class="service-box">
+                <h4>VPN Site-to-Site:</h4>
+                <p>
+                    Cobrado por hora de conexão VPN ativa.
+                </p>
+            </div>
+            <div class="service-box">
+                <h4>VPC Endpoints:</h4>
+                <p>
+                    Interface Endpoints cobrados por hora. Gateway Endpoints são gratuitos.
+                </p>
+            </div>
+            <div class="service-box">
+                <h4>Transit Gateway:</h4>
+                <p>
+                    Cobrado por hora de conexão e por GB de dados processados.
+                </p>
+            </div>
+            <div class="service-box">
+                <h4>Transferência de Dados:</h4>
+                <p>
+                    Dados entre AZs, regiões ou para internet são cobrados. Dentro da mesma AZ geralmente é gratuito.
+                </p>
+            </div>
+            <div class="service-box">
+                <h4>Elastic IPs:<</h4>
+                <p>
+                    Gratuitos quando associados a instância em execução. Cobrados quando não utilizados ou instância está parada.
+                </p>
+            </div>
         </div>
 
         <div class="content-card">
             <h2>💡 Melhores Práticas</h2>
-
-            <p><strong>Planeje CIDR Blocks Cuidadosamente:</strong> Escolha tamanho adequado para crescimento futuro. Evite sobreposição com redes on-premises.</p>
-            
-            <p><strong>Use Múltiplas Availability Zones:</strong> Distribua recursos em pelo menos duas AZs para alta disponibilidade e resiliência.</p>
-            
-            <p><strong>Implemente Segurança em Camadas:</strong> Use Security Groups e NACLs em conjunto para defesa em profundidade.</p>
-            
-            <p><strong>Sub-redes Privadas para Dados Sensíveis:</strong> Mantenha bancos de dados e recursos críticos em sub-redes privadas.</p>
-            
-            <p><strong>Use VPC Endpoints:</strong> Reduz custos e melhora segurança mantendo tráfego AWS dentro da rede privada.</p>
-            
-            <p><strong>Habilite Flow Logs:</strong> Monitore tráfego de rede para auditoria, troubleshooting e detecção de anomalias.</p>
-            
-            <p><strong>Documente Arquitetura:</strong> Mantenha documentação clara de design de rede, CIDRs, rotas e regras de segurança.</p>
-            
-            <p><strong>Use Tags Consistentes:</strong> Implemente estratégia de tags para organização e gerenciamento de custos.</p>
-            
-            <p><strong>Automatize com IaC:</strong> Use CloudFormation, Terraform ou CDK para provisionamento consistente e versionado.</p>
+            <div class="highlight-box">
+                <h4>Planeje CIDR Blocks Cuidadosamente:</h4>
+                <p>
+                    Escolha tamanho adequado para crescimento futuro. Evite sobreposição com redes on-premises.
+                </p>
+            </div>
+             <div class="highlight-box">
+                <h4>Use Múltiplas Availability Zones:</h4>
+                <p>
+                    Distribua recursos em pelo menos duas AZs para alta disponibilidade e resiliência.
+                </p>
+            </div>
+             <div class="highlight-box">
+                <h4>Implemente Segurança em Camadas:</h4>
+                <p>
+                    Use Security Groups e NACLs em conjunto para defesa em profundidade.
+                </p>
+            </div>
+             <div class="highlight-box">
+                <h4>Sub-redes Privadas para Dados Sensíveis:</h4>
+                <p>
+                    Mantenha bancos de dados e recursos críticos em sub-redes privadas.
+                </p>
+            </div>
+             <div class="highlight-box">
+                <h4>Use VPC Endpoints:</h4>
+                <p>
+                    Reduz custos e melhora segurança mantendo tráfego AWS dentro da rede privada.
+                </p>
+            </div>
+             <div class="highlight-box">
+                <h4>Habilite Flow Logs: </h4>
+                <p>
+                    Monitore tráfego de rede para auditoria, troubleshooting e detecção de anomalias.
+                </p>
+            </div>
+             <div class="highlight-box">
+                <h4>Documente Arquitetura: </h4>
+                <p>
+                    Mantenha documentação clara de design de rede, CIDRs, rotas e regras de segurança.
+                </p>
+            </div>
+             <div class="highlight-box">
+                <h4>Use Tags Consistentes:</h4>
+                <p>
+                     Implemente estratégia de tags para organização e gerenciamento de custos.
+                </p>
+            </div>
+             <div class="highlight-box">
+                <h4>Automatize com IaC: </h4>
+                <p>
+                    Use CloudFormation, Terraform ou CDK para provisionamento consistente e versionado.
+                </p>
+            </div>
         </div>
 
         <center>
