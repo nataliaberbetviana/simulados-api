@@ -123,6 +123,10 @@ def s3():
 def vpc():
     return render_template('vpc.html')
 
+@app.route('/iam')
+def iam():
+    return render_template('iam.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')

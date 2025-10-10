@@ -141,11 +141,9 @@
 
         .materiais-grid {
             display: grid;
-            /* ATUALIZAÇÃO CRÍTICA: 
-               Usa 'auto-fit' e 'minmax' para criar colunas que se encaixam automaticamente.
-               Aqui, definimos que cada coluna deve ter no mínimo 250px de largura.
-               Se houver espaço para 4 colunas de 250px (4 * 250px = 1000px) dentro do container (1200px), 
-               elas serão criadas e usarão '1fr' para dividir o espaço restante igualmente.
+            /* ATUALIZAÇÃO: Define a largura mínima para 350px.
+               Em um contêiner de 1200px, 3 colunas de 350px (1050px) cabem e se expandem com 1fr.
+               4 colunas de 350px (1400px) não cabem, forçando o layout a ter no máximo 3.
             */
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
             gap: 30px;
@@ -377,6 +375,13 @@
                 <span class="material-icon">🌐</span>
                 <h3>Amazon VPC</h3>
                 <p>Virtual Private Cloud - Rede Privada Virtual Isolada na AWS.</p>
+                <span class="material-status">Disponível</span>
+            </a>
+            
+            <a href="{{ url_for('home') }}iam" class="material-card"> 
+                <span class="material-icon">🔐</span>
+                <h3>AWS IAM</h3>
+                <p>Identity and Access Management - Gerenciamento de Identidade e Acesso.</p>
                 <span class="material-status">Disponível</span>
             </a>
             
