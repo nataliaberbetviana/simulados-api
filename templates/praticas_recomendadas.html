@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práticas de Segurança - Criação de Conta AWS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --primary-light: #FFB84D;
+            --secondary: #232F3E;
+            --secondary-light: #37475A;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-card h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out backwards;
+        }
+
+        .content-card:nth-child(2) { animation-delay: 0.1s; }
+        .content-card:nth-child(3) { animation-delay: 0.2s; }
+        .content-card:nth-child(4) { animation-delay: 0.3s; }
+        .content-card:nth-child(5) { animation-delay: 0.4s; }
+        .content-card:nth-child(6) { animation-delay: 0.5s; }
+        .content-card:nth-child(7) { animation-delay: 0.6s; }
+        .content-card:nth-child(8) { animation-delay: 0.7s; }
+        .content-card:nth-child(9) { animation-delay: 0.8s; }
+        .content-card:nth-child(10) { animation-delay: 0.9s; }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card h2 {
+            color: var(--secondary);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-card h3 {
+            color: var(--secondary-light);
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+        }
+
+        .content-card p {
+            color: var(--gray-700);
+            line-height: 1.8;
+            font-size: 1.05em;
+            margin-bottom: 15px;
+        }
+
+        .content-card strong {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .service-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .service-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .service-box p {
+            margin-bottom: 8px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .pricing-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-left: 4px solid #22c55e;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .pricing-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .critical-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-left: 4px solid #dc2626;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .critical-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .link-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: var(--white);
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            animation: fadeIn 0.6s ease-out 1s backwards;
+        }
+
+        .link-voltar::before {
+            content: '←';
+            font-size: 1.3em;
+        }
+
+        .link-voltar:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header-card {
+                padding: 35px 25px;
+            }
+
+            .header-card h1 {
+                font-size: 2em;
+            }
+
+            .content-card {
+                padding: 30px 20px;
+            }
+
+            .content-card h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-card h1 {
+                font-size: 1.6em;
+            }
+
+            .header-icon {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-card">
+            <div class="header-content">
+                <div class="header-icon">🔐</div>
+                <h1>Práticas de Segurança AWS</h1>
+                <p>Melhores Práticas para Criar e Proteger sua Conta AWS</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📋 Por Que Segurança é Fundamental?</h2>
+            <p>
+                A segurança da sua conta AWS é absolutamente crítica. Uma conta comprometida pode resultar 
+                em custos inesperados massivos, perda de dados, exposição de informações confidenciais e 
+                danos à reputação da empresa. A AWS opera sob o modelo de responsabilidade compartilhada: 
+                AWS é responsável pela segurança DA nuvem, você é responsável pela segurança NA nuvem.
+            </p>
+            <p>
+                Implementar práticas de segurança desde o primeiro dia não é opcional - é essencial. 
+                Este guia cobre as melhores práticas recomendadas pela AWS para criar e gerenciar sua 
+                conta com segurança máxima, desde a configuração inicial até operações do dia a dia.
+            </p>
+        </div>
+
+        <div class="content-card">
+            <h2>🎯 Práticas Críticas Imediatas</h2>
+
+            <div class="critical-box">
+                <h4>1. Proteja a Conta Root IMEDIATAMENTE</h4>
+                <p>
+                    <strong>O QUE FAZER:</strong> Assim que criar sua conta AWS, configure MFA (Multi-Factor Authentication) 
+                    na conta root. Use autenticador de hardware ou aplicativo (Google Authenticator, Authy).<br><br>
+                    <strong>POR QUÊ:</strong> A conta root tem acesso IRRESTRITO a tudo. Se comprometida, 
+                    atacante pode excluir recursos, criar instâncias caras, acessar dados sensíveis.<br><br>
+                    <strong>NUNCA:</strong> Use a conta root para tarefas diárias. Guarde as credenciais 
+                    em local extremamente seguro (cofre físico, gerenciador de senhas corporativo).
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>2. Crie Usuário IAM Administrativo</h4>
+                <p>
+                    <strong>O QUE FAZER:</strong> Imediatamente após proteger conta root, crie usuário IAM 
+                    com permissões administrativas para uso diário.<br><br>
+                    <strong>COMO:</strong> Acesse IAM Console → Users → Add User → Anexe política 
+                    AdministratorAccess → Habilite MFA para este usuário também.<br><br>
+                    <strong>IMPORTANTE:</strong> Use este usuário administrativo para tarefas diárias, 
+                    NUNCA a conta root. Conte root deve ser usada apenas para tarefas que EXIGEM root 
+                    (fechar conta, alterar plano de suporte, etc).
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>3. Configure Informações de Contato Alternativo</h4>
+                <p>
+                    <strong>O QUE FAZER:</strong> Configure email alternativo, telefone e contatos de 
+                    segurança/operações na conta.<br><br>
+                    <strong>POR QUÊ:</strong> Se perder acesso ao email principal, AWS pode usar contatos 
+                    alternativos para recuperação. Em emergências de segurança, AWS precisa forma de 
+                    contatar você urgentemente.<br><br>
+                    <strong>ONDE:</strong> Account Settings → Alternate Contacts → Configure Security, 
+                    Billing e Operations contacts.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>4. Ative CloudTrail Imediatamente</h4>
+                <p>
+                    <strong>O QUE FAZER:</strong> Crie trilha CloudTrail em todas as regiões para registrar 
+                    TODAS as ações na conta.<br><br>
+                    <strong>POR QUÊ:</strong> Sem CloudTrail, você não tem registro de quem fez o quê e quando. 
+                    Essencial para auditoria, compliance, investigação de incidentes e forense.<br><br>
+                    <strong>CONFIGURE:</strong> Multi-região trail, valide integridade de logs, criptografe 
+                    com KMS, armazene em bucket S3 dedicado com versionamento e bloqueio.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔑 Gerenciamento de Identidade e Acesso</h2>
+
+            <div class="service-box">
+                <h4>Princípio do Privilégio Mínimo</h4>
+                <p>
+                    Conceda apenas as permissões estritamente necessárias para realizar tarefa. 
+                    Comece sem permissões e adicione conforme necessário. Nunca comece com 
+                    AdministratorAccess e "remova depois". Revise e reduza permissões regularmente. 
+                    Use AWS Access Analyzer para identificar permissões não utilizadas.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Use Grupos IAM, Não Usuários Individuais</h4>
+                <p>
+                    Crie grupos para diferentes funções (Desenvolvedores, DevOps, Auditores, 
+                    Somente Leitura). Atribua permissões aos grupos, não usuários. Adicione 
+                    usuários aos grupos apropriados. Facilita gerenciamento e garante consistência. 
+                    Quando pessoa muda de função, apenas mude grupo.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Implemente Política de Senha Forte</h4>
+                <p>
+                    Configure política de senha IAM: mínimo 14 caracteres, exija letras maiúsculas, 
+                    minúsculas, números e símbolos. Exija alteração a cada 90 dias. Impeça 
+                    reutilização das últimas 24 senhas. Permita que usuários alterem próprias senhas. 
+                    IAM Console → Account Settings → Password Policy.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>MFA para TODOS os Usuários Privilegiados</h4>
+                <p>
+                    Exija MFA para conta root (crítico), usuários administrativos (essencial), 
+                    todos os usuários IAM (altamente recomendado). Use autenticadores de hardware 
+                    (YubiKey) para contas mais sensíveis. Aplicativos autenticadores (Google 
+                    Authenticator, Authy) para demais. NUNCA use SMS como único fator.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Rotação Regular de Credenciais</h4>
+                <p>
+                    Senhas: Política de expiração 90 dias automaticamente. Chaves de Acesso: 
+                    Rotacione a cada 90 dias manualmente ou automaticamente. Use Credential Report 
+                    para identificar chaves antigas. Desative chaves não utilizadas. NUNCA commite 
+                    chaves em código ou repositórios Git.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Use IAM Roles em Vez de Chaves para Aplicações</h4>
+                <p>
+                    Para aplicações em EC2, Lambda, ECS: use IAM Roles, NUNCA chaves hardcoded. 
+                    Roles fornecem credenciais temporárias rotacionadas automaticamente. Elimina 
+                    risco de expor chaves em código. Para aplicações externas: use AWS STS para 
+                    credenciais temporárias quando possível.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🛡️ Configurações de Rede e Infraestrutura</h2>
+
+            <div class="highlight-box">
+                <h4>Nunca Exponha Recursos Diretamente à Internet</h4>
+                  <p>VPC (Virtual Private Cloud) para isolar recursos. <br>
+                  Coloque recursos sensíveis em subnets privadas sem acesso direto à internet.<br>
+                  Use NAT Gateway para acesso outbound de subnets privadas.<br>
+                   Apenas load balancers e bastion hosts em subnets públicas. Banco de dados, servidores de aplicação SEMPRE em subnets privadas.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Grupos de Segurança: Princípio do Menor Acesso</h4>
+                  <p>NUNCA permita 0.0.0.0/0 em portas sensíveis (SSH 22, RDP 3389, bancos de dados).<br>
+                   Permita apenas IPs específicos necessários.<br> Use referências de Security Group 
+                   (sg-xxxxx) em vez de ranges de IP quando possível.<br>
+                   Documente motivo de cada regra usando tags e descriptions.<br>
+                  Revise regras regularmente e remova as não utilizadas.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Network ACLs como Camada Adicional</h4>
+                  <p>Use Network ACLs como segunda camada de defesa.<br>
+                  Security Grouuls: stateful, nível de instância. NACLs: stateless, nível de subnet.<br>
+                  Configure NACLs para bloquear tráfego malicioso conhecido.<br>
+                  Útil para regras de negação explícitas (Security Groups são apenas allow)</p>.
+            </div>    
+            <div class="highlight-box">
+                <h4>Ative VPC Flow Logs</h4>
+                 <p>Registre todo tráfego de rede aceito e rejeitado em sua VPC.<br>
+                  Essencial para análise de segurança, troubleshooting, detecção de anomalias.<br>
+                  Envie logs para CloudWatch Logs ou S3.<br>
+                  Use ferramentas como Amazon Detective ou GuardDuty para análise automatizada de padrões suspeitos</p> 
+            </div>
+
+            <div class="highlight-box">
+                <h4>Use AWS WAF para Aplicações Web</h4>
+                 <p>Proteja aplicações web contra ataques comuns (SQL injection, XSS, bots). <br>
+                  Configure WAF em ALB, CloudFront ou API Gateway <br>
+                  Use AWS Managed Rules para proteção básica.<br>
+                  Crie regras personalizadas para proteção específica da aplicação.<br>
+                  Monitore métricas e logs WAF continuamente.</p> 
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📊 Monitoramento e Detecção</h2>
+
+            <div class="warning-box">
+                <h4>Ative Amazon GuardDuty</h4>
+                <p>
+                    Serviço de detecção de ameaças que analisa CloudTrail, VPC Flow Logs e DNS Logs.<br>
+                    Usa machine learning para identificar atividades maliciosas.<br> Detecta 
+                    comprometimento de credenciais, comunicação com IPs maliciosos, reconhecimento 
+                    de infraestrutura, mineração de criptomoedas. Ative em TODAS as regiões e contas.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Configure AWS Config para Compliance Contínuo</h4>
+                <p>
+                    Registre configurações de recursos e mudanças ao longo do tempo. <br>Implemente 
+                    Config Rules para conformidade automática (ex: S3 buckets não podem ser públicos, 
+                    EC2 deve ter encryption habilitada).<br> Configure remediação automática para 
+                    violações não críticas.<br> Gere relatórios de compliance para auditoria.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Use AWS Security Hub</h4>
+                <p>
+                    Agregação centralizada de descobertas de segurança de GuardDuty, Inspector, 
+                    Macie, IAM Access Analyzer, Firewall Manager. <br>Avalia conta contra frameworks 
+                    de segurança (CIS AWS Foundations, PCI-DSS). <br>Prioriza descobertas por 
+                    severidade. <br>Integra com SIEM externo se necessário.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Configure Alertas CloudWatch</h4>
+                <p>
+                    Crie alarmes para atividades críticas: uso de conta root, falhas de login IAM, 
+                    mudanças em Security Groups, criação de usuários IAM, mudanças em políticas IAM, 
+                    criação de Access Keys, desativação de CloudTrail, mudanças em Network ACLs. <br>
+                    Envie alertas para SNS → email/SMS/Slack para resposta imediata.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Implemente Análise Regular de Logs</h4>
+                <p>
+                    Use CloudWatch Logs Insights ou Amazon Athena para queries em logs CloudTrail 
+                    e VPC Flow Logs. <br>Procure por padrões suspeitos: logins de IPs desconhecidos, 
+                    horários incomuns, múltiplas falhas seguidas de sucesso, grandes volumes de 
+                    criação/exclusão de recursos, acesso a serviços raramente usados.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>💾 Proteção de Dados</h2>
+
+            <div class="pricing-box">
+                <h4>Criptografia em Repouso - SEMPRE</h4>
+                <p>
+                    <strong>S3:</strong> Habilite Server-Side Encryption (SSE-S3 ou SSE-KMS) por padrão 
+                    em todos os buckets. Use Bucket Policies para rejeitar uploads não criptografados.<br><br>
+                    <strong>EBS:</strong> Habilite criptografia por padrão na região. Todos os novos 
+                    volumes serão criptografados automaticamente.<br><br>
+                    <strong>RDS:</strong> Sempre crie databases com encryption at rest habilitada. 
+                    Não pode ser habilitada depois da criação.<br><br>
+                    <strong>DynamoDB:</strong> Use criptografia com AWS KMS para dados sensíveis.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Criptografia em Trânsito - SEMPRE</h4>
+                <p>
+                    Use TLS/SSL para toda comunicação: ALB/NLB com certificados SSL, CloudFront com 
+                    HTTPS obrigatório, API Gateway apenas HTTPS, RDS com SSL/TLS forçado, ElastiCache 
+                    com in-transit encryption. <br>Desabilite protocolos antigos (SSLv3, TLS 1.0, TLS 1.1). <br>
+                    Use apenas TLS 1.2 ou 1.3.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Gerenciamento de Chaves com AWS KMS</h4>
+                <p>
+                    Use Customer Managed Keys (CMK) para controle completo sobre criptografia. <br>
+                    Implemente políticas de chave restritivas.<br> Habilite automatic key rotation 
+                    anual.<br> Use aliases para facilitar gerenciamento. Monitore uso de chaves com 
+                    CloudTrail.<br> NUNCA compartilhe chaves entre ambientes (dev, staging, prod).
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Controle de Acesso a Dados Sensíveis</h4>
+                <p>
+                    Use S3 Block Public Access em nível de conta e bucket.<br> Configure S3 Bucket 
+                    Policies restritivas. <br>Implemente Object Lock para dados que não podem ser 
+                    alterados (compliance, legal). <br>Use versionamento para recuperação de exclusões 
+                    acidentais.<br> Configure lifecycle policies para transição e expiração automática.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Backups Regulares e Automáticos</h4>
+                <p>
+                    <strong>AWS Backup:</strong> Configure planos de backup centralizados para EC2, 
+                    EBS, RDS, DynamoDB, EFS, FSx, Storage Gateway.<br><br>
+                    <strong>Frequência:</strong> Diário para dados críticos, semanal para demais.<br><br>
+                    <strong>Retenção:</strong> Mínimo 30 dias, idealmente 90 dias ou mais.<br><br>
+                    <strong>Teste:</strong> Faça restore testing mensalmente para garantir que 
+                    backups funcionam.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🏢 Governança e Compliance</h2>
+
+            <div class="service-box">
+                <h4>Use AWS Organizations</h4>
+                <p>
+                    Gerencie múltiplas contas AWS centralizadamente. <br>Crie estrutura organizacional 
+                    (OUs) por ambiente, departamento ou aplicação.<br> Implemente Service Control Policies 
+                    (SCPs) para guardrails em nível de organização.<br> Consolide billing. <br>Compartilhe 
+                    recursos (AMIs, snapshots) entre contas de forma controlada.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Implemente Arquitetura Multi-Conta</h4>
+                <p>
+                    Separe ambientes por conta: Produção, Staging, Desenvolvimento, Segurança, 
+                    Log Archive, Shared Services.<br> Isolamento de blast radius: problema em dev 
+                    não afeta produção.<br> Separação de billing e limites de serviço.<br> Facilita 
+                    compliance e auditoria.<br> Use AWS Control Tower para automação de setup.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Tags Obrigatórias para Recursos</h4>
+                <p>
+                    Defina política de tagging: Owner (quem é responsável), Environment (dev/staging/prod), 
+                    Project (a qual projeto pertence), CostCenter (centro de custo), Compliance 
+                    (nível de sensibilidade). <br>Use Tag Policies no Organizations para forçar 
+                    conformidade. <br>Facilita rastreamento de custos, auditoria e gerenciamento.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Service Control Policies (SCPs)</h4>
+                <p>
+                    Defina permissões máximas para contas na organização.<br> Exemplos: impeça 
+                    desativação do CloudTrail, bloqueie criação de recursos fora de regiões 
+                    aprovadas, proíba exposição pública de S3 buckets, impeça exclusão de 
+                    recursos de segurança.<br> SCPs são guardrails, não substituem IAM policies.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Documentação e Procedimentos</h4>
+                <p>
+                    Documente arquitetura de segurança, responsabilidades, procedimentos de 
+                    resposta a incidentes, processos de onboarding/offboarding. Mantenha runbooks 
+                    para cenários comuns. <br>Documente decisões de arquitetura e motivos. <br>Facilita 
+                    auditorias, treinamento e continuidade operacional.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🚨 Resposta a Incidentes</h2>
+
+            <div class="critical-box">
+                <h4>Preparação: Plano de Resposta</h4>
+                <p>
+                    Crie plano documentado de resposta a incidentes ANTES que ocorra problema. <br>
+                    Defina roles e responsabilidades (quem faz o quê).<br> Liste contatos de 
+                    emergência (AWS Support, gerenciamento, legal, PR).<br> Documente procedimentos 
+                    passo a passo para cenários comuns: credenciais comprometidas, recursos 
+                    criados maliciosamente, exfiltração de dados.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>Detecção: Monitore Anomalias</h4>
+                <p>
+                    Use GuardDuty, Security Hub, CloudWatch para detecção. <br>Configure alertas 
+                    para atividades suspeitas.<br> Estabeleça baseline de atividade normal. <br>
+                    Investigue prontamente qualquer desvio.<br> Mantenha equipe treinada para 
+                    reconhecer indicadores de comprometimento.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>Contenção: Ações Imediatas</h4>
+                <p>
+                    <strong>Credenciais comprometidas:</strong> Desative usuário IAM imediatamente, 
+                    rotacione todas as chaves, revogue sessões ativas, analise logs CloudTrail 
+                    para ações realizadas.<br><br>
+                    <strong>Recurso comprometido:</strong> Isole instância (mude Security Group 
+                    para negar tudo), capture snapshot/AMI para forense, NÃO delete ainda, analise 
+                    logs e memória.<br><br>
+                    <strong>Conta comprometida:</strong> Abra caso com AWS Support URGENTE, 
+                    mude senha root se necessário, desative todos os usuários, rotacione todas 
+                    as credenciais.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>Erradicação e Recuperação</h4>
+                <p>
+                    Identifique e remova causa raiz do comprometimento. Remova backdoors, 
+                    malware, acessos não autorizados.<br> Restaure sistemas a partir de backups 
+                    limpos conhecidos. <br>Reforce configurações de segurança. <br>Implemente controles 
+                    adicionais para prevenir reocorrência.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>Lições Aprendidas: Post-Mortem</h4>
+                <p>
+                    Após incidente, realize reunião de post-mortem sem culpa.<br> Documente: o que 
+                    aconteceu, como foi detectado, quanto tempo levou para responder, o que 
+                    funcionou bem, o que pode melhorar.<br> Crie action items específicos. <br>Atualize 
+                    procedimentos. <br>Compartilhe lições com equipe. <br>Teste melhorias implementadas.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>💰 Segurança de Billing e Custos</h2>
+
+            <div class="warning-box">
+                <h4>Configure Billing Alerts</h4>
+                <p>
+                    Ative billing alerts no console de billing. <br>Configure alarmes CloudWatch 
+                    para custos estimados. <br>Defina múltiplos thresholds: 50%, 75%, 90%, 100% 
+                    do budget. <br>Receba alertas ANTES de exceder budget. <br>Ataques podem gerar 
+                    custos massivos rapidamente (mineração de cripto, instâncias caras).
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Use AWS Budgets</h4>
+                <p>
+                    Crie budgets mensais por serviço, tag ou conta. <br>Configure alertas quando 
+                    custos atingirem thresholds.<br> Budgets podem incluir créditos e RI coverage. <br>
+                    Use budget actions para automação (notificar, aplicar SCP, desligar recursos). <br>
+                    Revise budgets mensalmente e ajuste conforme necessário.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Implemente Service Quotas</h4>
+                <p>
+                    Defina limites apropriados para serviços críticos.<br> Previne criação acidental 
+                    ou maliciosa de recursos em massa.<br> Monitore uso vs quotas com Trusted Advisor. <br>
+                    Para cargas legítimas, solicite aumentos proativamente.<br> Para prevenir abuso, 
+                    mantenha quotas conservadoras.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Restrinja Regiões AWS</h4>
+                <p>
+                    Use SCPs para permitir recursos apenas em regiões específicas necessárias. <br>
+                    Reduz superfície de ataque e custos.<br> Facilita compliance com regulamentações 
+                    de residência de dados.<br> Simplifica monitoramento (menos regiões para verificar). <br>
+                    Exceções apenas quando necessário e documentado.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📚 Checklist de Configuração Inicial</h2>
+
+            <div class="highlight-box">
+                <h4>✅ Primeiras 24 Horas</h4>
+                <p>
+                    ☑️ Habilitar MFA na conta root<br>
+                    ☑️ Criar usuário IAM administrativo<br>
+                    ☑️ Habilitar MFA no usuário administrativo<br>
+                    ☑️ Configurar contatos alternativos<br>
+                    ☑️ Ativar CloudTrail multi-região<br>
+                    ☑️ Configurar billing alerts<br>
+                    ☑️ Ativar Cost Explorer<br>
+                    ☑️ Criar budget inicial<br>
+                    ☑️ Configurar política de senha IAM forte
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>✅ Primeira Semana</h4>
+                <p>
+                    ☑️ Ativar GuardDuty em todas as regiões<br>
+                    ☑️ Configurar AWS Config<br>
+                    ☑️ Ativar Security Hub<br>
+                    ☑️ Configurar grupos IAM e políticas<br>
+                    ☑️ Implementar tag policy<br>
+                    ☑️ Configurar VPC Flow Logs<br>
+                    ☑️ Criar alertas CloudWatch para atividades críticas<br>
+                    ☑️ Habilitar S3 Block Public Access em nível de conta<br>
+                    ☑️ Habilitar criptografia EBS por padrão<br>
+                    ☑️ Documentar arquitetura inicial
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>✅ Primeiro Mês</h4>
+                <p>
+                    ☑️ Configurar AWS Backup<br>
+                    ☑️ Implementar arquitetura multi-conta se aplicável<br>
+                    ☑️ Configurar AWS Organizations e SCPs<br>
+                    ☑️ Implementar bastion hosts ou Systems Manager Session Manager<br>
+                    ☑️ Configurar WAF para aplicações web<br>
+                    ☑️ Implementar Secrets Manager para credenciais de aplicações<br>
+                    ☑️ Configurar VPC com subnets públicas e privadas apropriadas<br>
+                    ☑️ Criar plano de resposta a incidentes<br>
+                    ☑️ Treinar equipe em práticas de segurança AWS<br>
+                    ☑️ Realizar primeira revisão de segurança com Trusted Advisor
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔄 Manutenção Contínua</h2>
+
+            <div class="pricing-box">
+                <h4>Diariamente</h4>
+                <p>
+                    Revise alertas de segurança (GuardDuty, Security Hub).<br> Verifique custos 
+                    não usuais no Cost Explorer.<br> Monitore dashboards CloudWatch para anomalias.<br>
+                    Revise logs de acesso à conta root (deve ser zero).
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Semanalmente</h4>
+                <p>
+                    Revise Trusted Advisor recommendations.<br> Analise IAM Credential Report para 
+                    chaves antigas.<br> Verifique Config compliance dashboard. Revise VPC Flow Logs 
+                    para padrões suspeitos.<br> Atualize documentação de mudanças realizadas.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Mensalmente</h4>
+                <p>
+                    Revise e ajuste budgets. Audite usuários IAM (remover não utilizados).<br> 
+                    Revise políticas IAM e remova permissões não usadas. <br>Teste restore de 
+                    backups críticos.<br> Revise e atualize Security Groups. <br>Analise relatórios 
+                    de conformidade do Config.<br> Revise logs CloudTrail para atividades suspeitas.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Trimestralmente</h4>
+                <p>
+                    Realizar security assessment completo.<br> Teste plano de resposta a incidentes 
+                    (tabletop exercise).<br> Rotacionar credenciais de longo prazo.<br> Revisar e atualizar 
+                    documentação de segurança.<br> Treinar equipe em novos serviços e features AWS. <br>
+                    Revisar SCPs e tag policies.<br> Avaliar necessidade de novas regiões ou serviços.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Anualmente</h4>
+                <p>
+                    Auditoria de segurança externa (se aplicável).<br> Revisão completa de arquitetura. <br>
+                    Atualização de plano de disaster recovery.<br> Revisão de conformidade com 
+                    frameworks (CIS, NIST, PCI-DSS).<br> Renovação de certificados SSL.<br> Revisão de 
+                    contratos e SLAs com AWS.<br> Planejamento de melhorias para próximo ano.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>⚠️ Erros Comuns a EVITAR</h2>
+
+            <div class="critical-box">
+                <h4>❌ Usar Conta Root para Operações Diárias</h4>
+                <p>
+                    NUNCA use conta root depois da configuração inicial. <br>Crie usuário 
+                    administrativo para tarefas diárias.<br> Conta root deve ficar guardada e 
+                    usada apenas para tarefas que exigem root explicitamente.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>❌ Não Implementar MFA</h4>
+                <p>
+                    MFA não é opcional para contas com acesso privilegiado.<br> Senhas sozinhas 
+                    são facilmente comprometidas. <br>MFA adiciona camada crítica de proteção.<br> 
+                    Sem MFA, você está apenas um phishing de ter conta comprometida.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>❌ Expor Chaves de Acesso em Código</h4>
+                <p>
+                    NUNCA commite chaves AWS em Git, Dockerfile, configurações.<br> Use IAM Roles 
+                    para aplicações em AWS.<br> Use secrets managers (AWS Secrets Manager, Parameter 
+                    Store) para credenciais. <br>Bots escaneiam GitHub constantemente para chaves 
+                    expostas - minutos após commit, sua conta pode estar comprometida.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>❌ Grupos de Segurança Abertos (0.0.0.0/0)</h4>
+                <p>
+                    NUNCA abra SSH (22), RDP (3389), bancos de dados para toda internet. <br>
+                    Use bastion hosts, VPN ou Systems Manager Session Manager para acesso 
+                    administrativo. <br>Restrinja acesso a IPs específicos conhecidos quando possível. <br>
+                    Revise regras regularmente.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>❌ Não Habilitar Logging</h4>
+                <p>
+                    Sem CloudTrail, você não sabe quem fez o quê.<br> Sem VPC Flow Logs, não sabe 
+                    que tráfego está ocorrendo.<br> Sem logs, investigação de incidentes é 
+                    impossível.<br> Compliance requer logs.<br> Habilite logging SEMPRE e em TODAS 
+                    as regiões.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>❌ Ignorar Alertas de Segurança</h4>
+                <p>
+                    GuardDuty, Security Hub, Trusted Advisor não são opcionais.<br> Alertas não 
+                    são sugestões - são indicadores de problemas reais. Configure alertas para 
+                    serem acionáveis.<br> Investigue prontamente. <br>Fadiga de alertas é problema real, 
+                    mas solução é ajustar alertas, não ignorá-los.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>❌ Não Fazer Backups</h4>
+                <p>
+                    Ransomware, exclusões acidentais, falhas de hardware acontecem.<br> Sem backups, 
+                    perda de dados é permanente.<br> Configure backups automáticos.<br> Teste restores 
+                    regularmente.<br> Backups não testados são backups que não funcionam.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>❌ Conceder Mais Permissões que Necessário</h4>
+                <p>
+                    AdministratorAccess para todos é receita para desastre.<br> Privilégio mínimo 
+                    não é sugestão, é requisito de segurança.<br> Comece com nenhuma permissão, 
+                    adicione conforme necessário.<br> Use Access Analyzer para identificar permissões 
+                    não utilizadas e remover.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📖 Recursos Adicionais</h2>
+
+            <div class="service-box">
+                <h4>Documentação e Frameworks Oficiais</h4>
+                <p>
+                    <strong>AWS Security Best Practices:</strong> Whitepaper oficial da AWS<br>
+                    <strong>AWS Well-Architected Framework:</strong> Pilar de segurança<br>
+                    <strong>CIS AWS Foundations Benchmark:</strong> Padrão da indústria<br>
+                    <strong>AWS Security Hub:</strong> Implementa CIS Benchmark automaticamente<br>
+                    <strong>AWS Prescriptive Guidance:</strong> Guias específicos por cenário
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Ferramentas Úteis</h4>
+                <p>
+                    <strong>AWS Trusted Advisor:</strong> Recomendações automatizadas<br>
+                    <strong>AWS IAM Access Analyzer:</strong> Identifica recursos compartilhados externamente<br>
+                    <strong>AWS Config:</strong> Conformidade contínua<br>
+                    <strong>AWS CloudFormation Guard:</strong> Valide templates antes de deploy<br>
+                    <strong>AWS Security Hub:</strong> Agregação de descobertas
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Suporte AWS</h4>
+                <p>
+                    <strong>AWS Support:</strong> Considere plano Business ou Enterprise para 
+                    acesso a TAM e response times mais rápidos<br>
+                    <strong>AWS Trust & Safety:</strong> Reporte abuso e atividades suspeitas<br>
+                    <strong>AWS re:Post:</strong> Comunidade para perguntas técnicas<br>
+                    <strong>AWS Training:</strong> Certificações de segurança disponíveis
+                </p>
+            </div>
+        </div>
+
+        <center>
+            <a class="link-voltar" href="/materiais">Voltar para Materiais</a>
+        </center>
+    </div>
+</body>
+</html>

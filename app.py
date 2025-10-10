@@ -139,6 +139,10 @@ def config():
 def trusted_advisor():
     return render_template('trusted_advisor.html')
 
+@app.route('/praticas_recomendadas')
+def praticas_recomendadas():
+    return render_template('praticas_recomendadas.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')
