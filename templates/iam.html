@@ -639,56 +639,112 @@
 
         <div class="content-card">
             <h2>🎯 Casos de Uso Comuns</h2>
-
-            <p><strong>Gerenciamento de Equipe:</strong> Crie grupos para desenvolvedores, administradores e auditores com permissões apropriadas para cada função.</p>
-            
-            <p><strong>Aplicações em EC2:</strong> Use IAM Roles para conceder permissões a aplicações rodando em instâncias EC2 sem expor credenciais.</p>
-            
-            <p><strong>Acesso Temporário:</strong> Conceda acesso temporário a consultores ou parceiros usando roles com credenciais temporárias e MFA.</p>
-            
-            <p><strong>Automação e CI/CD:</strong> Crie usuários IAM ou roles específicos para ferramentas de automação com permissões mínimas necessárias.</p>
-            
-            <p><strong>Acesso Mobile/Web:</strong> Use Amazon Cognito com IAM para permitir que usuários finais acessem recursos AWS de forma segura.</p>
-            
-            <p><strong>Auditoria e Conformidade:</strong> Use IAM Access Analyzer e CloudTrail para monitorar e auditar acesso aos recursos.</p>
-            
-            <p><strong>Ambiente Multi-Conta:</strong> Configure cross-account access para gerenciar recursos em múltiplas contas AWS centralizadamente.</p>
+            <div class="pricing-box">
+                <h4>Gerenciamento de Equipe: </h4>
+                <p>
+                    Crie grupos para desenvolvedores, administradores e auditores com permissões apropriadas para cada função.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Aplicações em EC2: </h4>
+                <p>
+                    Use IAM Roles para conceder permissões a aplicações rodando em instâncias EC2 sem expor credenciais.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Acesso Temporário: </h4>
+                <p>
+                    Conceda acesso temporário a consultores ou parceiros usando roles com credenciais temporárias e MFA.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Automação e CI/CD: </h4>
+                <p>
+                    Crie usuários IAM ou roles específicos para ferramentas de automação com permissões mínimas necessárias.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Acesso Mobile/Web: </h4>
+                <p>
+                    Use Amazon Cognito com IAM para permitir que usuários finais acessem recursos AWS de forma segura.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Auditoria e Conformidade: </h4>
+                <p>
+                    Use IAM Access Analyzer e CloudTrail para monitorar e auditar acesso aos recursos.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Ambiente Multi-Conta: </h4>
+                <p>
+                Configure cross-account access para gerenciar recursos em múltiplas contas AWS centralizadamente.
+                </p>
+            </div>
         </div>
 
         <div class="content-card">
             <h2>💰 Precificação</h2>
-
-            <p><strong>IAM:</strong> Serviço completamente gratuito. Não há cobrança por usuários, grupos, roles ou políticas criadas.</p>
-            
-            <p><strong>AWS STS:</strong> Também gratuito para todas as requisições de credenciais temporárias.</p>
-            
-            <p><strong>IAM Access Analyzer:</strong> Gratuito para análise de recursos dentro da conta. Cobrança apenas para análises externas.</p>
-            
-            <p><strong>Observação:</strong> Embora IAM seja gratuito, os recursos AWS acessados usando credenciais IAM são cobrados normalmente conforme uso.</p>
+            <div class="service-box">
+                <h4>IAM: </h4>
+                <p>Serviço completamente gratuito. Não há cobrança por usuários, grupos, roles ou políticas criadas.</p>
+            </div>
+            <div class="service-box">
+                <h4>AWS STS: </h4>
+                <p>Também gratuito para todas as requisições de credenciais temporárias.</p>
+            </div>
+            <div class="service-box">
+                <h4>IAM Access Analyzer:</h4>
+                <p> Gratuito para análise de recursos dentro da conta. Cobrança apenas para análises externas.</p>
+            </div>
+            <div class="service-box">
+                <h4>Observação: </h4>
+                <p>Embora IAM seja gratuito, os recursos AWS acessados usando credenciais IAM são cobrados normalmente conforme uso.</p>
+            </div>
         </div>
 
         <div class="content-card">
             <h2>💡 Melhores Práticas</h2>
-
-            <p><strong>Não Use Conta Root:</strong> Crie usuários IAM para todas as tarefas do dia a dia. Use root apenas para tarefas administrativas específicas.</p>
-            
-            <p><strong>Habilite MFA:</strong> Sempre ative MFA para conta root e usuários privilegiados. Considere para todos os usuários.</p>
-            
-            <p><strong>Privilégio Mínimo:</strong> Conceda apenas permissões necessárias. Comece com permissões mínimas e adicione conforme necessário.</p>
-            
-            <p><strong>Use Grupos:</strong> Atribua permissões a grupos, não a usuários individuais. Facilita gerenciamento e manutenção.</p>
-            
-            <p><strong>Rotação de Credenciais:</strong> Implemente rotação regular de senhas e chaves de acesso. Desative credenciais não utilizadas.</p>
-            
-            <p><strong>Use Roles para Aplicações:</strong> Prefira IAM Roles a chaves de acesso hardcoded para aplicações em EC2, Lambda, etc.</p>
-            
-            <p><strong>Monitore Atividades:</strong> Habilite AWS CloudTrail para registrar todas as ações IAM. Revise logs regularmente.</p>
-            
-            <p><strong>Políticas Gerenciadas:</strong> Prefira políticas gerenciadas (AWS ou customer) a inline policies para reutilização e manutenção.</p>
-            
-            <p><strong>Validação de Políticas:</strong> Use IAM Policy Simulator para testar políticas antes de aplicá-las em produção.</p>
-            
-            <p><strong>Documente Permissões:</strong> Mantenha documentação clara sobre estrutura de usuários, grupos, roles e suas permissões.</p>
+            <div class="highlight-box">
+                <h4>Não Use Conta Root: </h4>
+                <p>Crie usuários IAM para todas as tarefas do dia a dia. Use root apenas para tarefas administrativas específicas.</p>
+            </div>
+            <div class="service-box">
+                <h4>Habilite MFA:</h4>
+                <p> Sempre ative MFA para conta root e usuários privilegiados. Considere para todos os usuários.</p>
+            </div>
+            <div class="service-box">
+                <h4>Privilégio Mínimo: </h4>
+                <p>Conceda apenas permissões necessárias. Comece com permissões mínimas e adicione conforme necessário.</p>
+            </div>
+            <div class="service-box">
+                <h4>Use Grupos: </h4>
+                <p>Atribua permissões a grupos, não a usuários individuais. Facilita gerenciamento e manutenção.</p>
+            </div>
+            <div class="service-box">
+                <h4>Rotação de Credenciais: </h4>
+                <p>Implemente rotação regular de senhas e chaves de acesso. Desative credenciais não utilizadas.</p>
+            </div>
+            <div class="service-box">
+                <h4>Use Roles para Aplicações:</h4>
+                <p> Prefira IAM Roles a chaves de acesso hardcoded para aplicações em EC2, Lambda, etc.</p>
+            </div>
+            <div class="service-box">
+                <h4>Monitore Atividades: </h4>
+                <p>Habilite AWS CloudTrail para registrar todas as ações IAM. Revise logs regularmente.</p>
+            </div>
+            <div class="service-box">
+                <h4>Políticas Gerenciadas:</h4>
+                <p> Prefira políticas gerenciadas (AWS ou customer) a inline policies para reutilização e manutenção.</p>
+            </div>
+            <div class="service-box">
+                <h4>Validação de Políticas: </h4>
+                <p>Use IAM Policy Simulator para testar políticas antes de aplicá-las em produção.</p>
+            </div>
+            <div class="service-box">
+                <h4>Documente Permissões: </h4>
+                <p>Mantenha documentação clara sobre estrutura de usuários, grupos, roles e suas permissões.</p>
+            </div>
         </div>
 
         <center>
