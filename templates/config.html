@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Config - AWS Practitioner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --primary-light: #FFB84D;
+            --secondary: #232F3E;
+            --secondary-light: #37475A;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-card h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out backwards;
+        }
+
+        .content-card:nth-child(2) { animation-delay: 0.1s; }
+        .content-card:nth-child(3) { animation-delay: 0.2s; }
+        .content-card:nth-child(4) { animation-delay: 0.3s; }
+        .content-card:nth-child(5) { animation-delay: 0.4s; }
+        .content-card:nth-child(6) { animation-delay: 0.5s; }
+        .content-card:nth-child(7) { animation-delay: 0.6s; }
+        .content-card:nth-child(8) { animation-delay: 0.7s; }
+        .content-card:nth-child(9) { animation-delay: 0.8s; }
+        .content-card:nth-child(10) { animation-delay: 0.9s; }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card h2 {
+            color: var(--secondary);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-card h3 {
+            color: var(--secondary-light);
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+        }
+
+        .content-card p {
+            color: var(--gray-700);
+            line-height: 1.8;
+            font-size: 1.05em;
+            margin-bottom: 15px;
+        }
+
+        .content-card strong {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .service-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .service-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .service-box p {
+            margin-bottom: 8px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .pricing-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-left: 4px solid #22c55e;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .pricing-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .link-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: var(--white);
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            animation: fadeIn 0.6s ease-out 1s backwards;
+        }
+
+        .link-voltar::before {
+            content: '←';
+            font-size: 1.3em;
+        }
+
+        .link-voltar:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header-card {
+                padding: 35px 25px;
+            }
+
+            .header-card h1 {
+                font-size: 2em;
+            }
+
+            .content-card {
+                padding: 30px 20px;
+            }
+
+            .content-card h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-card h1 {
+                font-size: 1.6em;
+            }
+
+            .header-icon {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-card">
+            <div class="header-content">
+                <div class="header-icon">⚙️</div>
+                <h1>AWS Config</h1>
+                <p>Avaliação, Auditoria e Conformidade de Recursos AWS</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📋 O que é o AWS Config?</h2>
+            <p>
+                O AWS Config é um serviço que permite avaliar, auditar e analisar as configurações 
+                dos seus recursos AWS. Com Config, você pode revisar mudanças nas configurações e 
+                relacionamentos entre recursos AWS, examinar históricos detalhados de configuração 
+                e determinar a conformidade geral com as configurações especificadas em suas diretrizes internas.
+            </p>
+            <p>
+                AWS Config monitora e registra continuamente as configurações de recursos AWS e permite 
+                automatizar a avaliação dessas configurações contra configurações desejadas. Facilita 
+                solução de problemas operacionais, auditoria de segurança, análise de mudanças e 
+                conformidade regulatória.
+            </p>
+        </div>
+
+        <div class="content-card">
+            <h2>✨ Principais Características</h2>
+            
+            <div class="service-box">
+                <h4>Inventário Contínuo de Recursos</h4>
+                <p>
+                    Descobre recursos AWS existentes, registra suas configurações atuais e captura 
+                    mudanças em configurações de recursos ao longo do tempo. Mantém inventário 
+                    detalhado e atualizado de todos os recursos AWS na conta.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Histórico de Configurações</h4>
+                <p>
+                    Registra histórico completo de mudanças de configuração. Visualize como recurso 
+                    era configurado em qualquer ponto no tempo. Essencial para auditoria, solução 
+                    de problemas e análise de impacto de mudanças.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Notificações de Mudanças</h4>
+                <p>
+                    Receba notificações via Amazon SNS sempre que configurações de recursos mudarem. 
+                    Integra com CloudWatch Events para automação de resposta a mudanças específicas. 
+                    Mantenha-se informado sobre alterações críticas.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Avaliação de Conformidade</h4>
+                <p>
+                    Avalie automaticamente configurações de recursos contra regras de conformidade 
+                    desejadas. Identifique recursos não conformes e tome ações corretivas. Simplifique 
+                    auditoria e demonstração de conformidade regulatória.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Mapeamento de Relacionamentos</h4>
+                <p>
+                    Rastreie relacionamentos entre recursos AWS. Entenda como mudanças em um recurso 
+                    podem impactar outros. Visualize dependências e infraestrutura conectada para 
+                    análise de impacto abrangente.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Suporte Multi-Região e Multi-Conta</h4>
+                <p>
+                    Agregue dados de configuração de múltiplas regiões e contas em um único local. 
+                    Visibilidade centralizada de conformidade em toda organização. Facilita governança 
+                    em ambientes AWS complexos.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🗂️ Componentes Fundamentais</h2>
+
+            <div class="highlight-box">
+                <h4>📦 Itens de Configuração (Configuration Items)</h4>
+                <p>
+                    Representação pontual da configuração de um recurso AWS. Inclui metadados, 
+                    atributos, relacionamentos, configuração atual e eventos relacionados. 
+                    Gerado cada vez que configuração de recurso muda. Formato JSON armazenado 
+                    em bucket S3.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📸 Snapshots de Configuração</h4>
+                <p>
+                    Coleção de itens de configuração entregue a bucket S3 especificado. Contém 
+                    todas as configurações de recursos registrados pelo Config em momento específico. 
+                    Pode ser gerado sob demanda ou periodicamente.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📜 Histórico de Configuração</h4>
+                <p>
+                    Arquivo entregue periodicamente contendo todos os itens de configuração de 
+                    recurso específico durante período de tempo. Permite revisar mudanças históricas 
+                    e estado anterior de recursos. Armazenado em bucket S3.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📊 Fluxo de Configuração (Configuration Stream)</h4>
+                <p>
+                    Fluxo automaticamente atualizado de todas as mudanças de configuração. 
+                    Entregue via Amazon SNS. Permite processamento em tempo real de mudanças 
+                    de configuração para automação e integração com outros sistemas.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📝 Gravador de Configuração (Configuration Recorder)</h4>
+                <p>
+                    Componente que detecta mudanças em configurações de recursos e grava itens 
+                    de configuração. Define quais recursos são registrados. Deve ser habilitado 
+                    e em execução para que Config funcione. Um por região.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📤 Canal de Entrega (Delivery Channel)</h4>
+                <p>
+                    Especifica destino para entrega de snapshots e histórico de configuração. 
+                    Define bucket S3 para armazenamento e tópico SNS opcional para notificações. 
+                    Necessário para que Config entregue dados de configuração.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>✅ AWS Config Rules</h2>
+
+            <div class="pricing-box">
+                <h4>O que são Config Rules?</h4>
+                <p>
+                    Regras que representam configurações desejadas para recursos AWS. Config 
+                    avalia continuamente se recursos estão em conformidade com essas regras. 
+                    Quando recurso viola regra, é marcado como não conforme e pode acionar 
+                    notificações ou remediações automáticas.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Regras Gerenciadas pela AWS</h4>
+                <p>
+                    Regras predefinidas criadas e mantidas pela AWS. Cobrem melhores práticas 
+                    comuns de segurança, conformidade e operações. Exemplos: verificar se buckets 
+                    S3 são públicos, se instâncias EC2 usam tipos aprovados, se grupos de segurança 
+                    têm regras específicas. Fáceis de implementar.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Regras Personalizadas</h4>
+                <p>
+                    Criadas usando AWS Lambda para lógica personalizada. Permite avaliar 
+                    conformidade baseada em requisitos específicos da organização. Função Lambda 
+                    recebe eventos de configuração e retorna status de conformidade. Máxima 
+                    flexibilidade para casos únicos.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Tipos de Avaliação</h4>
+                <p>
+                    <strong>Baseada em Mudanças:</strong> Acionada quando configuração de recurso 
+                    muda. Avaliação ocorre em resposta a mudanças específicas.<br><br>
+                    <strong>Periódica:</strong> Executada em intervalos regulares (1h, 3h, 6h, 12h, 24h). 
+                    Útil para verificações que dependem de fatores externos ou estado temporal.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔧 Remediação Automática</h2>
+
+            <div class="warning-box">
+                <h4>Remediação com AWS Systems Manager</h4>
+                <p>
+                    AWS Config pode acionar documentos SSM Automation automaticamente quando 
+                    recursos são marcados como não conformes. Corrige configurações automaticamente 
+                    sem intervenção manual. Reduz tempo de resposta e garante conformidade contínua.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Ações de Remediação Personalizadas</h4>
+                <p>
+                    Configure ações personalizadas usando Lambda functions. Implemente lógica 
+                    específica de remediação para requisitos únicos. Pode incluir notificações, 
+                    aprovações ou múltiplas etapas de correção.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Tentativas Automáticas</h4>
+                <p>
+                    Configure número de tentativas automáticas se remediação falhar. Define 
+                    intervalo entre tentativas. Aumenta confiabilidade da correção automática 
+                    em caso de problemas temporários ou dependências.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Modo Manual vs. Automático</h4>
+                <p>
+                    Escolha entre remediação totalmente automática ou manual. Modo manual requer 
+                    aprovação antes de executar correções. Útil para mudanças críticas que exigem 
+                    revisão humana antes de aplicação.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔗 Integração com Outros Serviços AWS</h2>
+
+            <div class="service-box">
+                <h4>AWS CloudTrail</h4>
+                <p>
+                    Config usa CloudTrail para capturar chamadas de API. Juntos fornecem 
+                    visibilidade completa: Config mostra O QUE mudou (configuração), CloudTrail 
+                    mostra QUEM mudou, QUANDO e COMO. Complementares para auditoria completa.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Security Hub</h4>
+                <p>
+                    Security Hub agrega descobertas de conformidade do Config. Fornece visão 
+                    centralizada de postura de segurança. Integra verificações de conformidade 
+                    Config com outras descobertas de segurança de múltiplos serviços.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Systems Manager</h4>
+                <p>
+                    SSM Automation documents são usados para remediação automática. Config 
+                    aciona automações SSM quando recursos estão não conformes. Permite correções 
+                    padronizadas e repetíveis de problemas de conformidade.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon EventBridge</h4>
+                <p>
+                    Recebe eventos de mudanças de conformidade do Config. Permite criar workflows 
+                    personalizados baseados em mudanças de estado de conformidade. Integra com 
+                    Lambda, SNS, SQS e outros serviços para automação.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Organizations</h4>
+                <p>
+                    Deploy de regras Config em múltiplas contas usando StackSets. Agregação 
+                    de dados de conformidade de toda organização. Gerenciamento centralizado 
+                    de políticas de conformidade em ambiente multi-conta.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon S3</h4>
+                <p>
+                    Armazena snapshots de configuração, histórico e arquivos de conformidade. 
+                    Permite retenção de longo prazo e análise histórica. Use Athena para 
+                    queries SQL diretamente em dados Config armazenados em S3.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📊 Agregadores de Configuração</h2>
+
+            <div class="highlight-box">
+                <h4>Agregação Multi-Região</h4>
+                <p>
+                    Agregue dados de configuração e conformidade de múltiplas regiões em uma 
+                    visualização centralizada. Simplifique gerenciamento e auditoria de recursos 
+                    distribuídos globalmente. Não há movimentação de dados, apenas agregação de 
+                    visualização.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Agregação Multi-Conta</h4>
+                <p>
+                    Combine dados de configuração de múltiplas contas AWS. Essencial para 
+                    organizações com arquitetura multi-conta. Requer autorização das contas 
+                    fonte. Fornece visibilidade de conformidade em toda organização.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Agregação Organizacional</h4>
+                <p>
+                    Usando AWS Organizations, crie agregador que automaticamente inclui todas 
+                    as contas da organização. Novas contas são incluídas automaticamente. 
+                    Simplifica configuração em ambientes grandes e dinâmicos.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🎯 Casos de Uso Comuns</h2>
+
+            <p><strong>Auditoria de Conformidade:</strong> Demonstre conformidade com frameworks regulatórios como PCI-DSS, HIPAA, SOC 2 usando Config Rules e relatórios de conformidade automatizados.</p>
+            
+            <p><strong>Gerenciamento de Mudanças:</strong> Rastreie todas as mudanças em recursos AWS. Identifique quem fez mudanças e quando. Reverta configurações para estado anterior quando necessário.</p>
+            
+            <p><strong>Solução de Problemas:</strong> Investigue problemas operacionais revisando histórico de configuração. Identifique mudanças que precederam falhas. Entenda estado de recursos em momentos específicos.</p>
+            
+            <p><strong>Análise de Segurança:</strong> Monitore configurações de segurança continuamente. Detecte automaticamente recursos mal configurados ou expostos. Implemente correções automáticas de vulnerabilidades.</p>
+            
+            <p><strong>Otimização de Custos:</strong> Identifique recursos não utilizados ou mal dimensionados. Monitore uso de tipos de instância não aprovados. Aplique políticas de otimização de custos automaticamente.</p>
+            
+            <p><strong>Inventário de Recursos:</strong> Mantenha inventário atualizado de todos os recursos AWS. Rastreie relacionamentos e dependências. Facilite planejamento de capacidade e disaster recovery.</p>
+            
+            <p><strong>Governança Multi-Conta:</strong> Aplique políticas de configuração consistentes em múltiplas contas. Monitore conformidade centralizada. Automatize correções em escala organizacional.</p>
+        </div>
+
+        <div class="content-card">
+            <h2>💰 Precificação</h2>
+
+            <p><strong>Itens de Configuração:</strong> Cobrado por item de configuração registrado. Primeiros 1.000 itens por região são gratuitos. Após isso, aproximadamente US$ 0,003 por item registrado.</p>
+            
+            <p><strong>Avaliações de Regras:</strong> Cobrado por avaliação de Config Rule. Primeiras 100.000 avaliações de regras por região são gratuitas. Depois, aproximadamente US$ 0,001 por avaliação.</p>
+            
+            <p><strong>Regras Personalizadas:</strong> Além do custo de avaliação, há custos de execução Lambda associados. Considere custo de invocações Lambda ao usar regras personalizadas.</p>
+            
+            <p><strong>Conformity Packs:</strong> Cobrado por avaliação de regra no pack. Preços similares às avaliações de regras individuais, mas gerenciadas como grupo.</p>
+            
+            <p><strong>Armazenamento S3:</strong> Custos de armazenamento S3 para snapshots e histórico. Considere políticas de ciclo de vida para gerenciar custos de longo prazo.</p>
+            
+            <p><strong>Agregadores:</strong> Não há custo adicional para agregadores. Você paga apenas pelos itens de configuração e avaliações das contas individuais.</p>
+            
+            <p><strong>Observação:</strong> Custos podem aumentar rapidamente em ambientes grandes. Selecione cuidadosamente quais recursos registrar e quais regras avaliar para otimizar custos.</p>
+        </div>
+
+        <div class="content-card">
+            <h2>💡 Melhores Práticas</h2>
+
+            <p><strong>Comece com Regras Essenciais:</strong> Não ative todas as regras imediatamente. Comece com regras críticas de segurança e conformidade. Expanda gradualmente conforme maturidade aumenta.</p>
+            
+            <p><strong>Use Conformity Packs:</strong> Aproveite Conformity Packs predefinidos da AWS para frameworks comuns. Economiza tempo e garante cobertura abrangente de melhores práticas.</p>
+            
+            <p><strong>Configure Remediação Automática:</strong> Para violações comuns e não críticas, configure remediação automática. Reduz carga operacional e garante correção rápida de problemas.</p>
+            
+            <p><strong>Centralize com Agregadores:</strong> Use agregadores para visibilidade centralizada em ambientes multi-região e multi-conta. Facilita gerenciamento e relatórios de conformidade.</p>
+            
+            <p><strong>Integre com CloudTrail:</strong> Sempre use

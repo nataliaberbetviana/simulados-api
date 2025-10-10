@@ -131,6 +131,10 @@ def iam():
 def cloud_trail():
     return render_template('cloud_trail.html')
 
+@app.route('/config')
+def config():
+    return render_template('config.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')
