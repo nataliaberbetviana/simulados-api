@@ -602,64 +602,114 @@
 
         <div class="content-card">
             <h2>🎯 Casos de Uso Comuns</h2>
-
-            <p><strong>Auditoria de Segurança:</strong> Rastreie quem acessou o quê, quando e de onde. Identifique tentativas de acesso não autorizado ou configurações de segurança alteradas.</p>
-            
-            <p><strong>Conformidade Regulatória:</strong> Mantenha registros detalhados para atender requisitos de conformidade como HIPAA, PCI-DSS, SOC, GDPR. Logs imutáveis servem como evidência auditável.</p>
-            
-            <p><strong>Solução de Problemas Operacionais:</strong> Investigue problemas rastreando mudanças que precederam falhas ou degradação de desempenho. Identifique rapidamente a causa raiz.</p>
-            
-            <p><strong>Detecção de Ameaças:</strong> Monitore atividades suspeitas como criação de usuários não autorizados, mudanças em políticas de segurança, acesso de locais incomuns.</p>
-            
-            <p><strong>Análise de Custos:</strong> Rastreie quem está provisionando recursos que geram custos. Identifique padrões de uso e otimize gastos baseado em dados reais.</p>
-            
-            <p><strong>Governança de Dados:</strong> Rastreie acesso e modificações a dados sensíveis em S3, RDS, DynamoDB. Garanta que apenas pessoal autorizado acessa informações confidenciais.</p>
-            
-            <p><strong>Automação de Resposta:</strong> Configure respostas automáticas a eventos específicos usando EventBridge e Lambda. Por exemplo, reverter mudanças não autorizadas automaticamente.</p>
+            <div class="highlight-box">
+                <h4>Auditoria de Segurança: </h4>
+                <p>Rastreie quem acessou o quê, quando e de onde. Identifique tentativas de acesso não autorizado ou configurações de segurança alteradas.</p>
+            </div>
+            <div class="highlight-box">
+                <h4>Conformidade Regulatória: </h4>
+                <p>Mantenha registros detalhados para atender requisitos de conformidade como HIPAA, PCI-DSS, SOC, GDPR. Logs imutáveis servem como evidência auditável.</p>
+            </div>
+            <div class="highlight-box">
+                <h4>Solução de Problemas Operacionais: </h4>
+                <p>Investigue problemas rastreando mudanças que precederam falhas ou degradação de desempenho. Identifique rapidamente a causa raiz.</p>
+            </div>
+            <div class="highlight-box">
+                <h4>Detecção de Ameaças: </h4>
+                <p>Monitore atividades suspeitas como criação de usuários não autorizados, mudanças em políticas de segurança, acesso de locais incomuns.</p>
+            </div>
+            <div class="highlight-box">
+                <h4>Análise de Custos: </h4>
+                <p>Rastreie quem está provisionando recursos que geram custos. Identifique padrões de uso e otimize gastos baseado em dados reais.</p>
+            </div>
+            <div class="highlight-box">
+                <h4>Governança de Dados: </h4>
+                <p>Rastreie acesso e modificações a dados sensíveis em S3, RDS, DynamoDB. Garanta que apenas pessoal autorizado acessa informações confidenciais.</p>
+            </div>
+            <div class="highlight-box">
+                <h4>Automação de Resposta: </h4>
+                <p>Configure respostas automáticas a eventos específicos usando EventBridge e Lambda. Por exemplo, reverter mudanças não autorizadas automaticamente.</p>
+            </div>
         </div>
 
         <div class="content-card">
             <h2>💰 Precificação</h2>
-
-            <p><strong>Event History (90 dias):</strong> Gratuito. Todos os usuários têm acesso aos últimos 90 dias de eventos de gerenciamento através do console, sem custo adicional.</p>
-            
-            <p><strong>Primeira Trilha:</strong> Primeira cópia de eventos de gerenciamento é entregue gratuitamente. Não há cobrança pela primeira trilha em cada região.</p>
-            
-            <p><strong>Trilhas Adicionais:</strong> Cobradas por trilha adicional por região. Valor aproximado de US$ 2,00 por 100.000 eventos de gerenciamento.</p>
-            
-            <p><strong>Eventos de Dados:</strong> Cobrados separadamente. Aproximadamente US$ 0,10 por 100.000 eventos de dados registrados. Pode gerar custos significativos em ambientes de alto volume.</p>
-            
-            <p><strong>CloudTrail Insights:</strong> Cobrado por evento de insights analisado. Aproximadamente US$ 0,35 por 100.000 eventos de gerenciamento analisados para insights.</p>
-            
-            <p><strong>CloudTrail Lake:</strong> Cobrado por ingestão e armazenamento de dados. Aproximadamente US$ 2,50 por GB ingerido e US$ 0,023 por GB armazenado por mês.</p>
-            
-            <p><strong>Armazenamento S3:</strong> Custos de armazenamento S3 aplicam-se aos logs armazenados. Considere políticas de ciclo de vida para gerenciar custos de longo prazo.</p>
+            <div class="pricing-box">
+                <h4>Event History (90 dias): </h4>
+                <p>Gratuito. Todos os usuários têm acesso aos últimos 90 dias de eventos de gerenciamento através do console, sem custo adicional.</p>
+            </div>
+            <div class="pricing-box">
+                <h4>Primeira Trilha: </h4>
+                <p>Primeira cópia de eventos de gerenciamento é entregue gratuitamente. Não há cobrança pela primeira trilha em cada região.</p>
+            </div>
+            <div class="pricing-box">
+                <h4>Trilhas Adicionais: </h4>
+                <p>Cobradas por trilha adicional por região. Valor aproximado de US$ 2,00 por 100.000 eventos de gerenciamento.</p>
+            </div>
+            <div class="pricing-box">
+                <h4>Eventos de Dados: </h4>
+                <p>Cobrados separadamente. Aproximadamente US$ 0,10 por 100.000 eventos de dados registrados. Pode gerar custos significativos em ambientes de alto volume.</p>
+            </div>
+            <div class="pricing-box">
+                <h4>CloudTrail Insights: </h4>
+                <p>Cobrado por evento de insights analisado. Aproximadamente US$ 0,35 por 100.000 eventos de gerenciamento analisados para insights.</p>
+            </div>
+            <div class="pricing-box">
+                <h4>CloudTrail Lake: </h4>
+                <p>Cobrado por ingestão e armazenamento de dados. Aproximadamente US$ 2,50 por GB ingerido e US$ 0,023 por GB armazenado por mês.</p>
+            </div>
+            <div class="pricing-box">
+                <h4>Armazenamento S3: </h4>
+                <p>Custos de armazenamento S3 aplicam-se aos logs armazenados. Considere políticas de ciclo de vida para gerenciar custos de longo prazo.</p>
+            </div>
         </div>
 
         <div class="content-card">
             <h2>💡 Melhores Práticas</h2>
-
-            <p><strong>Habilite CloudTrail em Todas as Contas:</strong> Garanta que CloudTrail esteja ativo em todas as contas AWS. Use trilhas organizacionais para ambientes multi-conta.</p>
-            
-            <p><strong>Use Trilhas Multi-Região:</strong> Configure trilhas multi-região para visibilidade completa de atividades em todas as regiões AWS. Evita pontos cegos de auditoria.</p>
-            
-            <p><strong>Ative Validação de Integridade:</strong> Sempre habilite validação de integridade de logs para garantir que logs não foram adulterados. Essencial para conformidade.</p>
-            
-            <p><strong>Centralize Logs:</strong> Envie logs de todas as contas para bucket S3 centralizado. Facilita análise, monitoramento e conformidade em toda a organização.</p>
-            
-            <p><strong>Configure Alertas:</strong> Use CloudWatch Logs e EventBridge para criar alarmes em eventos críticos. Responda rapidamente a atividades suspeitas ou mudanças importantes.</p>
-            
-            <p><strong>Proteja Bucket S3:</strong> Configure políticas de bucket restritivas. Use MFA Delete, versionamento e Object Lock. Restrinja acesso apenas a contas/roles autorizadas.</p>
-            
-            <p><strong>Implemente Lifecycle Policies:</strong> Configure políticas de ciclo de vida S3 para transição de logs para classes de armazenamento mais baratas (S3-IA, Glacier) após período definido.</p>
-            
-            <p><strong>Monitore Custos:</strong> Esteja atento a custos de eventos de dados e CloudTrail Lake. Use filtros para registrar apenas eventos necessários e evite surpresas na fatura.</p>
-            
-            <p><strong>Analise Logs Regularmente:</strong> Não apenas colete logs, analise-os. Use Athena, CloudWatch Logs Insights ou ferramentas SIEM para insights acionáveis.</p>
-            
-            <p><strong>Documente Configurações:</strong> Mantenha documentação clara sobre trilhas configuradas, retenção de logs e processos de auditoria. Facilita auditorias e conformidade.</p>
-            
-            <p><strong>Teste Restauração:</strong> Periodicamente teste sua capacidade de acessar e analisar logs históricos. Garanta que processos de recuperação funcionam quando necessário.</p>
+            <div class="service-box">
+                <h4>Habilite CloudTrail em Todas as Contas: </h4>
+                <p>Garanta que CloudTrail esteja ativo em todas as contas AWS. Use trilhas organizacionais para ambientes multi-conta.</p>
+            </div>
+            <div class="service-box">
+                <h4>Use Trilhas Multi-Região: </h4>
+                <p>Configure trilhas multi-região para visibilidade completa de atividades em todas as regiões AWS. Evita pontos cegos de auditoria.</p>
+            </div>
+            <div class="service-box">
+                <h4>Ative Validação de Integridade: </h4>
+                <p>Sempre habilite validação de integridade de logs para garantir que logs não foram adulterados. Essencial para conformidade.</p>
+            </div>
+            <div class="service-box">
+                <h4>Centralize Logs: </h4>
+                <p>Envie logs de todas as contas para bucket S3 centralizado. Facilita análise, monitoramento e conformidade em toda a organização.</p>
+            </div>
+            <div class="service-box">
+                <h4>Configure Alertas: </h4>
+                <p>Use CloudWatch Logs e EventBridge para criar alarmes em eventos críticos. Responda rapidamente a atividades suspeitas ou mudanças importantes.</p>
+            </div>
+            <div class="service-box">
+                <h4>Proteja Bucket S3: </h4>
+                <p>Configure políticas de bucket restritivas. Use MFA Delete, versionamento e Object Lock. Restrinja acesso apenas a contas/roles autorizadas.</p>
+            </div>
+            <div class="service-box">
+                <h4>Implemente Lifecycle Policies: </h4>
+                <p>Configure políticas de ciclo de vida S3 para transição de logs para classes de armazenamento mais baratas (S3-IA, Glacier) após período definido.</p>
+            </div>
+            <div class="service-box">
+                <h4>Monitore Custos: </h4>
+                <p>Esteja atento a custos de eventos de dados e CloudTrail Lake. Use filtros para registrar apenas eventos necessários e evite surpresas na fatura.</p>
+            </div>
+            <div class="service-box">
+                <h4>Analise Logs Regularmente: </h4>
+                <p>Não apenas colete logs, analise-os. Use Athena, CloudWatch Logs Insights ou ferramentas SIEM para insights acionáveis.</p>
+            </div>
+            <div class="service-box">
+                <h4>Documente Configurações: </h4>
+                <p>Mantenha documentação clara sobre trilhas configuradas, retenção de logs e processos de auditoria. Facilita auditorias e conformidade.</p>
+            </div>
+            <div class="service-box">
+                <h4>Teste Restauração: </h4>
+                <p>Periodicamente teste sua capacidade de acessar e analisar logs históricos. Garanta que processos de recuperação funcionam quando necessário.</p>
+            </div>
         </div>
 
         <center>
