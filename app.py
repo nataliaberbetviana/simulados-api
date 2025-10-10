@@ -135,6 +135,10 @@ def cloud_trail():
 def config():
     return render_template('config.html')
 
+@app.route('/trusted_advisor')
+def trusted_advisor():
+    return render_template('trusted_advisor.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')

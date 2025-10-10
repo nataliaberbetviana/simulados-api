@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Trusted Advisor - AWS Practitioner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --primary-light: #FFB84D;
+            --secondary: #232F3E;
+            --secondary-light: #37475A;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-card h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out backwards;
+        }
+
+        .content-card:nth-child(2) { animation-delay: 0.1s; }
+        .content-card:nth-child(3) { animation-delay: 0.2s; }
+        .content-card:nth-child(4) { animation-delay: 0.3s; }
+        .content-card:nth-child(5) { animation-delay: 0.4s; }
+        .content-card:nth-child(6) { animation-delay: 0.5s; }
+        .content-card:nth-child(7) { animation-delay: 0.6s; }
+        .content-card:nth-child(8) { animation-delay: 0.7s; }
+        .content-card:nth-child(9) { animation-delay: 0.8s; }
+        .content-card:nth-child(10) { animation-delay: 0.9s; }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card h2 {
+            color: var(--secondary);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-card h3 {
+            color: var(--secondary-light);
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+        }
+
+        .content-card p {
+            color: var(--gray-700);
+            line-height: 1.8;
+            font-size: 1.05em;
+            margin-bottom: 15px;
+        }
+
+        .content-card strong {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .service-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .service-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .service-box p {
+            margin-bottom: 8px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .pricing-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-left: 4px solid #22c55e;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .pricing-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .status-box {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border-left: 4px solid #9333ea;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .status-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .link-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: var(--white);
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            animation: fadeIn 0.6s ease-out 1s backwards;
+        }
+
+        .link-voltar::before {
+            content: '←';
+            font-size: 1.3em;
+        }
+
+        .link-voltar:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header-card {
+                padding: 35px 25px;
+            }
+
+            .header-card h1 {
+                font-size: 2em;
+            }
+
+            .content-card {
+                padding: 30px 20px;
+            }
+
+            .content-card h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-card h1 {
+                font-size: 1.6em;
+            }
+
+            .header-icon {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-card">
+            <div class="header-content">
+                <div class="header-icon">✅</div>
+                <h1>AWS Trusted Advisor</h1>
+                <p>Recomendações em Tempo Real para Otimizar sua Infraestrutura AWS</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📋 O que é o AWS Trusted Advisor?</h2>
+            <p>
+                O AWS Trusted Advisor é um serviço online que fornece orientação em tempo real para 
+                ajudá-lo a provisionar seus recursos seguindo as melhores práticas da AWS. O Trusted 
+                Advisor inspeciona seu ambiente AWS e faz recomendações quando oportunidades são 
+                identificadas para economizar dinheiro, melhorar disponibilidade e desempenho do sistema, 
+                ou ajudar a fechar lacunas de segurança.
+            </p>
+            <p>
+                Funciona como um consultor personalizado na nuvem, analisando continuamente sua conta AWS 
+                e comparando seu uso com as melhores práticas da AWS em cinco categorias principais. 
+                Fornece alertas e recomendações acionáveis para otimizar sua infraestrutura, economizar 
+                custos e melhorar segurança e desempenho.
+            </p>
+        </div>
+
+        <div class="content-card">
+            <h2>🎯 As Cinco Categorias de Verificação</h2>
+            
+            <div class="service-box">
+                <h4>💰 Otimização de Custos (Cost Optimization)</h4>
+                <p>
+                    Identifica recursos não utilizados ou subutilizados que estão gerando custos 
+                    desnecessários. Recomenda oportunidades para reduzir gastos, como instâncias EC2 
+                    ociosas, volumes EBS não anexados, endereços IP Elastic não utilizados, Reserved 
+                    Instances que podem ser adquiridas para economia, e recursos mal dimensionados.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>⚡ Performance (Desempenho)</h4>
+                <p>
+                    Verifica configurações de serviços para garantir que você está tirando máximo 
+                    proveito do provisionamento. Identifica gargalos de desempenho, limites de serviço 
+                    que estão sendo atingidos, throughput subótimo, e oportunidades para melhorar 
+                    velocidade e responsividade das aplicações.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>🔒 Segurança (Security)</h4>
+                <p>
+                    Analisa configurações de segurança e identifica lacunas que podem expor seu ambiente 
+                    a riscos. Verifica grupos de segurança com portas abertas, buckets S3 com permissões 
+                    públicas, chaves de acesso IAM antigas, MFA não habilitado na conta root, e outras 
+                    vulnerabilidades de segurança comuns.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>🛡️ Tolerância a Falhas (Fault Tolerance)</h4>
+                <p>
+                    Ajuda a aumentar disponibilidade e redundância da sua aplicação AWS. Identifica 
+                    pontos únicos de falha, verifica se backups estão configurados, se você está usando 
+                    múltiplas zonas de disponibilidade, se há snapshots de volumes EBS, e outras práticas 
+                    de resiliência.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>📊 Limites de Serviço (Service Limits)</h4>
+                <p>
+                    Monitora uso de recursos em relação aos limites de serviço da AWS (service quotas). 
+                    Alerta quando você está próximo de atingir limites que podem impactar provisionamento 
+                    de novos recursos. Permite solicitar aumentos proativamente antes de enfrentar problemas.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🎨 Status das Verificações</h2>
+
+            <div class="status-box">
+                <h4>🔴 Ação Recomendada (Red) - Vermelho</h4>
+                <p>
+                    Indica que Trusted Advisor recomenda ação imediata. Pode representar problema de 
+                    segurança, potencial economia significativa de custos, ou risco à disponibilidade. 
+                    Deve ser priorizado e investigado rapidamente.
+                </p>
+            </div>
+
+            <div class="status-box">
+                <h4>🟡 Investigação Recomendada (Yellow) - Amarelo</h4>
+                <p>
+                    Sugere que você investigue potencial problema ou oportunidade. Não é crítico como 
+                    vermelho, mas merece atenção. Pode indicar recursos que estão subutilizados ou 
+                    configurações que podem ser otimizadas.
+                </p>
+            </div>
+
+            <div class="status-box">
+                <h4>🟢 Nenhum Problema Detectado (Green) - Verde</h4>
+                <p>
+                    Indica que verificação não encontrou problemas. Seus recursos estão seguindo 
+                    melhores práticas para aquela verificação específica. Continue monitorando conforme 
+                    seu ambiente evolui.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📦 Níveis de Suporte e Verificações Disponíveis</h2>
+
+            <div class="pricing-box">
+                <h4>Plano Basic e Developer (Gratuito/Básico)</h4>
+                <p>
+                    Acesso limitado a 7 verificações principais do Trusted Advisor. Inclui verificações 
+                    essenciais de segurança como grupos de segurança com portas abertas, uso de IAM, 
+                    MFA na conta root, e snapshots públicos de EBS e RDS. Verificações de limites de 
+                    serviço básicos também disponíveis. Atualização semanal das verificações.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Plano Business, Enterprise On-Ramp e Enterprise</h4>
+                <p>
+                    Acesso completo a todas as verificações do Trusted Advisor em todas as cinco 
+                    categorias. Mais de 115 verificações disponíveis. Notificações semanais por email 
+                    sobre mudanças no status. Acesso à API do Trusted Advisor para automação e integração. 
+                    AWS Support API para programar atualizações de verificações. CloudWatch integration 
+                    para métricas e alarmes.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Verificações Principais Gratuitas (Basic/Developer)</h4>
+                <p>
+                    <strong>Segurança:</strong> Grupos de segurança - Portas Específicas Irrestritas, 
+                    Uso do IAM, MFA na Conta Root, Snapshots Públicos de EBS, Snapshots Públicos de 
+                    RDS.<br><br>
+                    <strong>Limites de Serviço:</strong> Verificações de limites para vários serviços AWS 
+                    como EC2, VPC, EBS, RDS, Auto Scaling.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>⚙️ Funcionalidades Avançadas</h2>
+
+            <div class="highlight-box">
+                <h4>🔔 Notificações Automáticas</h4>
+                <p>
+                    Configure notificações semanais por email sobre status das verificações. Receba 
+                    alertas quando novos itens de ação são identificados. Mantenha-se informado sobre 
+                    mudanças no ambiente sem precisar verificar manualmente o console.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🔄 Atualização de Verificações</h4>
+                <p>
+                    Verificações são atualizadas automaticamente a cada 24 horas. Com planos Business 
+                    ou superiores, pode atualizar verificações individuais manualmente através do console 
+                    ou via API. Útil quando você faz mudanças e quer verificar impacto imediatamente.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📊 Integração com CloudWatch</h4>
+                <p>
+                    Métricas do Trusted Advisor são publicadas no CloudWatch. Crie alarmes personalizados 
+                    baseados em status de verificações específicas. Automatize respostas usando Lambda 
+                    quando verificações mudam de status. Monitore tendências ao longo do tempo.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🔌 API do Trusted Advisor</h4>
+                <p>
+                    Disponível com planos Business ou superiores. Permite integração programática com 
+                    ferramentas internas. Automatize coleta de recomendações, crie dashboards 
+                    personalizados, integre com sistemas de ticketing e workflows existentes.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📥 Exportação de Relatórios</h4>
+                <p>
+                    Exporte resultados de verificações em formato JSON para análise offline. Compartilhe 
+                    relatórios com equipes ou stakeholders. Mantenha registros históricos de recomendações 
+                    para auditoria e compliance.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🔍 Exclusão de Itens</h4>
+                <p>
+                    Marque itens específicos para exclusão quando são falsos positivos ou intencionalmente 
+                    configurados daquela forma. Reduz ruído e foca em recomendações verdadeiramente 
+                    acionáveis. Itens excluídos não aparecem em contagem de alertas.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔗 Integração com Outros Serviços AWS</h2>
+
+            <div class="service-box">
+                <h4>AWS Organizations</h4>
+                <p>
+                    Visualize verificações agregadas de todas as contas na organização. Trusted Advisor 
+                    Priority fornece visão centralizada de recomendações de maior impacto em múltiplas 
+                    contas. Identifique padrões e problemas recorrentes em toda organização.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon CloudWatch</h4>
+                <p>
+                    Métricas de verificação publicadas automaticamente. Crie dashboards visualizando 
+                    status de múltiplas verificações. Configure alarmes para notificação quando status 
+                    muda. Monitore tendências e evolução ao longo do tempo.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Lambda</h4>
+                <p>
+                    Use EventBridge para acionar funções Lambda quando verificações mudam de status. 
+                    Automatize remediação de problemas comuns. Implemente workflows personalizados 
+                    baseados em recomendações do Trusted Advisor.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon SNS</h4>
+                <p>
+                    Configure notificações para alertas em tempo real. Envie alertas para múltiplos 
+                    destinatários ou sistemas. Integre com ferramentas de chat, sistemas de ticketing 
+                    ou outras plataformas de notificação.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Security Hub</h4>
+                <p>
+                    Descobertas de segurança do Trusted Advisor são automaticamente enviadas para 
+                    Security Hub. Visão consolidada de problemas de segurança de múltiplas fontes. 
+                    Priorize e gerencie remediações centralizadamente.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Cost Explorer</h4>
+                <p>
+                    Correlacione recomendações de otimização de custos com dados reais de gastos. 
+                    Calcule ROI potencial de implementar recomendações. Rastreie economias realizadas 
+                    ao longo do tempo.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>💡 Exemplos de Verificações Comuns</h2>
+
+            <div class="warning-box">
+                <h4>Instâncias EC2 de Baixa Utilização</h4>
+                <p>
+                    Identifica instâncias EC2 com CPU consistentemente abaixo de 10% durante 14 dias. 
+                    Recomenda redimensionar para tipo menor ou desligar se não necessária. Economia 
+                    potencial calculada e exibida.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Volumes EBS Não Anexados</h4>
+                <p>
+                    Lista volumes EBS que não estão anexados a nenhuma instância. Você paga por 
+                    armazenamento mesmo sem uso. Recomenda snapshot e exclusão para economia, ou 
+                    anexar se necessário.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Grupos de Segurança - Acesso Irrestrito</h4>
+                <p>
+                    Alerta sobre regras que permitem acesso de qualquer IP (0.0.0.0/0) em portas 
+                    sensíveis como SSH (22), RDP (3389), MySQL (3306). Risco de segurança crítico 
+                    que deve ser restringido imediatamente.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Buckets S3 com Permissões Abertas</h4>
+                <p>
+                    Detecta buckets S3 com políticas que permitem acesso público. Risco de exposição 
+                    de dados sensíveis. Recomenda revisar permissões e aplicar princípio de privilégio 
+                    mínimo.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Chaves de Acesso IAM Antigas</h4>
+                <p>
+                    Identifica chaves de acesso IAM que não foram rotacionadas em 90+ dias. Prática 
+                    de segurança recomenda rotação regular. Chaves antigas aumentam risco de 
+                    comprometimento.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Limites de Serviço Próximos</h4>
+                <p>
+                    Alerta quando uso está em 80% ou mais do limite de serviço. Permite solicitar 
+                    aumentos proativamente antes de impactar operações. Evita problemas de 
+                    provisionamento inesperados.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Snapshots EBS Desatualizados</h4>
+                <p>
+                    Verifica se você tem snapshots recentes de volumes EBS críticos. Ausência de 
+                    snapshots recentes aumenta risco de perda de dados. Recomenda implementar 
+                    política de backup regular.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Oportunidades de Reserved Instances</h4>
+                <p>
+                    Analisa padrões de uso de EC2 e RDS e recomenda compra de Reserved Instances 
+                    para cargas de trabalho consistentes. Calcula economia potencial comparada a 
+                    instâncias On-Demand.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🎯 Casos de Uso Comuns</h2>
+
+            <div class="pricing-box">
+                <h4>Redução de Custos Operacionais</h4>
+                <p>Identifique e elimine recursos não utilizados mensalmente. Implemente recomendações de redimensionamento. Aproveite oportunidades de Reserved Instances. Economias típicas de 20-40% são comuns.</p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Melhoria de Postura de Segurança</h4>
+                <p>Realize auditorias semanais de verificações de segurança. Remedie alertas vermelhos imediatamente. Use como checklist de segurança básica antes de auditorias formais.</p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Prevenção de Interrupções</h4>
+                <p>Monitore limites de serviço antes de eventos de tráfego alto. Identifique pontos únicos de falha. Garanta backups e redundância estão configurados adequadamente.</p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Otimização de Performance</h4>
+                <p>Identifique gargalos de desempenho antes que impactem usuários. Ajuste throughput de serviços baseado em recomendações. Otimize configurações para máxima eficiência.</p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Compliance e Governança</h4>
+                <p>Use verificações de segurança como parte de framework de compliance. Documente remediações para auditores. Mantenha postura de segurança consistente em múltiplas contas.</p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Planejamento de Capacidade</h4>
+                <p>Monitore tendências de utilização ao longo do tempo. Planeje aumentos de capacidade proativamente. Evite surpresas com limites de serviço durante crescimento.</p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Onboarding de Novas Contas</h4>
+                <p>Use Trusted Advisor como checklist para novas contas AWS. Garanta que melhores práticas são seguidas desde o início. Identifique configurações problemáticas cedo.</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>💰 Precificação</h2>
+
+            <div class="service-box">
+                <h4>Verificações Básicas</h4>
+                <p>Gratuitas para todos os clientes AWS. Inclui 7 verificações principais de segurança e limites de serviço. Disponíveis nos planos Basic e Developer Support sem custo adicional.</p>
+            </div>
+
+            <div class="service-box">
+                <h4>Verificações Completas</h4>
+                <p>Incluídas nos planos AWS Support Business (a partir de US$ 100/mês ou 10% dos custos AWS mensais), Enterprise On-Ramp e Enterprise Support. Mais de 115 verificações em todas as categorias. Custo faz parte do plano de suporte, sem cobrança adicional pelo Trusted Advisor.</p>
+            </div>
+
+            <div class="service-box">
+                <h4>Trusted Advisor Priority</h4>
+                <p>Disponível sem custo adicional para clientes Enterprise Support com AWS Organizations. Fornece visão agregada e priorizada de recomendações em múltiplas contas. Identifica problemas de maior impacto organizacional.</p>
+            </div>
+
+            <div class="service-box">
+                <h4>Observação Importante</h4>
+                <p>Não há cobrança direta pelo uso do Trusted Advisor. O acesso a funcionalidades depende do seu plano AWS Support. As economias identificadas pelo Trusted Advisor geralmente superam largamente o custo dos planos de suporte premium.</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>💡 Melhores Práticas</h2>
+
+            <div class="highlight-box">
+                <h4>Revise Regularmente</h4>
+                <p>Estabeleça rotina semanal ou mensal para revisar dashboard do Trusted Advisor. Não deixe alertas vermelhos acumularem. Priorize ações baseadas em impacto de segurança e economia de custos.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Automatize Notificações</h4>
+                <p>Configure notificações por email semanais. Use CloudWatch e EventBridge para alertas em tempo real de mudanças críticas. Integre com sistemas de ticketing para rastreamento de remediações.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Priorize Segurança</h4>
+                <p>Remedie todos os alertas de segurança vermelhos imediatamente. Não deixe grupos de segurança ou buckets S3 abertos. Trate verificações de segurança como críticas, não opcionais.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Use Exclusões com Sabedoria</h4>
+                <p>Documente motivo ao excluir itens de recomendações. Revise exclusões periodicamente para garantir que ainda são válidas. Não abuse de exclusões para "limpar" dashboard sem ação real.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Calcule ROI de Recomendações</h4>
+                <p>Estime economia potencial antes de implementar mudanças. Rastreie economias realizadas ao longo do tempo. Use dados para justificar investimento em planos de suporte premium.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Integre com CI/CD</h4>
+                <p>Use API do Trusted Advisor em pipelines de deployment. Verifique conformidade antes de promover para produção. Automatize verificações de segurança em processo de desenvolvimento.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Compartilhe Responsabilidade</h4>
+                <p>Distribua verificações entre equipes apropriadas. Segurança para time de segurança, custos para FinOps, performance para engenharia. Estabeleça SLAs para remediação por categoria.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Monitore Tendências</h4>
+                <p>Use CloudWatch para rastrear métricas ao longo do tempo. Identifique se postura está melhorando ou piorando. Estabeleça metas para reduzir alertas vermelhos e amarelos progressivamente.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Aproveite Trusted Advisor Priority</h4>
+                <p>Se tem Enterprise Support e Organizations, use Priority para visão consolidada. Foque em problemas de maior impacto organizacional primeiro. Identifique padrões recorrentes entre contas.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Documente Ações Tomadas</h4>
+                <p>Mantenha registro de recomendações implementadas e impacto observado. Use para demonstrar valor em revisões de gestão. Facilita auditorias e demonstração de compliance.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Combine com Outros Serviços</h4>
+                <p>Use junto com AWS Config para conformidade contínua. Integre com Cost Explorer para análise financeira detalhada. Combine com Security Hub para postura de segurança completa.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Eduque a Equipe</h4>
+                <p>Treine equipes sobre importância de cada categoria de verificação. Compartilhe sucessos de economia de custos e melhorias de segurança. Crie cultura de otimização contínua baseada em dados.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Atualize Proativamente</h4>
+                <p>Com planos Business ou superiores, atualize verificações após fazer mudanças significativas. Não espere atualização automática de 24h. Valide que remediações foram efetivas imediatamente.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Estabeleça Baseline</h4>
+                <p>Documente estado inicial ao começar a usar Trusted Advisor. Meça progresso ao longo do tempo. Use para demonstrar melhoria contínua e ROI de iniciativas de otimização.</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>⚠️ Limitações e Considerações</h2>
+
+            <div class="warning-box">
+                <h4>Não Substitui Auditoria Completa</h4>
+                <p>
+                    Trusted Advisor é ferramenta de otimização, não ferramenta de auditoria de segurança 
+                    completa. Complementa mas não substitui avaliações de segurança profundas. Use junto 
+                    com outras ferramentas como AWS Config, Security Hub e GuardDuty.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Verificações Limitadas no Plano Gratuito</h4>
+                <p>
+                    Planos Basic e Developer têm acesso apenas a 7 verificações. Para valor completo, 
+                    considere upgrade para Business ou superior. Muitas recomendações valiosas de custos 
+                    e performance só disponíveis em planos pagos.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Atualização de 24 Horas</h4>
+                <p>
+                    Verificações automáticas ocorrem uma vez a cada 24 horas. Mudanças recentes podem 
+                    não aparecer imediatamente. Use atualização manual quando disponível para feedback 
+                    imediato após remediações.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Nem Todos os Recursos Cobertos</h4>
+                <p>
+                    Trusted Advisor não verifica todos os tipos de recursos ou configurações AWS. 
+                    Foca em verificações mais comuns e impactantes. Não deve ser única fonte de 
+                    recomendações de otimização.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Contexto Limitado</h4>
+                <p>
+                    Recomendações são baseadas em heurísticas e podem não entender contexto completo 
+                    do seu negócio. Algumas recomendações podem ser falsos positivos. Sempre valide 
+                    antes de implementar mudanças significativas.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Requer Ação Manual</h4>
+                <p>
+                    Trusted Advisor identifica problemas mas não os corrige automaticamente. Você deve 
+                    implementar recomendações manualmente ou via automação personalizada. Não é 
+                    ferramenta de remediação automática como alguns recursos do AWS Config.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔄 Diferença entre Trusted Advisor e Outros Serviços</h2>
+
+            <div class="service-box">
+                <h4>Trusted Advisor vs AWS Config</h4>
+                <p>
+                    <strong>Trusted Advisor:</strong> Foca em recomendações e melhores práticas. Identifica 
+                    oportunidades de otimização. Não rastreia mudanças históricas.<br><br>
+                    <strong>AWS Config:</strong> Rastreia configurações e mudanças ao longo do tempo. 
+                    Avalia conformidade com regras específicas. Fornece histórico detalhado.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Trusted Advisor vs AWS Cost Explorer</h4>
+                <p>
+                    <strong>Trusted Advisor:</strong> Identifica recursos não utilizados e oportunidades 
+                    de economia específicas. Recomendações acionáveis pontuais.<br><br>
+                    <strong>Cost Explorer:</strong> Analisa padrões de gastos ao longo do tempo. Fornece 
+                    visualizações detalhadas e previsões. Foca em análise, não recomendações.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Trusted Advisor vs AWS Security Hub</h4>
+                <p>
+                    <strong>Trusted Advisor:</strong> Verificações básicas de segurança e melhores práticas. 
+                    Parte de otimização geral, não apenas segurança.<br><br>
+                    <strong>Security Hub:</strong> Agregação abrangente de descobertas de segurança de 
+                    múltiplas fontes. Análise profunda de postura de segurança. Foco exclusivo em segurança.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Trusted Advisor vs AWS Well-Architected Tool</h4>
+                <p>
+                    <strong>Trusted Advisor:</strong> Verificações automáticas e contínuas do ambiente. 
+                    Recomendações práticas imediatas baseadas em estado atual.<br><br>
+                    <strong>Well-Architected Tool:</strong> Revisões arquiteturais guiadas baseadas em 
+                    framework Well-Architected. Processo manual de avaliação e documentação.
+                </p>
+            </div>
+        </div>
+
+        <center>
+            <a class="link-voltar" href="/materiais">Voltar para Materiais</a>
+        </center>
+    </div>
+</body>
+</html>
