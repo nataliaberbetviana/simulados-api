@@ -586,52 +586,143 @@
 
         <div class="content-card">
             <h2>🎯 Casos de Uso Comuns</h2>
-
-            <p><strong>Backup e Recuperação:</strong> Armazenamento durável e econômico para backups críticos de dados e disaster recovery.</p>
-            
-            <p><strong>Data Lakes e Big Data:</strong> Armazene grandes volumes de dados estruturados e não estruturados para analytics com Athena, Redshift Spectrum e EMR.</p>
-            
-            <p><strong>Hospedagem de Sites Estáticos:</strong> Hospede sites HTML, CSS e JavaScript diretamente do S3 com alta disponibilidade.</p>
-            
-            <p><strong>Distribuição de Conteúdo:</strong> Armazene e distribua mídias, imagens, vídeos e downloads de software.</p>
-            
-            <p><strong>Arquivamento de Dados:</strong> Armazenamento de longo prazo para conformidade regulatória e requisitos de retenção.</p>
-            
-            <p><strong>Armazenamento de Logs:</strong> Centralize logs de aplicações, servidores e serviços AWS para análise e auditoria.</p>
+            <div class="pricing-box">
+                <h4>Backup e Recuperação:</h4>
+                <p>
+                    Armazenamento durável e econômico para backups críticos de dados e disaster recovery.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Data Lakes e Big Data:</h4>
+                <p>
+                    Armazene grandes volumes de dados estruturados e não estruturados para analytics com Athena, Redshift Spectrum e EMR.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Hospedagem de Sites Estáticos:</h4>
+                <p>
+                    Hospede sites HTML, CSS e JavaScript diretamente do S3 com alta disponibilidade.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Distribuição de Conteúdo:</h4>
+                <p>
+                    Armazene e distribua mídias, imagens, vídeos e downloads de software.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Arquivamento de Dados:</h4>
+                <p>
+                    Armazenamento de longo prazo para conformidade regulatória e requisitos de retenção.
+                </p>
+            </div>
+            <div class="pricing-box">
+                <h4>Armazenamento de Logs:</h4>
+                <p>
+                    Centralize logs de aplicações, servidores e serviços AWS para análise e auditoria.
+                </p>
+            </div>
         </div>
 
         <div class="content-card">
             <h2>💰 Modelo de Precificação</h2>
-
-            <p><strong>Armazenamento:</strong> Cobrado por GB armazenado por mês. Preço varia conforme a classe de armazenamento.</p>
-            
-            <p><strong>Requisições:</strong> Cobra-se por número de requisições (PUT, COPY, POST, LIST, GET, SELECT).</p>
-            
-            <p><strong>Transferência de Dados:</strong> Entrada de dados é gratuita. Saída de dados é cobrada após o nível gratuito.</p>
-            
-            <p><strong>Gerenciamento:</strong> Custos adicionais para recursos como S3 Inventory, Analytics e Object Tagging.</p>
-            
-            <p><strong>Replicação:</strong> Cobra-se pela replicação de objetos entre regiões ou dentro da mesma região.</p>
+            <div class="service-box">
+                <h4>Armazenamento:</h4>
+                <p>
+                    Cobrado por GB armazenado por mês. Preço varia conforme a classe de armazenamento.
+                </p>
+            </div>
+            <div class="service-box">
+                <h4>Requisições:</h4>
+                <p>
+                    Cobra-se por número de requisições (PUT, COPY, POST, LIST, GET, SELECT).
+                </p>
+            </div>
+            <div class="service-box">
+                <h4>Transferência de Dados:</h4>
+                <p>
+                    Entrada de dados é gratuita. Saída de dados é cobrada após o nível gratuito.
+                </p>
+            </div>
+            <div class="service-box">
+                <h4>Gerenciamento:</h4>
+                <p>
+                    Custos adicionais para recursos como S3 Inventory, Analytics e Object Tagging.
+                </p>
+            </div>
+            <div class="service-box">
+                <h4>Replicação:</h4>
+                <p>
+                    Cobra-se pela replicação de objetos entre regiões ou dentro da mesma região.
+                </p>
+            </div>
         </div>
 
         <div class="content-card">
             <h2>💡 Melhores Práticas</h2>
-
-            <p><strong>Use Classes de Armazenamento Apropriadas:</strong> Escolha a classe correta baseada nos padrões de acesso para otimizar custos.</p>
+            <div class="highlight-box">
+                <h4>Use Classes de Armazenamento Apropriadas:</h4>
+                <p>
+                    Escolha a classe correta baseada nos padrões de acesso para otimizar custos.
+                </p>
+            </div>
+            <div class="highlight-box">
+                <h4>Implemente Lifecycle Policies:</h4>
+                <p>
+                    Automatize a movimentação e expiração de objetos para reduzir custos.
+                </p>
+            </div>
+            <div class="highlight-box">
+                <h4>Habilite Versionamento:</h4>
+                <p>
+                    Proteja contra exclusões acidentais e mantenha histórico de alterações.
+                </p>
+            </div>
+            <div class="highlight-box">
+                <h4>Configure Replicação: </h4>
+                <p>
+                    Implemente CRR para disaster recovery e SRR para conformidade.
+                </p>
+            </div>
+            <div class="highlight-box">
+                <h4>Use Criptografia:</h4>
+                <p>
+                    Sempre criptografe dados sensíveis em repouso e em trânsito.
+                </p>
+            </div>
+            <div class="highlight-box">
+                <h4>Monitore com CloudWatch:</h4>
+                <p>
+                   Configure métricas e alarmes para monitorar uso, custos e performance.
+                </p>
+            </div>
+            <div class="highlight-box">
+                <h4>Aplique Block Public Access:</h4>
+                <p>
+                    Ative por padrão para prevenir exposição acidental de dados.
+                </p>
+            </div>
+            <div class="highlight-box">
+                <h4>Use Tags para Organização:</h4>
+                <p>
+                    Implemente estratégia de tags consistente para gerenciamento de custos e governança.
+                </p>
+            </div>
+            <p><strong></strong> </p>
             
-            <p><strong>Implemente Lifecycle Policies:</strong> Automatize a movimentação e expiração de objetos para reduzir custos.</p>
+            <p><strong>
             
-            <p><strong>Habilite Versionamento:</strong> Proteja contra exclusões acidentais e mantenha histórico de alterações.</p>
+            <p><strong>
             
-            <p><strong>Configure Replicação:</strong> Implemente CRR para disaster recovery e SRR para conformidade.</p>
+            <p><strong></p>
             
-            <p><strong>Use Criptografia:</strong> Sempre criptografe dados sensíveis em repouso e em trânsito.</p>
+            <p><strong></p>
             
-            <p><strong>Monitore com CloudWatch:</strong> Configure métricas e alarmes para monitorar uso, custos e performance.</p>
+            <p><strong></p>
             
-            <p><strong>Aplique Block Public Access:</strong> Ative por padrão para prevenir exposição acidental de dados.</p>
+            <p><strong></strong> </p>
             
-            <p><strong>Use Tags para Organização:</strong> Implemente estratégia de tags consistente para gerenciamento de custos e governança.</p>
+            <p><strong></p>
         </div>
 
         <center>
