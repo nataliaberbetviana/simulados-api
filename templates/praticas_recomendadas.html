@@ -446,9 +446,9 @@
             <div class="service-box">
                 <h4>Princípio do Privilégio Mínimo</h4>
                 <p>
-                    Conceda apenas as permissões estritamente necessárias para realizar tarefa. 
-                    Comece sem permissões e adicione conforme necessário. Nunca comece com 
-                    AdministratorAccess e "remova depois". Revise e reduza permissões regularmente. 
+                    Conceda apenas as permissões estritamente necessárias para realizar tarefa. <br>
+                    Comece sem permissões e adicione conforme necessário.<br> Nunca comece com 
+                    AdministratorAccess e "remova depois".<br> Revise e reduza permissões regularmente. <br>
                     Use AWS Access Analyzer para identificar permissões não utilizadas.
                 </p>
             </div>
@@ -457,8 +457,8 @@
                 <h4>Use Grupos IAM, Não Usuários Individuais</h4>
                 <p>
                     Crie grupos para diferentes funções (Desenvolvedores, DevOps, Auditores, 
-                    Somente Leitura). Atribua permissões aos grupos, não usuários. Adicione 
-                    usuários aos grupos apropriados. Facilita gerenciamento e garante consistência. 
+                    Somente Leitura).<br> Atribua permissões aos grupos, não usuários.<br> Adicione 
+                    usuários aos grupos apropriados. <br>Facilita gerenciamento e garante consistência. <br>
                     Quando pessoa muda de função, apenas mude grupo.
                 </p>
             </div>
@@ -467,8 +467,8 @@
                 <h4>Implemente Política de Senha Forte</h4>
                 <p>
                     Configure política de senha IAM: mínimo 14 caracteres, exija letras maiúsculas, 
-                    minúsculas, números e símbolos. Exija alteração a cada 90 dias. Impeça 
-                    reutilização das últimas 24 senhas. Permita que usuários alterem próprias senhas. 
+                    minúsculas, números e símbolos.<br> Exija alteração a cada 90 dias. <br>Impeça 
+                    reutilização das últimas 24 senhas.<br> Permita que usuários alterem próprias senhas. <br>
                     IAM Console → Account Settings → Password Policy.
                 </p>
             </div>
@@ -477,18 +477,18 @@
                 <h4>MFA para TODOS os Usuários Privilegiados</h4>
                 <p>
                     Exija MFA para conta root (crítico), usuários administrativos (essencial), 
-                    todos os usuários IAM (altamente recomendado). Use autenticadores de hardware 
-                    (YubiKey) para contas mais sensíveis. Aplicativos autenticadores (Google 
-                    Authenticator, Authy) para demais. NUNCA use SMS como único fator.
+                    todos os usuários IAM (altamente recomendado).<br> Use autenticadores de hardware 
+                    (YubiKey) para contas mais sensíveis.<br> Aplicativos autenticadores (Google 
+                    Authenticator, Authy) para demais. <br>NUNCA use SMS como único fator.
                 </p>
             </div>
 
             <div class="service-box">
                 <h4>Rotação Regular de Credenciais</h4>
                 <p>
-                    Senhas: Política de expiração 90 dias automaticamente. Chaves de Acesso: 
-                    Rotacione a cada 90 dias manualmente ou automaticamente. Use Credential Report 
-                    para identificar chaves antigas. Desative chaves não utilizadas. NUNCA commite 
+                    Senhas: Política de expiração 90 dias automaticamente. <br>Chaves de Acesso: 
+                    Rotacione a cada 90 dias manualmente ou automaticamente.<br> Use Credential Report 
+                    para identificar chaves antigas. Desative chaves não utilizadas. <br>NUNCA commite 
                     chaves em código ou repositórios Git.
                 </p>
             </div>
@@ -496,9 +496,9 @@
             <div class="service-box">
                 <h4>Use IAM Roles em Vez de Chaves para Aplicações</h4>
                 <p>
-                    Para aplicações em EC2, Lambda, ECS: use IAM Roles, NUNCA chaves hardcoded. 
-                    Roles fornecem credenciais temporárias rotacionadas automaticamente. Elimina 
-                    risco de expor chaves em código. Para aplicações externas: use AWS STS para 
+                    Para aplicações em EC2, Lambda, ECS: use IAM Roles, NUNCA chaves hardcoded. <br>
+                    Roles fornecem credenciais temporárias rotacionadas automaticamente.<br> Elimina 
+                    risco de expor chaves em código.<br> Para aplicações externas: use AWS STS para 
                     credenciais temporárias quando possível.
                 </p>
             </div>
