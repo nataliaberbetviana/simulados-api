@@ -111,6 +111,10 @@ def materiais():
 def servicos_aws():
     return render_template('servicos_aws.html')
 
+@app.route('/ec2')
+def ec2():
+    return render_template('ec2.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')
