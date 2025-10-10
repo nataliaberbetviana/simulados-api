@@ -127,6 +127,10 @@ def vpc():
 def iam():
     return render_template('iam.html')
 
+@app.route('/cloud_trail')
+def cloud_trail():
+    return render_template('cloud_trail.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')
