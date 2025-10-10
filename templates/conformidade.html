@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conformidade de Segurança - AWS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --primary-light: #FFB84D;
+            --secondary: #232F3E;
+            --secondary-light: #37475A;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-card h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out backwards;
+        }
+
+        .content-card:nth-child(2) { animation-delay: 0.1s; }
+        .content-card:nth-child(3) { animation-delay: 0.2s; }
+        .content-card:nth-child(4) { animation-delay: 0.3s; }
+        .content-card:nth-child(5) { animation-delay: 0.4s; }
+        .content-card:nth-child(6) { animation-delay: 0.5s; }
+        .content-card:nth-child(7) { animation-delay: 0.6s; }
+        .content-card:nth-child(8) { animation-delay: 0.7s; }
+        .content-card:nth-child(9) { animation-delay: 0.8s; }
+        .content-card:nth-child(10) { animation-delay: 0.9s; }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card h2 {
+            color: var(--secondary);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-card h3 {
+            color: var(--secondary-light);
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+        }
+
+        .content-card p {
+            color: var(--gray-700);
+            line-height: 1.8;
+            font-size: 1.05em;
+            margin-bottom: 15px;
+        }
+
+        .content-card strong {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .framework-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .framework-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .framework-box p {
+            margin-bottom: 8px;
+        }
+
+        .compliance-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .compliance-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .audit-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-left: 4px solid #22c55e;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .audit-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .critical-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-left: 4px solid #dc2626;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .critical-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .tool-box {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border-left: 4px solid #9333ea;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .tool-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .link-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: var(--white);
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            animation: fadeIn 0.6s ease-out 1s backwards;
+        }
+
+        .link-voltar::before {
+            content: '←';
+            font-size: 1.3em;
+        }
+
+        .link-voltar:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header-card {
+                padding: 35px 25px;
+            }
+
+            .header-card h1 {
+                font-size: 2em;
+            }
+
+            .content-card {
+                padding: 30px 20px;
+            }
+
+            .content-card h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-card h1 {
+                font-size: 1.6em;
+            }
+
+            .header-icon {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-card">
+            <div class="header-content">
+                <div class="header-icon">🛡️</div>
+                <h1>Conformidade de Segurança AWS</h1>
+                <p>Frameworks, Padrões e Certificações para Compliance na Nuvem</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📋 O Que É Conformidade na AWS?</h2>
+            <p>
+                Conformidade (compliance) refere-se ao cumprimento de padrões, regulamentações e 
+                frameworks de segurança estabelecidos por organizações reguladoras, governos e 
+                indústrias. Na AWS, conformidade significa garantir que sua infraestrutura e 
+                operações atendam aos requisitos específicos do seu setor e localização geográfica.
+            </p>
+            <p>
+                A AWS mantém um amplo programa de conformidade que abrange certificações globais, 
+                regionais e específicas da indústria. Compreender e implementar conformidade não é 
+                apenas sobre evitar multas - é sobre proteger dados, construir confiança com clientes 
+                e estabelecer práticas operacionais sólidas que reduzem riscos de segurança.
+            </p>
+            <p>
+                <strong>Modelo de Responsabilidade Compartilhada:</strong> A AWS é responsável pela 
+                conformidade DA nuvem (infraestrutura física, rede, virtualização). Você é responsável 
+                pela conformidade NA nuvem (dados, aplicações, configurações, controles de acesso). 
+                Este guia foca em sua responsabilidade - como garantir conformidade das suas cargas 
+                de trabalho na AWS.
+            </p>
+        </div>
+
+        <div class="content-card">
+            <h2>🌍 Principais Frameworks e Regulamentações</h2>
+
+            <div class="framework-box">
+                <h4>CIS AWS Foundations Benchmark</h4>
+                <p>
+                    <strong>O QUE É:</strong> Conjunto de melhores práticas de segurança desenvolvido 
+                    pelo Center for Internet Security, reconhecido globalmente como padrão baseline 
+                    para segurança AWS.<br><br>
+                    <strong>ESCOPO:</strong> Cobre configurações fundamentais de IAM, logging, 
+                    monitoramento, networking. Não específico de indústria - aplicável a qualquer 
+                    organização.<br><br>
+                    <strong>IMPLEMENTAÇÃO:</strong> AWS Security Hub fornece verificação automatizada 
+                    contra CIS Benchmark. Ative Security Hub e habilite o padrão CIS AWS Foundations 
+                    Benchmark.<br><br>
+                    <strong>POR QUÊ IMPORTANTE:</strong> Base sólida de segurança. Muitas organizações 
+                    exigem conformidade CIS como requisito mínimo. Frequentemente ponto de partida para 
+                    auditorias.
+                </p>
+            </div>
+
+            <div class="framework-box">
+                <h4>GDPR (General Data Protection Regulation)</h4>
+                <p>
+                    <strong>O QUE É:</strong> Regulamentação de privacidade da União Europeia que 
+                    protege dados pessoais de cidadãos da UE, independente de onde empresa está localizada.<br><br>
+                    <strong>APLICA-SE A:</strong> Qualquer organização que processa dados de residentes 
+                    da UE. Multas podem chegar a 4% do faturamento global anual ou €20 milhões.<br><br>
+                    <strong>REQUISITOS CHAVE:</strong> Consentimento explícito para coleta de dados, 
+                    direito ao esquecimento (deletar dados), portabilidade de dados, notificação de 
+                    breach em 72 horas, designação de DPO (Data Protection Officer).<br><br>
+                    <strong>NA AWS:</strong> Use criptografia obrigatória, implemente retenção e 
+                    deleção automatizada de dados, configure logs de acesso, documente processamento 
+                    de dados, use regiões EU para dados de cidadãos EU.
+                </p>
+            </div>
+
+            <div class="framework-box">
+                <h4>LGPD (Lei Geral de Proteção de Dados)</h4>
+                <p>
+                    <strong>O QUE É:</strong> Lei brasileira de proteção de dados inspirada no GDPR, 
+                    regulamenta tratamento de dados pessoais no Brasil.<br><br>
+                    <strong>APLICA-SE A:</strong> Empresas que processam dados de residentes brasileiros, 
+                    mesmo se sediadas fora do Brasil. Vigência desde setembro de 2020.<br><br>
+                    <strong>REQUISITOS:</strong> Semelhantes ao GDPR - consentimento, direitos dos 
+                    titulares, segurança de dados, notificação de incidentes à ANPD, nomeação de 
+                    encarregado de dados.<br><br>
+                    <strong>IMPLEMENTAÇÃO AWS:</strong> Use região São Paulo (sa-east-1) para dados 
+                    sensíveis de brasileiros, implemente controles de acesso granulares, mantenha 
+                    registros de processamento, habilite criptografia end-to-end.
+                </p>
+            </div>
+
+            <div class="framework-box">
+                <h4>PCI-DSS (Payment Card Industry Data Security Standard)</h4>
+                <p>
+                    <strong>O QUE É:</strong> Padrão de segurança para organizações que processam, 
+                    armazenam ou transmitem dados de cartões de crédito. Mandatório, não opcional.<br><br>
+                    <strong>NÍVEIS:</strong> Baseados em volume de transações anuais. Nível 1 (mais de 
+                    6 milhões) requer auditoria anual por QSA. Menores volumes podem fazer 
+                    auto-avaliação.<br><br>
+                    <strong>12 REQUISITOS:</strong> Firewall, não usar defaults, proteger dados 
+                    armazenados, criptografar transmissão, antivírus, sistemas seguros, restringir 
+                    acesso, IDs únicos, restringir acesso físico, monitorar, testar, política de 
+                    segurança.<br><br>
+                    <strong>AWS:</strong> Nunca armazene CVV/CVV2, use tokenização, segmente rede com 
+                    VPCs dedicadas, logs imutáveis, MFA obrigatório, criptografia forte, scans de 
+                    vulnerabilidade trimestrais.
+                </p>
+            </div>
+
+            <div class="framework-box">
+                <h4>HIPAA (Health Insurance Portability and Accountability Act)</h4>
+                <p>
+                    <strong>O QUE É:</strong> Lei dos EUA que regula proteção de informações de saúde 
+                    (PHI - Protected Health Information). Aplicável a healthcare providers, health plans, 
+                    clearinghouses.<br><br>
+                    <strong>BUSINESS ASSOCIATE AGREEMENT:</strong> Necessário BAA com AWS antes de 
+                    processar PHI. Solicite via AWS Artifact ou contato com suporte.<br><br>
+                    <strong>REQUISITOS:</strong> Criptografia de PHI em repouso e trânsito, logs de 
+                    auditoria de acessos, controles de acesso baseados em função, backup de PHI, plano 
+                    de disaster recovery, treinamento de equipe.<br><br>
+                    <strong>SERVIÇOS ELEGÍVEIS:</strong> Nem todos os serviços AWS são HIPAA eligible. 
+                    Verifique lista oficial - EC2, S3, RDS são elegíveis. Serviços como Amazon Chime, 
+                    WorkMail não são.
+                </p>
+            </div>
+
+            <div class="framework-box">
+                <h4>SOC 2 (Service Organization Control)</h4>
+                <p>
+                    <strong>O QUE É:</strong> Framework de auditoria desenvolvido pela AICPA para avaliar 
+                    controles de segurança, disponibilidade, confidencialidade de serviços.<br><br>
+                    <strong>TIPOS:</strong> SOC 2 Type I (design de controles em momento específico), 
+                    Type II (eficácia de controles por período, tipicamente 6-12 meses).<br><br>
+                    <strong>TRUST SERVICE CRITERIA:</strong> Segurança (obrigatório), disponibilidade, 
+                    integridade de processamento, confidencialidade, privacidade (opcionais conforme 
+                    aplicável).<br><br>
+                    <strong>PARA CLIENTES AWS:</strong> AWS tem SOC 2 próprio. Você precisa SOC 2 para 
+                    suas aplicações/serviços. Implemente controles documentados, evidências de operação, 
+                    monitoramento contínuo, resposta a incidentes.
+                </p>
+            </div>
+
+            <div class="framework-box">
+                <h4>ISO 27001</h4>
+                <p>
+                    <strong>O QUE É:</strong> Padrão internacional para sistemas de gestão de segurança 
+                    da informação (ISMS). Certificação reconhecida globalmente.<br><br>
+                    <strong>ABORDAGEM:</strong> Baseada em risco - identifique riscos, implemente 
+                    controles, monitore eficácia, melhore continuamente. Não prescreve controles 
+                    específicos, permite flexibilidade.<br><br>
+                    <strong>CERTIFICAÇÃO:</strong> Requer auditoria externa por organismo certificador 
+                    credenciado. Válida por 3 anos com auditorias anuais de supervisão.<br><br>
+                    <strong>IMPLEMENTAÇÃO:</strong> Defina escopo do ISMS, faça assessment de riscos, 
+                    implemente controles do Anexo A conforme aplicável, documente políticas e 
+                    procedimentos, treine equipe, monitore KPIs.
+                </p>
+            </div>
+
+            <div class="framework-box">
+                <h4>NIST Cybersecurity Framework</h4>
+                <p>
+                    <strong>O QUE É:</strong> Framework voluntário desenvolvido pelo National Institute 
+                    of Standards and Technology (EUA) para gerenciar riscos de cybersecurity.<br><br>
+                    <strong>5 FUNÇÕES CORE:</strong> Identify (ativos, riscos), Protect (implementar 
+                    salvaguardas), Detect (atividades anômalas), Respond (ações durante incidente), 
+                    Recover (restaurar serviços).<br><br>
+                    <strong>TIERS:</strong> Parcial, Risk Informed, Repetível, Adaptativo. Permite 
+                    avaliar maturidade de cybersecurity da organização.<br><br>
+                    <strong>APLICAÇÃO AWS:</strong> Use como framework para construir programa de 
+                    segurança. Mapeia bem para serviços AWS - GuardDuty para Detect, Security Hub para 
+                    Identify, AWS Backup para Recover.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔧 Ferramentas AWS para Conformidade</h2>
+
+            <div class="tool-box">
+                <h4>AWS Artifact</h4>
+                <p>
+                    Portal central para acesso sob demanda a relatórios de conformidade e acordos da AWS. 
+                    Disponível sem custo no console AWS.<br><br>
+                    <strong>RELATÓRIOS DISPONÍVEIS:</strong> SOC 1, 2, 3, ISO 27001, 27017, 27018, 27701, 
+                    PCI-DSS AOC, FedRAMP, HIPAA BAA, GDPR DPA, e muitos outros.<br><br>
+                    <strong>COMO USAR:</strong> AWS Console → Artifact → Reports ou Agreements. Download 
+                    de PDFs para auditorias, due diligence de clientes, assessments internos.<br><br>
+                    <strong>ACORDOS:</strong> BAA para HIPAA, DPA para GDPR podem ser aceitos diretamente 
+                    via Artifact sem contato com AWS.
+                </p>
+            </div>
+
+            <div class="tool-box">
+                <h4>AWS Audit Manager</h4>
+                <p>
+                    Automatiza coleta de evidências de conformidade. Reduz esforço manual de preparação 
+                    para auditorias.<br><br>
+                    <strong>FRAMEWORKS PRÉ-CONSTRUÍDOS:</strong> CIS AWS Foundations Benchmark, PCI-DSS, 
+                    GDPR, HIPAA, SOC 2, ISO 27001 e outros. Mapeia controles para configurações AWS.<br><br>
+                    <strong>FUNCIONAMENTO:</strong> Cria assessments baseados em framework escolhido. 
+                    Coleta evidências automaticamente de CloudTrail, Config, Security Hub. Organiza 
+                    evidências por controle.<br><br>
+                    <strong>RELATÓRIOS:</strong> Gera assessment reports prontos para auditores. Reduz 
+                    tempo de preparação de semanas para horas.
+                </p>
+            </div>
+
+            <div class="tool-box">
+                <h4>AWS Config</h4>
+                <p>
+                    Avalia, audita e analisa configurações de recursos AWS. Fundamental para conformidade 
+                    contínua.<br><br>
+                    <strong>CONFIG RULES:</strong> Regras gerenciadas pela AWS ou customizadas. Avaliam 
+                    se recursos estão em conformidade. Exemplos: s3-bucket-public-read-prohibited, 
+                    iam-password-policy, encrypted-volumes.<br><br>
+                    <strong>REMEDIAÇÃO:</strong> Automática via Systems Manager Automation ou manual. 
+                    Corrige não-conformidades sem intervenção humana quando possível.<br><br>
+                    <strong>CONFORMITY PACKS:</strong> Coleções de Config Rules e remediações. Templates 
+                    para frameworks completos (CIS, PCI-DSS) em um único deployment.
+                </p>
+            </div>
+
+            <div class="tool-box">
+                <h4>AWS Security Hub</h4>
+                <p>
+                    Agregação centralizada de descobertas de segurança. Dashboard único para postura de 
+                    segurança.<br><br>
+                    <strong>SECURITY STANDARDS:</strong> CIS AWS Foundations Benchmark, AWS Foundational 
+                    Security Best Practices, PCI-DSS. Verifica automaticamente conformidade contra 
+                    standards.<br><br>
+                    <strong>INTEGRAÇÕES:</strong> GuardDuty, Inspector, Macie, IAM Access Analyzer, 
+                    Firewall Manager, Config, third-party tools (Palo Alto, Trend Micro, etc).<br><br>
+                    <strong>SECURITY SCORE:</strong> Pontuação de segurança baseada em checks passados vs 
+                    falhados. Facilita tracking de progresso ao longo do tempo.
+                </p>
+            </div>
+
+            <div class="tool-box">
+                <h4>AWS Control Tower</h4>
+                <p>
+                    Orquestra setup e governance de ambiente AWS multi-conta seguro. Implementa landing 
+                    zone com best practices.<br><br>
+                    <strong>GUARDRAILS:</strong> Preventivos (SCPs) e detectivos (Config Rules). 
+                    Garantem conformidade contínua. Exemplos: proibir mudanças em CloudTrail, requerer 
+                    MFA para root account.<br><br>
+                    <strong>ACCOUNT FACTORY:</strong> Provisiona contas novas automaticamente com 
+                    baseline de segurança. Garante consistência em todas as contas.<br><br>
+                    <strong>DASHBOARD:</strong> Visibilidade de status de conformidade em toda 
+                    organização. Identifica contas ou guardrails violados rapidamente.
+                </p>
+            </div>
+
+            <div class="tool-box">
+                <h4>AWS Systems Manager Compliance</h4>
+                <p>
+                    Escaneia instâncias EC2 para conformidade com patch baselines, configurações desejadas, 
+                    custom compliance types.<br><br>
+                    <strong>PATCH COMPLIANCE:</strong> Verifica se instâncias têm patches críticos e de 
+                    segurança instalados. Identifica instâncias out-of-compliance.<br><br>
+                    <strong>ASSOCIATION COMPLIANCE:</strong> Valida se State Manager associations foram 
+                    executadas com sucesso. Garante configurações aplicadas.<br><br>
+                    <strong>CUSTOM COMPLIANCE:</strong> Permite definir tipos customizados de compliance. 
+                    Útil para requisitos específicos da organização ou indústria.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📊 Implementando Programa de Conformidade</h2>
+
+            <div class="compliance-box">
+                <h4>Fase 1: Assessment e Scoping</h4>
+                <p>
+                    <strong>IDENTIFIQUE REQUISITOS:</strong> Determine quais frameworks e regulamentações 
+                    aplicam-se à sua organização. Considere indústria, localização geográfica, tipo de 
+                    dados processados.<br><br>
+                    <strong>DEFINA ESCOPO:</strong> Quais contas AWS, regiões, serviços estão no escopo? 
+                    Documentação clara de escopo é crítica para auditorias.<br><br>
+                    <strong>GAP ANALYSIS:</strong> Compare estado atual vs requisitos. Use Security Hub 
+                    e Config para assessment automatizado. Identifique gaps e priorize por risco.<br><br>
+                    <strong>STAKEHOLDERS:</strong> Envolva liderança executiva, legal, compliance, 
+                    segurança, operações. Conformidade é responsabilidade de toda organização.
+                </p>
+            </div>
+
+            <div class="compliance-box">
+                <h4>Fase 2: Design e Planejamento</h4>
+                <p>
+                    <strong>POLÍTICAS E PROCEDIMENTOS:</strong> Documente políticas de segurança, 
+                    procedimentos operacionais, responsabilidades. Base para auditorias.<br><br>
+                    <strong>ARQUITETURA DE REFERÊNCIA:</strong> Desenhe arquitetura que atende requisitos. 
+                    Multi-conta com segregação por ambiente e sensibilidade de dados.<br><br>
+                    <strong>CONTROLES TÉCNICOS:</strong> Liste controles específicos a implementar 
+                    (criptografia, logs, access controls, network segmentation, backup, etc).<br><br>
+                    <strong>ROADMAP:</strong> Crie plano faseado de implementação. Priorize controles 
+                    críticos e quick wins primeiro. Estabeleça timelines realistas.
+                </p>
+            </div>
+
+            <div class="compliance-box">
+                <h4>Fase 3: Implementação</h4>
+                <p>
+                    <strong>AUTOMAÇÃO:</strong> Use Infrastructure as Code (CloudFormation, Terraform) para 
+                    garantir consistência. Codifique controles de segurança em templates.<br><br>
+                    <strong>CONTROLES PREVENTIVOS:</strong> SCPs, IAM policies, Security Groups, WAF rules. 
+                    Impedem ações não-conformes antes que ocorram.<br><br>
+                    <strong>CONTROLES DETECTIVOS:</strong> Config Rules, GuardDuty, Security Hub, 
+                    CloudWatch Alarms. Identificam violações rapidamente.<br><br>
+                    <strong>REMEDIAÇÃO:</strong> Automatize correção de não-conformidades quando possível. 
+                    Config remediation actions, Lambda functions, Systems Manager Automation.
+                </p>
+            </div>
+
+            <div class="compliance-box">
+                <h4>Fase 4: Operação e Monitoramento</h4>
+                <p>
+                    <strong>MONITORAMENTO CONTÍNUO:</strong> Security Hub e Config fornecem visão em tempo 
+                    real de postura de conformidade. Configure dashboards para stakeholders.<br><br>
+                    <strong>ALERTAS:</strong> Notificações imediatas de violações críticas via SNS, email, 
+                    Slack, PagerDuty. Response rápida essencial para conformidade.<br><br>
+                    <strong>MÉTRICAS:</strong> Track KPIs - compliance score, tempo para remediação, número 
+                    de violações, cobertura de controles. Demonstre melhoria ao longo do tempo.<br><br>
+                    <strong>REVISÕES REGULARES:</strong> Assessments mensais de conformidade. Revise 
+                    mudanças em requisitos regulatórios. Ajuste controles conforme necessário.
+                </p>
+            </div>
+
+            <div class="compliance-box">
+                <h4>Fase 5: Auditoria e Certificação</h4>
+                <p>
+                    <strong>PREPARAÇÃO:</strong> Use Audit Manager para coletar evidências continuamente. 
+                    Organize documentação, políticas, logs, screenshots.<br><br>
+                    <strong>AUDITORIA:</strong> Trabalhe com auditores externos (para ISO, SOC 2) ou 
+                    assessors internos. Forneça acesso apropriado via IAM roles temporárias.<br><br>
+                    <strong>REMEDIAÇÃO DE FINDINGS:</strong> Corrija issues identificados por auditores 
+                    prontamente. Documente planos de ação corretiva para items que requerem tempo.<br><br>
+                    <strong>CERTIFICAÇÃO:</strong> Obtenha certificados/relatórios. Compartilhe com 
+                    stakeholders e clientes conforme apropriado. Mantenha vigência com recertificações.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🎯 Controles Técnicos Essenciais</h2>
+
+            <div class="audit-box">
+                <h4>Controles de Identidade e Acesso</h4>
+                <p>
+                    <strong>MFA OBRIGATÓRIO:</strong> Para todos os usuários humanos, especialmente 
+                    privilegiados. Requisito em praticamente todos os frameworks.<br><br>
+                    <strong>PRINCÍPIO DO MENOR PRIVILÉGIO:</strong> Permissões granulares baseadas em 
+                    função. Revise e reduza permissões regularmente com Access Analyzer.<br><br>
+                    <strong>SENHA FORTE:</strong> Política IAM com mínimo 14 caracteres, complexidade, 
+                    rotação regular. Previne brute force e credential stuffing.<br><br>
+                    <strong>FEDERATED ACCESS:</strong> Integração com IdP corporativo (Okta, Azure AD) via 
+                    SAML/OIDC. Centraliza gestão de identidades e facilita compliance.<br><br>
+                    <strong>ACCESS REVIEWS:</strong> Revisões trimestrais de permissões. Remova usuários 
+                    inativos, reduza privilégios excessivos. Documente revisões para auditoria.
+                </p>
+            </div>
+
+            <div class="audit-box">
+                <h4>Controles de Logging e Monitoramento</h4>
+                <p>
+                    <strong>CLOUDTRAIL GLOBAL:</strong> Ativo em todas as regiões, criptografado com KMS, 
+                    validação de integridade habilitada. Registra todas as ações API.<br><br>
+                    <strong>VPC FLOW LOGS:</strong> Logs de tráfego de rede. Essencial para investigações 
+                    de segurança, detecção de anomalias, forensics.<br><br>
+                    <strong>RETENÇÃO:</strong> Mínimo 1 ano para a maioria dos frameworks. 7 anos para 
+                    alguns regulamentações financeiras. Use S3 com lifecycle policies.<br><br>
+                    <strong>PROTEÇÃO DE LOGS:</strong> S3 bucket com versionamento, MFA delete, políticas 
+                    de acesso restritivas. Logs não podem ser modificados ou deletados por usuários 
+                    normais.<br><br>
+                    <strong>ALERTAS:</strong> CloudWatch alarms para eventos críticos - falhas de MFA, 
+                    mudanças em Security Groups, desativação de logs, uso de root account.
+                </p>
+            </div>
+
+            <div class="audit-box">
+                <h4>Controles de Criptografia</h4>
+                <p>
+                    <strong>DADOS EM REPOUSO:</strong> S3 SSE obrigatório, EBS encryption por padrão, RDS 
+                    encryption habilitada na criação. Use KMS CMKs para controle total.<br><br>
+                    <strong>DADOS EM TRÂNSITO:</strong> TLS 1.2+ para toda comunicação. Desabilite 
+                    protocolos antigos. Certificados SSL válidos e renovados automaticamente.<br><br>
+                    <strong>KEY MANAGEMENT:</strong> Rotação automática de KMS keys anual. Políticas de 
+                    key restritivas. Separação de keys por ambiente (dev, prod) e sensibilidade.<br><br>
+                    <strong>SECRETS:</strong> Nunca hardcode credenciais. Use Secrets Manager ou Parameter 
+                    Store. Rotação automática quando suportado pelo serviço.<br><br>
+                    <strong>VALIDAÇÃO:</strong> Use AWS Config rules para garantir encryption enforcement. 
+                    Bloque criação de recursos não-criptografados via SCPs.
+                </p>
+            </div>
+
+            <div class="audit-box">
+                <h4>Controles de Rede</h4>
+                <p>
+                    <strong>VPC ISOLAMENTO:</strong> Recursos sensíveis em subnets privadas. Segmentação 
+                    por ambiente e tier (web, app, database).<br><br>
+                    <strong>SECURITY GROUPS:</strong> Princípio do menor acesso. Nunca 0.0.0.0/0 em portas 
+                    sensíveis. Documente e revise regras regularmente.<br><br>
+                    <strong>NACLs:</strong> Camada adicional de defesa. Regras de negação explícitas para 
+                    tráfego malicioso conhecido. Stateless para controle granular.<br><br>
+                    <strong>PRIVATE ENDPOINTS:</strong> VPC Endpoints para serviços AWS. Tráfego não sai 
+                    da rede AWS. Reduz exposição e melhora performance.<br><br>
+                    <strong>WAF:</strong> Proteção contra OWASP Top 10. Regras gerenciadas + custom rules. 
+                    Rate limiting, geo-blocking conforme requisitos.
+                </p>
+            </div>
+
+            <div class="audit-box">
+                <h4>Controles de Backup e Disaster Recovery</h4>
+                <p>
+                    <strong>BACKUPS AUTOMATIZADOS:</strong> AWS Backup com políticas centralizadas. 
+                    Frequência baseada em RPO (Recovery Point Objective) do serviço.<br><br>
+                    <strong>RETENÇÃO:</strong> Conforme requisitos regulatórios. Backups imutáveis quando 
+                    necessário (Vault Lock). Teste de restore obrigatório.<br><br>
+                    <strong>CROSS-REGION:</strong> Cópias de backup em região secundária. Proteção contra 
+                    desastres regionais. Critical para DR e algumas regulamentações.<br><br>
+                    <strong>DR PLAN:</strong> Documentado, testado regularmente. RTO (Recovery Time 
+                    Objective) e RPO definidos. Runbooks para diferentes cenários.<br><br>
+                    <strong>VALIDAÇÃO:</strong> Testes de restore trimestrais. Valide que backups 
+                    funcionam e atendem RTOs/RPOs. Documente resultados.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📝 Documentação e Evidências</h2>
+
+            <div class="warning-box">
+                <h4>Políticas e Procedimentos</h4>
+                <p>
+                    <strong>POLÍTICA DE SEGURANÇA:</strong> Documento de alto nível aprovado pela liderança. 
+                    Define compromisso organizacional com segurança e conformidade.<br><br>
+                    <strong>PROCEDIMENTOS OPERACIONAIS:</strong> SOPs (Standard Operating Procedures) 
+                    detalhados. Como executar tarefas específicas mantendo conformidade.<br><br>
+                    <strong>MATRIZ DE CONTROLES:</strong> Mapeia requisitos regulatórios para controles 
+                    implementados e evidências. Facilita auditorias tremendamente.<br><br>
+                    <strong>PLANO DE RESPOSTA:</strong> Incident response plan documentado. Roles, 
+                    responsabilidades, procedimentos passo-a-passo, contatos de emergência.<br><br>
+                    <strong>VERSIONAMENTO:</strong> Controle de versão de todos os documentos. Data de 
+                    criação, revisões, aprovações. Git ou sistema de documentação formal.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Evidências de Controles</h4>
+                <p>
+                    <strong>SCREENSHOTS:</strong> Configurações de segurança implementadas. Security Hub 
+                    scores, Config compliance status, IAM policies, Security Groups.<br><br>
+                    <strong>LOGS:</strong> CloudTrail logs demonstrando ações executadas. Logs de acesso. 
+                    Logs de mudanças de configuração. Retenção conforme requerido.<br><br>
+                    <strong>RELATÓRIOS:</strong> Trusted Advisor checks, Config compliance reports, 
+                    vulnerability scan results, penetration test reports.<br><br>
+                    <strong>CERTIFICADOS:</strong> SSL certificates, training certifications da equipe, 
+                    attestations de terceiros, relatórios de auditoria.<br><br>
+                    <strong>ORGANIZAÇÃO:</strong> Sistema organizado para armazenar evidências. Por 
+                    controle, por período, fácil recuperação. Audit Manager ajuda tremendamente.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Registros de Mudanças</h4>
+                <p>
+                    <strong>CHANGE MANAGEMENT:</strong> Processo formal para mudanças em produção. Request, 
+                    approval, testing, implementation, verification.<br><br>
+                    <strong>CONFIG CHANGES:</strong> AWS Config registra automaticamente mudanças em 
+                    recursos. Timeline de configurações. Quem mudou o quê e quando.<br><br>
+                    <strong>APROVAÇÕES:</strong> Evidências de aprovações de mudanças. Emails, tickets, 
+                    sistemas de workflow. Critical para demonstrar governance.<br><br>
+                    <strong>ROLLBACK CAPABILITY:</strong> Capacidade de reverter mudanças problemáticas. 
+                    Procedures documentados. Testados regularmente.<br><br>
+                    <strong>POST-IMPLEMENTATION REVIEW:</strong> Validação que mudança funcionou como 
+                    esperado. Sem impactos adversos em segurança ou conformidade.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Treinamento e Awareness</h4>
+                <p>
+                    <strong>TREINAMENTO INICIAL:</strong> Onboarding de novos funcionários inclui 
+                    treinamento de segurança e conformidade. Documentação de conclusão.<br><br>
+                    <strong>TREINAMENTO CONTÍNUO:</strong> Anual ou mais frequente. Atualizações sobre 
+                    novas ameaças, mudanças regulatórias, novas ferramentas/processos.<br><br>
+                    <strong>ROLE-SPECIFIC:</strong> Treinamento adicional para roles privilegiadas. 
+                    Administradores, desenvolvedores, pessoal de segurança.<br><br>
+                    <strong>REGISTROS:</strong> Mantenha registros de quem completou qual treinamento e 
+                    quando. Sistema de tracking. Evidência para auditores.<br><br>
+                    <strong>TESTES:</strong> Quizzes ou assessments para validar compreensão. Phishing 
+                    simulations. Demonstra eficácia do programa.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>⚠️ Desafios Comuns e Soluções</h2>
+
+            <div class="critical-box">
+                <h4>Desafio: Complexidade de Múltiplos Frameworks</h4>
+                <p>
+                    <strong>PROBLEMA:</strong> Organização precisa atender GDPR, PCI-DSS, ISO 27001 
+                    simultaneamente. Requisitos overlapping mas não idênticos.<br><br>
+                    <strong>SOLUÇÃO:</strong> Implemente framework mais rigoroso como baseline (geralmente 
+                    ISO 27001 ou CIS). Maioria dos controles atenderá múltiplos frameworks. Identifique 
+                    gaps específicos e implemente controles adicionais conforme necessário. Use matriz de 
+                    controles para mapear um controle para múltiplos requisitos.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>Desafio: Recursos Limitados</h4>
+                <p>
+                    <strong>PROBLEMA:</strong> Equipe pequena, budget limitado. Conformidade parece 
+                    overwhelming e cara.<br><br>
+                    <strong>SOLUÇÃO:</strong> Priorize automação - Security Hub, Config, Audit Manager 
+                    fazem trabalho pesado. Use managed services quando possível - RDS, não EC2 com database 
+                    gerenciado manualmente. Foque em controles críticos primeiro. Use frameworks da AWS 
+                    (Well-Architected, Landing Zone) em vez de reinventar. Considere consultores para 
+                    setup inicial, depois mantenha internamente.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>Desafio: Mudanças Constantes na Nuvem</h4>
+                <p>
+                    <strong>PROBLEMA:</strong> DevOps deployment contínuo. Recursos criados/modificados 
+                    rapidamente. Difícil manter conformidade.<br><br>
+                    <strong>SOLUÇÃO:</strong> Shift-left security - integre compliance checks no CI/CD 
+                    pipeline. Use CloudFormation Guard para validar templates antes de deploy. SCPs 
+                    previnem ações não-conformes. Config detecta e remedeia automaticamente. Implemente 
+                    infrastructure as code - codifique controles de segurança nos templates.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>Desafio: Shadow IT</h4>
+                <p>
+                    <strong>PROBLEMA:</strong> Equipes criam recursos AWS fora de processos aprovados. 
+                    Descobrem-se recursos não-conformes em auditorias.<br><br>
+                    <strong>SOLUÇÃO:</strong> AWS Organizations com SCPs para enforçar guardrails. Service 
+                    Catalog para provisão self-service de recursos pré-aprovados. Educação sobre riscos. 
+                    Simplifique processos legítimos para reduzir tentação de shadow IT. Detecção via Config 
+                    e Security Hub. Tag policies para forçar ownership.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>Desafio: Evidências de Conformidade Contínua</h4>
+                <p>
+                    <strong>PROBLEMA:</strong> Auditores querem evidências de conformidade ao longo do tempo, 
+                    não apenas snapshot.<br><br>
+                    <strong>SOLUÇÃO:</strong> AWS Audit Manager coleta evidências continuamente. Config 
+                    compliance history mostra conformidade over time. CloudTrail para audit trail completo. 
+                    Security Hub scores históricos. Dashboards automatizados em QuickSight ou Grafana. 
+                    Relatórios mensais de compliance gerados automaticamente.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>Desafio: Custos de Conformidade</h4>
+                <p>
+                    <strong>PROBLEMA:</strong> Logging extensivo, multi-região, backups, ferramentas de 
+                    segurança aumentam custos significativamente.<br><br>
+                    <strong>SOLUÇÃO:</strong> Custos de não-conformidade são muito maiores (multas, perda de 
+                    clientes, reputação). Otimize sem comprometer segurança - lifecycle policies para logs 
+                    (transition para Glacier), retenção baseada em requisitos reais, não "forever". Use 
+                    tiers gratuitos de serviços (GuardDuty 30 dias trial, Security Hub free tier). Calcule 
+                    ROI de automação - reduz headcount necessário.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>✅ Checklist de Conformidade</h2>
+
+            <div class="audit-box">
+                <h4>Preparação Inicial</h4>
+                <p>
+                    ☑️ Identificar frameworks e regulamentações aplicáveis<br>
+                    ☑️ Definir escopo claramente (contas, regiões, serviços)<br>
+                    ☑️ Realizar gap analysis vs estado atual<br>
+                    ☑️ Obter buy-in e budget da liderança<br>
+                    ☑️ Designar compliance officer ou equipe responsável<br>
+                    ☑️ Baixar relatórios relevantes do AWS Artifact<br>
+                    ☑️ Aceitar acordos necessários (BAA, DPA) via Artifact<br>
+                    ☑️ Documentar políticas e procedimentos<br>
+                    ☑️ Criar matriz de controles mapeando requisitos
+                </p>
+            </div>
+
+            <div class="audit-box">
+                <h4>Implementação Técnica</h4>
+                <p>
+                    ☑️ Ativar CloudTrail multi-região com encryption<br>
+                    ☑️ Configurar VPC Flow Logs em todas as VPCs<br>
+                    ☑️ Habilitar GuardDuty em todas as regiões/contas<br>
+                    ☑️ Ativar Security Hub com standards relevantes<br>
+                    ☑️ Configurar AWS Config com rules apropriadas<br>
+                    ☑️ Implementar AWS Config conformity packs<br>
+                    ☑️ Configurar AWS Audit Manager assessments<br>
+                    ☑️ Habilitar encryption at rest por padrão<br>
+                    ☑️ Enforçar TLS 1.2+ para dados em trânsito<br>
+                    ☑️ Configurar AWS Backup com políticas apropriadas<br>
+                    ☑️ Implementar SCPs para guardrails organizacionais<br>
+                    ☑️ Configurar tag policies para governance<br>
+                    ☑️ Implementar MFA obrigatório para usuários privilegiados<br>
+                    ☑️ Configurar política de senha forte IAM
+                </p>
+            </div>
+
+            <div class="audit-box">
+                <h4>Monitoramento e Operação</h4>
+                <p>
+                    ☑️ Configurar CloudWatch alarms para eventos críticos<br>
+                    ☑️ Setup de dashboards de conformidade<br>
+                    ☑️ Implementar notificações SNS para violações<br>
+                    ☑️ Configurar remediação automatizada onde possível<br>
+                    ☑️ Estabelecer processos de revisão regular<br>
+                    ☑️ Agendar access reviews trimestrais<br>
+                    ☑️ Planejar testes de backup e DR<br>
+                    ☑️ Criar runbooks para cenários comuns<br>
+                    ☑️ Implementar sistema de tracking de evidências
+                </p>
+            </div>
+
+            <div class="audit-box">
+                <h4>Preparação para Auditoria</h4>
+                <p>
+                    ☑️ Coletar evidências via Audit Manager<br>
+                    ☑️ Organizar documentação (políticas, procedures, diagrams)<br>
+                    ☑️ Preparar matriz de controles com evidências mapeadas<br>
+                    ☑️ Gerar relatórios de Config compliance<br>
+                    ☑️ Exportar Security Hub findings e scores<br>
+                    ☑️ Coletar screenshots de configurações chave<br>
+                    ☑️ Documentar treinamentos completados pela equipe<br>
+                    ☑️ Preparar registros de mudanças e aprovações<br>
+                    ☑️ Revisar e remediar findings conhecidos<br>
+                    ☑️ Criar IAM roles para acesso de auditores
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔄 Manutenção de Conformidade</h2>
+
+            <div class="compliance-box">
+                <h4>Atividades Contínuas</h4>
+                <p>
+                    <strong>DIARIAMENTE:</strong> Revisar alertas de Security Hub, GuardDuty findings, 
+                    Config non-compliance notifications. Investigar e remediar issues críticos 
+                    imediatamente.<br><br>
+                    <strong>SEMANALMENTE:</strong> Revisar compliance dashboards, analisar tendências de 
+                    violações, revisar mudanças de configuração significativas via Config, verificar 
+                    status de remediações em andamento.<br><br>
+                    <strong>MENSALMENTE:</strong> Assessment formal de conformidade, revisar e atualizar 
+                    documentação, testar backups e DR procedures, revisar access permissions, gerar 
+                    relatórios para stakeholders, atualizar matriz de controles.<br><br>
+                    <strong>TRIMESTRALMENTE:</strong> Access reviews formais, training refreshers para 
+                    equipe, testes de incident response, revisão de políticas e procedures, avaliação de 
+                    novos serviços AWS para compliance, assessment de riscos.<br><br>
+                    <strong>ANUALMENTE:</strong> Auditorias externas conforme necessário, recertificações, 
+                    revisão completa do programa de conformidade, atualização de DR plan, renovação de BAAs 
+                    e DPAs, treinamento formal completo da equipe.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📚 Recursos e Referências</h2>
+
+            <div class="framework-box">
+                <h4>Documentação AWS</h4>
+                <p>
+                    <strong>AWS Compliance Center:</strong> Portal central para informações de conformidade 
+                    aws.amazon.com/compliance<br><br>
+                    <strong>AWS Artifact:</strong> Acesso a relatórios e acordos via console AWS<br><br>
+                    <strong>Compliance Quick Reference:</strong> Guias por framework específico<br><br>
+                    <strong>AWS Security Blog:</strong> Artigos sobre implementação de conformidade<br><br>
+                    <strong>AWS Whitepapers:</strong> Deep dives em tópicos específicos de compliance
+                </p>
+            </div>
+
+            <div class="framework-box">
+                <h4>Frameworks e Standards</h4>
+                <p>
+                    <strong>CIS Benchmarks:</strong> cisecurity.org - benchmarks gratuitos<br><br>
+                    <strong>NIST:</strong> nist.gov/cyberframework - frameworks de cybersecurity<br><br>
+                    <strong>ISO/IEC 27001:</strong> iso.org - padrão internacional ISMS<br><br>
+                    <strong>PCI Security Standards:</strong> pcisecuritystandards.org<br><br>
+                    <strong>GDPR:</strong> gdpr.eu - texto completo e guidance<br><br>
+                    <strong>HIPAA:</strong> hhs.gov/hipaa - regulamentações e guidance oficiais
+                </p>
+            </div>
+
+            <div class="framework-box">
+                <h4>Treinamento e Certificações</h4>
+                <p>
+                    <strong>AWS Training:</strong> Cursos oficiais sobre security e compliance<br><br>
+                    <strong>AWS Certified Security – Specialty:</strong> Certificação de segurança AWS<br><br>
+                    <strong>Certificações de Compliance:</strong> CISA, CISSP, CISM relevantes<br><br>
+                    <strong>Framework-specific:</strong> Certified ISO 27001 Lead Implementer, etc<br><br>
+                    <strong>AWS re:Inforce:</strong> Conferência anual de segurança AWS
+                </p>
+            </div>
+        </div>
+
+        <center>
+            <a class="link-voltar" href="praticas_recomendadas.html">Voltar para Práticas de Segurança</a>
+        </center>
+    </div>
+</body>
+</html>

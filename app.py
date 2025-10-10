@@ -143,6 +143,10 @@ def trusted_advisor():
 def praticas_recomendadas():
     return render_template('praticas_recomendadas.html')
 
+@app.route('/conformidade')
+def conformidade():
+    return render_template('conformidade.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')
