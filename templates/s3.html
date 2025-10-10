@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon S3 - AWS Practitioner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --primary-light: #FFB84D;
+            --secondary: #232F3E;
+            --secondary-light: #37475A;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-card h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out backwards;
+        }
+
+        .content-card:nth-child(2) { animation-delay: 0.1s; }
+        .content-card:nth-child(3) { animation-delay: 0.2s; }
+        .content-card:nth-child(4) { animation-delay: 0.3s; }
+        .content-card:nth-child(5) { animation-delay: 0.4s; }
+        .content-card:nth-child(6) { animation-delay: 0.5s; }
+        .content-card:nth-child(7) { animation-delay: 0.6s; }
+        .content-card:nth-child(8) { animation-delay: 0.7s; }
+        .content-card:nth-child(9) { animation-delay: 0.8s; }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card h2 {
+            color: var(--secondary);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-card h3 {
+            color: var(--secondary-light);
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+        }
+
+        .content-card p {
+            color: var(--gray-700);
+            line-height: 1.8;
+            font-size: 1.05em;
+            margin-bottom: 15px;
+        }
+
+        .content-card strong {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .service-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .service-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .service-box p {
+            margin-bottom: 8px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .pricing-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-left: 4px solid #22c55e;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .pricing-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .link-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: var(--white);
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            animation: fadeIn 0.6s ease-out 0.9s backwards;
+        }
+
+        .link-voltar::before {
+            content: '←';
+            font-size: 1.3em;
+        }
+
+        .link-voltar:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header-card {
+                padding: 35px 25px;
+            }
+
+            .header-card h1 {
+                font-size: 2em;
+            }
+
+            .content-card {
+                padding: 30px 20px;
+            }
+
+            .content-card h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-card h1 {
+                font-size: 1.6em;
+            }
+
+            .header-icon {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-card">
+            <div class="header-content">
+                <div class="header-icon">🪣</div>
+                <h1>Amazon S3</h1>
+                <p>Simple Storage Service - Armazenamento de Objetos Altamente Durável</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📋 O que é o Amazon S3?</h2>
+            <p>
+                O Amazon S3 (Simple Storage Service) é um serviço de armazenamento de objetos que oferece 
+                escalabilidade, disponibilidade de dados, segurança e performance líderes do setor. Ele 
+                permite armazenar e recuperar qualquer quantidade de dados, a qualquer momento, de qualquer 
+                lugar na web.
+            </p>
+            <p>
+                Com o S3, você pode armazenar desde backups e arquivos de mídia até data lakes para big data 
+                analytics, pagando apenas pelo armazenamento que realmente utiliza.
+            </p>
+        </div>
+
+        <div class="content-card">
+            <h2>✨ Principais Características</h2>
+            
+            <div class="service-box">
+                <h4>Durabilidade Excepcional</h4>
+                <p>
+                    Projetado para 99.999999999% (11 noves) de durabilidade. Os dados são automaticamente 
+                    distribuídos em múltiplos dispositivos e instalações dentro de uma região.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Escalabilidade Ilimitada</h4>
+                <p>
+                    Armazene quantidades praticamente ilimitadas de dados sem se preocupar com capacidade. 
+                    O S3 escala automaticamente para atender sua demanda.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Alta Disponibilidade</h4>
+                <p>
+                    Projetado para 99.99% de disponibilidade ao longo de um ano. O S3 Standard oferece 
+                    SLA de disponibilidade de 99.9%.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Segurança Robusta</h4>
+                <p>
+                    Criptografia de dados em repouso e em trânsito, controle de acesso granular com IAM, 
+                    bucket policies, ACLs e integração com AWS KMS.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🗂️ Conceitos Fundamentais</h2>
+
+            <div class="highlight-box">
+                <h4>📦 Buckets</h4>
+                <p>
+                    Containers para armazenar objetos no S3. Cada bucket tem um nome globalmente único 
+                    e é criado em uma região específica da AWS.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📄 Objetos</h4>
+                <p>
+                    Arquivos armazenados no S3. Cada objeto consiste em dados, metadados e uma chave 
+                    (nome único dentro do bucket). Tamanho máximo: 5 TB por objeto.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🔑 Chaves (Keys)</h4>
+                <p>
+                    Identificador único de um objeto dentro de um bucket. A combinação de bucket, 
+                    chave e ID de versão identifica exclusivamente cada objeto.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🌐 Regiões</h4>
+                <p>
+                    Localização geográfica onde seus dados são armazenados. Você escolhe a região 
+                    para otimizar latência, minimizar custos ou atender requisitos regulatórios.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>💾 Classes de Armazenamento</h2>
+
+            <div class="pricing-box">
+                <h4>S3 Standard</h4>
+                <p>
+                    Armazenamento de uso geral para dados acessados com frequência. Alto throughput 
+                    e baixa latência. Ideal para aplicações em nuvem, sites dinâmicos e distribuição 
+                    de conteúdo.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>S3 Intelligent-Tiering</h4>
+                <p>
+                    Move automaticamente os dados entre camadas de acesso frequente e infrequente 
+                    quando os padrões de acesso mudam. Sem taxas de recuperação e sem impacto operacional.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>S3 Standard-IA (Infrequent Access)</h4>
+                <p>
+                    Para dados acessados com menos frequência, mas que requerem acesso rápido quando 
+                    necessário. Menor custo de armazenamento, mas cobra por recuperação.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>S3 One Zone-IA</h4>
+                <p>
+                    Similar ao Standard-IA, mas armazena dados em uma única zona de disponibilidade. 
+                    Custo 20% menor, ideal para dados secundários ou replicáveis.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>S3 Glacier Instant Retrieval</h4>
+                <p>
+                    Para dados de arquivo acessados uma vez por trimestre. Recuperação em milissegundos. 
+                    Economia de até 68% em custos de armazenamento.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>S3 Glacier Flexible Retrieval</h4>
+                <p>
+                    Armazenamento de baixo custo para arquivamento. Recuperação de minutos a horas. 
+                    Ideal para backups e arquivos que raramente precisam ser acessados.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>S3 Glacier Deep Archive</h4>
+                <p>
+                    Classe de menor custo, ideal para retenção de longo prazo. Recuperação em 12 horas. 
+                    Perfeito para conformidade regulatória e arquivamento digital.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔐 Segurança e Controle de Acesso</h2>
+            
+            <div class="service-box">
+                <h4>Bucket Policies</h4>
+                <p>
+                    Políticas baseadas em JSON que concedem permissões de acesso ao bucket e aos objetos 
+                    nele contidos. Permitem controle granular sobre quem pode acessar seus dados.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>IAM Policies</h4>
+                <p>
+                    Controle de acesso no nível do usuário ou função IAM. Define permissões para usuários 
+                    e aplicações acessarem recursos S3.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Access Control Lists (ACLs)</h4>
+                <p>
+                    Mecanismo legado para gerenciar acesso a buckets e objetos. Recomenda-se usar 
+                    bucket policies e IAM policies em vez de ACLs.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Criptografia</h4>
+                <p>
+                    <strong>Em repouso:</strong> SSE-S3 (gerenciado pela AWS), SSE-KMS (AWS KMS), 
+                    SSE-C (chaves gerenciadas pelo cliente).<br>
+                    <strong>Em trânsito:</strong> SSL/TLS para transferências seguras.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>S3 Block Public Access</h4>
+                <p>
+                    Configurações para bloquear acesso público aos buckets e objetos. Proteção adicional 
+                    contra exposição acidental de dados.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>⚙️ Recursos Avançados</h2>
+
+            <div class="highlight-box">
+                <h4>Versionamento</h4>
+                <p>
+                    Mantém múltiplas versões de um objeto no bucket. Protege contra exclusões acidentais 
+                    e permite recuperar versões anteriores.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Replicação (CRR e SRR)</h4>
+                <p>
+                    <strong>Cross-Region Replication (CRR):</strong> Replica objetos entre regiões.<br>
+                    <strong>Same-Region Replication (SRR):</strong> Replica objetos dentro da mesma região.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Lifecycle Policies</h4>
+                <p>
+                    Automatiza a transição de objetos entre classes de armazenamento e configura 
+                    expiração automática de objetos com base em regras definidas.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>S3 Transfer Acceleration</h4>
+                <p>
+                    Acelera uploads de longa distância usando os pontos de presença da Amazon CloudFront. 
+                    Pode ser até 50-500% mais rápido.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>S3 Event Notifications</h4>
+                <p>
+                    Receba notificações quando eventos específicos ocorrem no bucket (upload, exclusão). 
+                    Integra com SNS, SQS e Lambda.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>S3 Select e Glacier Select</h4>
+                <p>
+                    Recupere subconjuntos de dados de objetos usando SQL simples. Reduz quantidade de 
+                    dados transferidos e melhora performance.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🎯 Casos de Uso Comuns</h2>
+
+            <p><strong>Backup e Recuperação:</strong> Armazenamento durável e econômico para backups críticos de dados e disaster recovery.</p>
+            
+            <p><strong>Data Lakes e Big Data:</strong> Armazene grandes volumes de dados estruturados e não estruturados para analytics com Athena, Redshift Spectrum e EMR.</p>
+            
+            <p><strong>Hospedagem de Sites Estáticos:</strong> Hospede sites HTML, CSS e JavaScript diretamente do S3 com alta disponibilidade.</p>
+            
+            <p><strong>Distribuição de Conteúdo:</strong> Armazene e distribua mídias, imagens, vídeos e downloads de software.</p>
+            
+            <p><strong>Arquivamento de Dados:</strong> Armazenamento de longo prazo para conformidade regulatória e requisitos de retenção.</p>
+            
+            <p><strong>Armazenamento de Logs:</strong> Centralize logs de aplicações, servidores e serviços AWS para análise e auditoria.</p>
+        </div>
+
+        <div class="content-card">
+            <h2>💰 Modelo de Precificação</h2>
+
+            <p><strong>Armazenamento:</strong> Cobrado por GB armazenado por mês. Preço varia conforme a classe de armazenamento.</p>
+            
+            <p><strong>Requisições:</strong> Cobra-se por número de requisições (PUT, COPY, POST, LIST, GET, SELECT).</p>
+            
+            <p><strong>Transferência de Dados:</strong> Entrada de dados é gratuita. Saída de dados é cobrada após o nível gratuito.</p>
+            
+            <p><strong>Gerenciamento:</strong> Custos adicionais para recursos como S3 Inventory, Analytics e Object Tagging.</p>
+            
+            <p><strong>Replicação:</strong> Cobra-se pela replicação de objetos entre regiões ou dentro da mesma região.</p>
+        </div>
+
+        <div class="content-card">
+            <h2>💡 Melhores Práticas</h2>
+
+            <p><strong>Use Classes de Armazenamento Apropriadas:</strong> Escolha a classe correta baseada nos padrões de acesso para otimizar custos.</p>
+            
+            <p><strong>Implemente Lifecycle Policies:</strong> Automatize a movimentação e expiração de objetos para reduzir custos.</p>
+            
+            <p><strong>Habilite Versionamento:</strong> Proteja contra exclusões acidentais e mantenha histórico de alterações.</p>
+            
+            <p><strong>Configure Replicação:</strong> Implemente CRR para disaster recovery e SRR para conformidade.</p>
+            
+            <p><strong>Use Criptografia:</strong> Sempre criptografe dados sensíveis em repouso e em trânsito.</p>
+            
+            <p><strong>Monitore com CloudWatch:</strong> Configure métricas e alarmes para monitorar uso, custos e performance.</p>
+            
+            <p><strong>Aplique Block Public Access:</strong> Ative por padrão para prevenir exposição acidental de dados.</p>
+            
+            <p><strong>Use Tags para Organização:</strong> Implemente estratégia de tags consistente para gerenciamento de custos e governança.</p>
+        </div>
+
+        <center>
+            <a class="link-voltar" href="/materiais">Voltar para Materiais</a>
+        </center>
+    </div>
+</body>
+</html>

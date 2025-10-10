@@ -115,6 +115,10 @@ def servicos_aws():
 def ec2():
     return render_template('ec2.html')
 
+@app.route('/s3')
+def s3():
+    return render_template('s3.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')
