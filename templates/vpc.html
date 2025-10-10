@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon VPC - AWS Practitioner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --primary-light: #FFB84D;
+            --secondary: #232F3E;
+            --secondary-light: #37475A;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-card h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out backwards;
+        }
+
+        .content-card:nth-child(2) { animation-delay: 0.1s; }
+        .content-card:nth-child(3) { animation-delay: 0.2s; }
+        .content-card:nth-child(4) { animation-delay: 0.3s; }
+        .content-card:nth-child(5) { animation-delay: 0.4s; }
+        .content-card:nth-child(6) { animation-delay: 0.5s; }
+        .content-card:nth-child(7) { animation-delay: 0.6s; }
+        .content-card:nth-child(8) { animation-delay: 0.7s; }
+        .content-card:nth-child(9) { animation-delay: 0.8s; }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card h2 {
+            color: var(--secondary);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-card h3 {
+            color: var(--secondary-light);
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+        }
+
+        .content-card p {
+            color: var(--gray-700);
+            line-height: 1.8;
+            font-size: 1.05em;
+            margin-bottom: 15px;
+        }
+
+        .content-card strong {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .service-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .service-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .service-box p {
+            margin-bottom: 8px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .pricing-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-left: 4px solid #22c55e;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .pricing-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .link-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: var(--white);
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            animation: fadeIn 0.6s ease-out 0.9s backwards;
+        }
+
+        .link-voltar::before {
+            content: '←';
+            font-size: 1.3em;
+        }
+
+        .link-voltar:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header-card {
+                padding: 35px 25px;
+            }
+
+            .header-card h1 {
+                font-size: 2em;
+            }
+
+            .content-card {
+                padding: 30px 20px;
+            }
+
+            .content-card h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-card h1 {
+                font-size: 1.6em;
+            }
+
+            .header-icon {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-card">
+            <div class="header-content">
+                <div class="header-icon">🌐</div>
+                <h1>Amazon VPC</h1>
+                <p>Virtual Private Cloud - Rede Privada Virtual Isolada na AWS</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📋 O que é o Amazon VPC?</h2>
+            <p>
+                O Amazon VPC (Virtual Private Cloud) é um serviço que permite provisionar uma seção 
+                logicamente isolada da nuvem AWS onde você pode executar recursos em uma rede virtual 
+                que você define. Você tem controle completo sobre seu ambiente de rede virtual, incluindo 
+                seleção de intervalos de endereços IP, criação de sub-redes e configuração de tabelas de 
+                roteamento e gateways de rede.
+            </p>
+            <p>
+                Com VPC, você pode facilmente customizar a configuração de rede para sua aplicação, 
+                criando sub-redes públicas para servidores web e sub-redes privadas para bancos de dados 
+                e servidores de aplicação, garantindo segurança e controle total.
+            </p>
+        </div>
+
+        <div class="content-card">
+            <h2>✨ Principais Características</h2>
+            
+            <div class="service-box">
+                <h4>Isolamento Completo</h4>
+                <p>
+                    Sua VPC é logicamente isolada de outras redes virtuais na nuvem AWS, proporcionando 
+                    um ambiente de rede dedicado e seguro para seus recursos.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Controle Total de Rede</h4>
+                <p>
+                    Controle completo sobre configuração de rede, incluindo endereços IP, sub-redes, 
+                    tabelas de roteamento, gateways de rede e configurações de segurança.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Múltiplas Camadas de Segurança</h4>
+                <p>
+                    Utilize Security Groups e Network ACLs para controlar tráfego de entrada e saída 
+                    nos níveis de instância e sub-rede respectivamente.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Conectividade Flexível</h4>
+                <p>
+                    Conecte sua VPC à internet, ao data center corporativo via VPN, ou a outras VPCs 
+                    usando VPC Peering e Transit Gateway.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🗂️ Componentes Fundamentais</h2>
+
+            <div class="highlight-box">
+                <h4>🌍 CIDR Block (IPv4/IPv6)</h4>
+                <p>
+                    Intervalo de endereços IP da VPC. Define o tamanho da rede (ex: 10.0.0.0/16 
+                    proporciona 65.536 endereços IP). Suporta IPv4 e IPv6.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📦 Subnets (Sub-redes)</h4>
+                <p>
+                    Divisões da VPC em segmentos menores. Podem ser públicas (acesso à internet) ou 
+                    privadas (sem acesso direto à internet). Cada subnet está em uma Availability Zone.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🚪 Internet Gateway (IGW)</h4>
+                <p>
+                    Gateway que permite comunicação entre recursos na VPC e a internet. Necessário 
+                    para sub-redes públicas. Um IGW por VPC.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🔀 Route Tables</h4>
+                <p>
+                    Conjunto de regras (rotas) que determinam para onde o tráfego de rede é direcionado. 
+                    Cada subnet deve estar associada a uma route table.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🔌 NAT Gateway/Instance</h4>
+                <p>
+                    Permite que instâncias em sub-redes privadas se conectem à internet ou outros 
+                    serviços AWS, mas impede que a internet inicie conexões com essas instâncias.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🔗 VPC Endpoints</h4>
+                <p>
+                    Permite conectar sua VPC a serviços AWS sem usar Internet Gateway, NAT ou VPN. 
+                    Mantém tráfego dentro da rede AWS. Tipos: Gateway Endpoint e Interface Endpoint.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔐 Segurança na VPC</h2>
+
+            <div class="pricing-box">
+                <h4>Security Groups</h4>
+                <p>
+                    Firewall virtual no nível da instância EC2. Controla tráfego de entrada e saída. 
+                    Stateful (retorno automático). Permite apenas regras de permissão (allow). Várias 
+                    instâncias podem compartilhar o mesmo Security Group.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Network ACLs (Access Control Lists)</h4>
+                <p>
+                    Firewall no nível de subnet. Stateless (deve configurar entrada e saída). Permite 
+                    regras de permissão e negação. Processa regras em ordem numérica. Uma ACL por subnet.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Flow Logs</h4>
+                <p>
+                    Captura informações sobre tráfego IP entrando e saindo de interfaces de rede na VPC. 
+                    Útil para monitoramento, troubleshooting e análise de segurança. Pode publicar logs 
+                    para CloudWatch ou S3.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>AWS Network Firewall</h4>
+                <p>
+                    Serviço gerenciado de firewall que facilita implantação de proteções de rede essenciais. 
+                    Inspeção de tráfego avançada, filtragem de URLs e proteção contra ameaças.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔗 Opções de Conectividade</h2>
+
+            <div class="service-box">
+                <h4>VPN Site-to-Site</h4>
+                <p>
+                    Conexão criptografada entre sua VPC e data center on-premises através da internet. 
+                    Usa IPsec para estabelecer túnel seguro. Útil para híbrido cloud.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Direct Connect</h4>
+                <p>
+                    Conexão de rede dedicada entre seu data center e AWS. Maior largura de banda, 
+                    menor latência e custos de transferência reduzidos comparado à internet.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>VPC Peering</h4>
+                <p>
+                    Conexão de rede entre duas VPCs que permite rotear tráfego usando endereços IP 
+                    privados. Pode conectar VPCs em diferentes regiões (inter-region peering) ou contas.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Transit Gateway</h4>
+                <p>
+                    Hub central que simplifica conectividade entre VPCs, VPN e Direct Connect. Elimina 
+                    necessidade de múltiplas conexões ponto-a-ponto. Escalável para milhares de VPCs.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS PrivateLink</h4>
+                <p>
+                    Fornece conectividade privada entre VPCs e serviços AWS ou serviços hospedados por 
+                    terceiros. Tráfego não atravessa internet pública.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>⚙️ Recursos Avançados</h2>
+
+            <div class="highlight-box">
+                <h4>Elastic IP Addresses</h4>
+                <p>
+                    Endereços IPv4 públicos estáticos alocados à sua conta AWS. Podem ser associados 
+                    e reassociados a instâncias conforme necessário. Útil para manter IP fixo.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>VPC Sharing</h4>
+                <p>
+                    Permite compartilhar sub-redes com outras contas AWS na mesma organização. Centraliza 
+                    gerenciamento de rede enquanto mantém isolamento de recursos entre contas.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>VPC Traffic Mirroring</h4>
+                <p>
+                    Copia tráfego de rede de interfaces de rede para monitoramento e análise. Útil 
+                    para detecção de intrusão, análise de segurança e troubleshooting.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>DHCP Options Sets</h4>
+                <p>
+                    Permite configurar opções DHCP como servidores DNS, nome de domínio e servidores 
+                    NTP para instâncias na VPC.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Egress-Only Internet Gateway</h4>
+                <p>
+                    Gateway específico para IPv6 que permite tráfego de saída para internet mas 
+                    bloqueia conexões iniciadas da internet. Equivalente ao NAT Gateway para IPv6.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🎯 Casos de Uso Comuns</h2>
+
+            <p><strong>Hospedagem de Aplicações Web:</strong> Crie arquitetura multi-tier com servidores web em sub-redes públicas e bancos de dados em sub-redes privadas.</p>
+            
+            <p><strong>Ambientes Híbridos:</strong> Estenda data center on-premises para nuvem usando VPN ou Direct Connect, mantendo comunicação segura.</p>
+            
+            <p><strong>Disaster Recovery:</strong> Configure ambiente de backup em outra região conectado via VPC Peering para failover rápido.</p>
+            
+            <p><strong>Isolamento de Ambientes:</strong> Separe desenvolvimento, homologação e produção em VPCs distintas com controles de acesso específicos.</p>
+            
+            <p><strong>Conformidade Regulatória:</strong> Implemente requisitos de isolamento de rede e controle de dados para atender normas como PCI-DSS, HIPAA.</p>
+            
+            <p><strong>Microserviços:</strong> Organize microserviços em sub-redes com políticas de segurança granulares e comunicação controlada.</p>
+        </div>
+
+        <div class="content-card">
+            <h2>💰 Modelo de Precificação</h2>
+
+            <p><strong>VPC Básica:</strong> Sem custo. A VPC em si não tem cobrança.</p>
+            
+            <p><strong>NAT Gateway:</strong> Cobrado por hora de uso e por GB de dados processados.</p>
+            
+            <p><strong>VPN Site-to-Site:</strong> Cobrado por hora de conexão VPN ativa.</p>
+            
+            <p><strong>VPC Endpoints:</strong> Interface Endpoints cobrados por hora. Gateway Endpoints são gratuitos.</p>
+            
+            <p><strong>Transit Gateway:</strong> Cobrado por hora de conexão e por GB de dados processados.</p>
+            
+            <p><strong>Transferência de Dados:</strong> Dados entre AZs, regiões ou para internet são cobrados. Dentro da mesma AZ geralmente é gratuito.</p>
+            
+            <p><strong>Elastic IPs:</strong> Gratuitos quando associados a instância em execução. Cobrados quando não utilizados ou instância está parada.</p>
+        </div>
+
+        <div class="content-card">
+            <h2>💡 Melhores Práticas</h2>
+
+            <p><strong>Planeje CIDR Blocks Cuidadosamente:</strong> Escolha tamanho adequado para crescimento futuro. Evite sobreposição com redes on-premises.</p>
+            
+            <p><strong>Use Múltiplas Availability Zones:</strong> Distribua recursos em pelo menos duas AZs para alta disponibilidade e resiliência.</p>
+            
+            <p><strong>Implemente Segurança em Camadas:</strong> Use Security Groups e NACLs em conjunto para defesa em profundidade.</p>
+            
+            <p><strong>Sub-redes Privadas para Dados Sensíveis:</strong> Mantenha bancos de dados e recursos críticos em sub-redes privadas.</p>
+            
+            <p><strong>Use VPC Endpoints:</strong> Reduz custos e melhora segurança mantendo tráfego AWS dentro da rede privada.</p>
+            
+            <p><strong>Habilite Flow Logs:</strong> Monitore tráfego de rede para auditoria, troubleshooting e detecção de anomalias.</p>
+            
+            <p><strong>Documente Arquitetura:</strong> Mantenha documentação clara de design de rede, CIDRs, rotas e regras de segurança.</p>
+            
+            <p><strong>Use Tags Consistentes:</strong> Implemente estratégia de tags para organização e gerenciamento de custos.</p>
+            
+            <p><strong>Automatize com IaC:</strong> Use CloudFormation, Terraform ou CDK para provisionamento consistente e versionado.</p>
+        </div>
+
+        <center>
+            <a class="link-voltar" href="/materiais">Voltar para Materiais</a>
+        </center>
+    </div>
+</body>
+</html>

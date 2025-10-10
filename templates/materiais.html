@@ -147,7 +147,7 @@
                Se houver espaço para 4 colunas de 250px (4 * 250px = 1000px) dentro do container (1200px), 
                elas serão criadas e usarão '1fr' para dividir o espaço restante igualmente.
             */
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
             gap: 30px;
             margin-bottom: 40px;
         }
@@ -369,7 +369,14 @@
             <a href="{{ url_for('home') }}s3" class="material-card"> 
                 <span class="material-icon">🪣</span>
                 <h3>Amazon S3</h3>
-                <p>Simple Storage Service - Armazenamento de Objetos Altamente Durável.</p>
+                <p>Simple Storage Service - Armazenamento de Objetos Altamente Durável</p>
+                <span class="material-status">Disponível</span>
+            </a>
+            
+            <a href="{{ url_for('home') }}vpc" class="material-card"> 
+                <span class="material-icon">🌐</span>
+                <h3>Amazon VPC</h3>
+                <p>Virtual Private Cloud - Rede Privada Virtual Isolada na AWS.</p>
                 <span class="material-status">Disponível</span>
             </a>
             

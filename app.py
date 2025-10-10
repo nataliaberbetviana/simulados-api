@@ -119,6 +119,10 @@ def ec2():
 def s3():
     return render_template('s3.html')
 
+@app.route('/vpc')
+def vpc():
+    return render_template('vpc.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')
