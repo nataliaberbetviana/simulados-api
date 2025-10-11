@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursos de Segurança - AWS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --primary-light: #FFB84D;
+            --secondary: #232F3E;
+            --secondary-light: #37475A;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-card h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out backwards;
+        }
+
+        .content-card:nth-child(2) { animation-delay: 0.1s; }
+        .content-card:nth-child(3) { animation-delay: 0.2s; }
+        .content-card:nth-child(4) { animation-delay: 0.3s; }
+        .content-card:nth-child(5) { animation-delay: 0.4s; }
+        .content-card:nth-child(6) { animation-delay: 0.5s; }
+        .content-card:nth-child(7) { animation-delay: 0.6s; }
+        .content-card:nth-child(8) { animation-delay: 0.7s; }
+        .content-card:nth-child(9) { animation-delay: 0.8s; }
+        .content-card:nth-child(10) { animation-delay: 0.9s; }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card h2 {
+            color: var(--secondary);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-card h3 {
+            color: var(--secondary-light);
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+        }
+
+        .content-card p {
+            color: var(--gray-700);
+            line-height: 1.8;
+            font-size: 1.05em;
+            margin-bottom: 15px;
+        }
+
+        .content-card strong {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .service-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .service-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .service-box p {
+            margin-bottom: 8px;
+        }
+
+        .feature-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .feature-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .pricing-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-left: 4px solid #22c55e;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .pricing-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .critical-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-left: 4px solid #dc2626;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .critical-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .integration-box {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border-left: 4px solid #9333ea;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .integration-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .link-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: var(--white);
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            animation: fadeIn 0.6s ease-out 1s backwards;
+        }
+
+        .link-voltar::before {
+            content: '←';
+            font-size: 1.3em;
+        }
+
+        .link-voltar:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header-card {
+                padding: 35px 25px;
+            }
+
+            .header-card h1 {
+                font-size: 2em;
+            }
+
+            .content-card {
+                padding: 30px 20px;
+            }
+
+            .content-card h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-card h1 {
+                font-size: 1.6em;
+            }
+
+            .header-icon {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-card">
+            <div class="header-content">
+                <div class="header-icon">🔐</div>
+                <h1>Recursos de Segurança AWS</h1>
+                <p>Serviços e Ferramentas para Proteger sua Infraestrutura na Nuvem</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🎯 Visão Geral dos Recursos de Segurança</h2>
+            <p>
+                A AWS oferece um portfólio abrangente e profundo de serviços de segurança nativos da 
+                nuvem, projetados para proteger dados, aplicações e infraestrutura. Esses recursos cobrem 
+                todas as camadas de segurança - desde identidade e controle de acesso até detecção de 
+                ameaças, proteção de dados, segurança de rede e conformidade regulatória.
+            </p>
+            <p>
+                Diferente de soluções on-premises tradicionais, os serviços de segurança AWS são 
+                profundamente integrados com a plataforma, escaláveis automaticamente, pagos conforme 
+                uso e frequentemente utilizam machine learning para detecção avançada de ameaças. Esta 
+                integração nativa permite implementar segurança de forma mais eficiente e eficaz do que 
+                seria possível construir do zero.
+            </p>
+            <p>
+                <strong>Princípio de Defesa em Profundidade:</strong> A AWS segue o modelo de defesa em 
+                camadas múltiplas. Nenhum controle único é suficiente - você deve implementar controles 
+                preventivos, detectivos e responsivos em todas as camadas. Este guia explora os principais 
+                recursos de segurança AWS e como utilizá-los efetivamente para construir uma postura de 
+                segurança robusta.
+            </p>
+        </div>
+
+        <div class="content-card">
+            <h2>👤 Identidade e Gerenciamento de Acesso</h2>
+
+            <div class="service-box">
+                <h4>AWS Identity and Access Management (IAM)</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço fundamental que controla quem pode acessar o quê na 
+                    sua conta AWS. Gerencia usuários, grupos, roles e suas permissões.<br><br>
+                    <strong>COMPONENTES PRINCIPAIS:</strong> Users (identidades humanas ou aplicações), 
+                    Groups (coleções de usuários), Roles (identidades assumidas temporariamente), Policies 
+                    (documentos JSON que definem permissões).<br><br>
+                    <strong>RECURSOS CHAVE:</strong> Multi-Factor Authentication (MFA), Password Policies, 
+                    Access Keys para acesso programático, Service Control Policies (SCPs) para Organizations, 
+                    Permission Boundaries para limitar permissões máximas.<br><br>
+                    <strong>BEST PRACTICES:</strong> Nunca use conta root para operações diárias, sempre 
+                    habilite MFA para usuários privilegiados, siga princípio do menor privilégio, use roles 
+                    para aplicações EC2/Lambda em vez de access keys, rotacione credenciais regularmente, 
+                    revise permissões com IAM Access Analyzer.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS IAM Identity Center (AWS SSO)</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço de Single Sign-On que permite gerenciar acesso a 
+                    múltiplas contas AWS e aplicações de negócio de um local central.<br><br>
+                    <strong>FUNCIONALIDADES:</strong> Login único para todas as contas AWS, integração com 
+                    provedores de identidade externos (Azure AD, Okta, Google Workspace), gerenciamento 
+                    centralizado de usuários e grupos, assignment de permissões baseado em grupos.<br><br>
+                    <strong>BENEFÍCIOS:</strong> Elimina necessidade de usuários IAM em cada conta, facilita 
+                    onboarding/offboarding, permite usar identidades corporativas existentes, reduz fadiga 
+                    de senhas, logs centralizados de acesso.<br><br>
+                    <strong>CASOS DE USO:</strong> Organizações com múltiplas contas AWS, empresas que já 
+                    usam IdP corporativo, ambientes que requerem auditoria centralizada de acesso, equipes 
+                    que precisam acesso temporário a contas específicas.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon Cognito</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço de autenticação, autorização e gerenciamento de 
+                    usuários para aplicações web e mobile.<br><br>
+                    <strong>COMPONENTES:</strong> User Pools (diretórios de usuários com autenticação), 
+                    Identity Pools (credenciais AWS temporárias para usuários), integração com provedores 
+                    sociais e corporativos (Google, Facebook, SAML).<br><br>
+                    <strong>RECURSOS:</strong> MFA adaptativo, proteção contra bots, customização de fluxos 
+                    de autenticação, tokens JWT, recuperação de senha, verificação de email/telefone, 
+                    triggers Lambda para lógica customizada.<br><br>
+                    <strong>QUANDO USAR:</strong> Aplicações que precisam gerenciar usuários finais 
+                    (clientes), mobile apps que requerem autenticação, aplicações web com login social, 
+                    cenários B2C onde você precisa controle completo sobre experiência de autenticação.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Directory Service</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviços de diretório gerenciados que permitem usar Microsoft 
+                    Active Directory na AWS ou conectar recursos AWS ao Active Directory on-premises.<br><br>
+                    <strong>OPÇÕES:</strong> AWS Managed Microsoft AD (AD completo gerenciado pela AWS), 
+                    AD Connector (proxy para AD on-premises), Simple AD (diretório básico compatível com AD).<br><br>
+                    <strong>FUNCIONALIDADES:</strong> Autenticação de usuários para EC2, RDS, WorkSpaces, 
+                    Group Policies, integração com aplicações que requerem AD, trust relationships com 
+                    domínios on-premises.<br><br>
+                    <strong>CASOS DE USO:</strong> Lift and shift de aplicações Windows que usam AD, 
+                    ambientes híbridos cloud-on-premises, WorkSpaces e AppStream, RDS SQL Server com 
+                    autenticação Windows.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS IAM Access Analyzer</h4>
+                <p>
+                    <strong>O QUE É:</strong> Ferramenta que analisa políticas de recursos e identifica 
+                    recursos compartilhados com entidades externas à sua conta ou organização.<br><br>
+                    <strong>O QUE ANALISA:</strong> S3 buckets, IAM roles, KMS keys, Lambda functions, 
+                    SQS queues, Secrets Manager secrets - identifica se estão acessíveis externamente.<br><br>
+                    <strong>RECURSOS:</strong> Findings de acesso externo, policy validation (valida 
+                    sintaxe JSON), policy generation (gera policies baseadas em CloudTrail logs), unused 
+                    access analysis (identifica permissões não usadas nos últimos 90 dias).<br><br>
+                    <strong>BENEFÍCIOS:</strong> Previne exposição acidental de dados, ajuda implementar 
+                    least privilege, facilita compliance, detecta configurações inseguras antes de se 
+                    tornarem problemas.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🛡️ Detecção de Ameaças e Monitoramento</h2>
+
+            <div class="service-box">
+                <h4>Amazon GuardDuty</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço de detecção de ameaças que monitora continuamente 
+                    atividades maliciosas e comportamento não autorizado usando machine learning.<br><br>
+                    <strong>FONTES DE DADOS:</strong> Analisa CloudTrail events, VPC Flow Logs, DNS logs, 
+                    Kubernetes audit logs, S3 data events, EKS logs, RDS login activity, Lambda network activity.<br><br>
+                    <strong>TIPOS DE DETECÇÃO:</strong> Reconhecimento (port scanning, unusual API calls), 
+                    comprometimento de instâncias (malware, cryptomining, backdoors), comprometimento de 
+                    contas (credenciais expostas, anomalias de acesso), exfiltração de dados (transferências 
+                    incomuns).<br><br>
+                    <strong>RECURSOS:</strong> Findings com severity levels, integração com Security Hub, 
+                    EventBridge para automação, threat intelligence feeds da AWS e terceiros, proteção 
+                    para múltiplas contas via Organizations.<br><br>
+                    <strong>PRICING:</strong> Baseado em volume de dados analisados. 30 dias trial gratuito. 
+                    Geralmente $4-5 por milhão de eventos CloudTrail, $1-1.50 por GB de VPC Flow Logs.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Security Hub</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço centralizado de gerenciamento de segurança que agrega, 
+                    organiza e prioriza findings de múltiplos serviços AWS e ferramentas de parceiros.<br><br>
+                    <strong>INTEGRAÇÕES NATIVAS:</strong> GuardDuty, Inspector, Macie, IAM Access Analyzer, 
+                    Firewall Manager, Systems Manager Patch Manager, Health, Config - todos enviam findings 
+                    para Security Hub automaticamente.<br><br>
+                    <strong>SECURITY STANDARDS:</strong> Verifica automaticamente conformidade contra CIS 
+                    AWS Foundations Benchmark, AWS Foundational Security Best Practices, PCI-DSS. Cada 
+                    standard tem dezenas de checks automatizados.<br><br>
+                    <strong>RECURSOS:</strong> Insights (agrupamentos automáticos de findings), cross-region 
+                    aggregation, automated response actions via EventBridge, integração com SIEMs externos 
+                    (Splunk, Sumo Logic), ASFF (AWS Security Finding Format) padronizado.<br><br>
+                    <strong>BENEFÍCIOS:</strong> Dashboard único para postura de segurança, reduz MTTD 
+                    (mean time to detect), priorização baseada em severidade, facilita compliance continuous, 
+                    elimina silos de ferramentas de segurança.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon Detective</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço de análise e investigação de segurança que facilita 
+                    análise, investigação e identificação rápida da causa raiz de findings de segurança.<br><br>
+                    <strong>COMO FUNCIONA:</strong> Coleta logs automaticamente de VPC Flow Logs, CloudTrail, 
+                    GuardDuty findings. Usa machine learning e gráficos para construir visualizações 
+                    interativas de atividades e relacionamentos.<br><br>
+                    <strong>RECURSOS:</strong> Finding groups (agrupa findings relacionados), entity 
+                    timelines (linha do tempo de atividades de usuário/recurso), geolocation analysis, 
+                    behavior graphs (visualiza padrões normais vs anômalos), integração nativa com GuardDuty 
+                    e Security Hub.<br><br>
+                    <strong>CASOS DE USO:</strong> Investigação de GuardDuty findings, análise forense de 
+                    incidentes, threat hunting, validação de alertas (true positive vs false positive), 
+                    compreensão de escopo de comprometimento.<br><br>
+                    <strong>BENEFÍCIOS:</strong> Reduz tempo de investigação de horas para minutos, 
+                    visualizações intuitivas mesmo para não-especialistas, context-aware (mostra atividades 
+                    relacionadas automaticamente), não requer configuração complexa de logs.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon Macie</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço de descoberta e proteção de dados que usa machine 
+                    learning para descobrir, classificar e proteger dados sensíveis em S3.<br><br>
+                    <strong>O QUE DETECTA:</strong> Personally Identifiable Information (PII) - CPF, RG, 
+                    passaportes, cartões de crédito, endereços. Financial data - números de contas bancárias. 
+                    Healthcare data - informações médicas. Credentials - API keys, senhas.<br><br>
+                    <strong>FUNCIONALIDADES:</strong> Automated discovery jobs (scans periódicos), sensitive 
+                    data findings (localização exata de dados sensíveis), bucket policies evaluation (identifica 
+                    buckets públicos ou compartilhados), data classification (categoriza automaticamente dados).<br><br>
+                    <strong>CASOS DE USO:</strong> Compliance com GDPR/LGPD (identificar dados pessoais), 
+                    PCI-DSS (localizar dados de cartões), descoberta de shadow IT (dados armazenados 
+                    inadequadamente), prevenção de data leaks, auditoria de segurança de dados.<br><br>
+                    <strong>PRICING:</strong> Baseado em dados avaliados. $1 por GB para os primeiros 1TB, 
+                    preço reduzido para volumes maiores. Bucket-level evaluation gratuito.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS CloudTrail</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço de auditoria e logging que registra todas as chamadas 
+                    API na sua conta AWS - quem fez o quê, quando, de onde e com qual resultado.<br><br>
+                    <strong>O QUE REGISTRA:</strong> Management events (operações de controle - criar/deletar 
+                    recursos), data events (operações de dados - GetObject S3, Invoke Lambda), insights events 
+                    (atividades incomuns detectadas automaticamente).<br><br>
+                    <strong>RECURSOS:</strong> Multi-region trails (logs de todas as regiões), organization 
+                    trails (logs de todas as contas), log file validation (integridade criptográfica), 
+                    encryption com KMS, integração com CloudWatch Logs, EventBridge para alertas em tempo real.<br><br>
+                    <strong>CASOS DE USO:</strong> Auditoria de segurança, compliance, troubleshooting 
+                    operacional, análise forense de incidentes, detecção de uso não autorizado, tracking de 
+                    mudanças de configuração.<br><br>
+                    <strong>BEST PRACTICES:</strong> Ative em TODAS as regiões, habilite log file validation, 
+                    criptografe com KMS, armazene em bucket S3 dedicado com acesso restrito, configure 
+                    lifecycle policies para retenção apropriada, monitore para desativação de trails.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon CloudWatch</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço de monitoramento e observabilidade para recursos AWS, 
+                    aplicações e serviços on-premises.<br><br>
+                    <strong>COMPONENTES DE SEGURANÇA:</strong> CloudWatch Logs (centraliza logs de aplicações 
+                    e AWS services), Metrics (métricas de performance e segurança), Alarms (notificações quando 
+                    thresholds são excedidos), Events/EventBridge (automação baseada em eventos), Insights 
+                    (queries avançadas em logs).<br><br>
+                    <strong>SECURITY USE CASES:</strong> Alertas de atividades suspeitas (uso de root account, 
+                    falhas de MFA), monitoramento de mudanças (Security Groups, IAM policies), anomaly detection 
+                    (baseline de comportamento normal), log aggregation (VPC Flow Logs, application logs).<br><br>
+                    <strong>INTEGRAÇÃO:</strong> Recebe logs de CloudTrail, VPC Flow Logs, Lambda, RDS, ECS, 
+                    EKS. Pode acionar Lambda functions, SNS notifications, Systems Manager automations baseado 
+                    em eventos.<br><br>
+                    <strong>EXEMPLO DE ALARMES:</strong> Root account usage, unauthorized API calls, IAM policy 
+                    changes, Network ACL changes, Security Group changes, failed console logins, disabling of 
+                    CloudTrail.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔒 Proteção de Dados e Criptografia</h2>
+
+            <div class="service-box">
+                <h4>AWS Key Management Service (KMS)</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço gerenciado de criação e controle de chaves de 
+                    criptografia usadas para proteger dados.<br><br>
+                    <strong>TIPOS DE CHAVES:</strong> AWS managed keys (gerenciadas pela AWS, gratuitas), 
+                    Customer managed keys (você controla, rotação, policies), AWS owned keys (usadas 
+                    internamente pela AWS, invisíveis), CloudHSM keys (armazenadas em HSMs dedicados).<br><br>
+                    <strong>FUNCIONALIDADES:</strong> Automatic key rotation (anual para CMKs), key policies 
+                    (controle granular de quem pode usar chaves), grants (permissões temporárias programáticas), 
+                    audit com CloudTrail (todos os usos de chaves são logados), multi-region keys (replique 
+                    chaves entre regiões).<br><br>
+                    <strong>INTEGRAÇÃO:</strong> S3, EBS, RDS, DynamoDB, Lambda, Systems Manager Parameter 
+                    Store, Secrets Manager, SQS, SNS - todos integram nativamente com KMS.<br><br>
+                    <strong>PRICING:</strong> $1/mês por CMK, $0.03 por 10.000 requests. AWS managed keys são 
+                    gratuitas mas você paga pelos requests.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Secrets Manager</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço para armazenar, rotacionar e gerenciar credenciais, 
+                    API keys e outros secrets de forma segura.<br><br>
+                    <strong>RECURSOS:</strong> Automatic rotation (integração nativa com RDS, Redshift, 
+                    DocumentDB), versioning (mantém histórico de secrets), encryption at rest com KMS, 
+                    cross-account access (compartilhe secrets entre contas), replica secrets (multi-region).<br><br>
+                    <strong>CASOS DE USO:</strong> Database credentials, API keys de terceiros, OAuth tokens, 
+                    SSH keys, certificados privados, connection strings, qualquer dado sensível usado por 
+                    aplicações.<br><br>
+                    <strong>BENEFÍCIOS vs HARDCODING:</strong> Elimina secrets em código/config files, rotação 
+                    automática sem downtime de aplicação, audit trail completo de acessos, integração com IAM 
+                    para controle de acesso granular, recuperação de secrets deletados acidentalmente (30 dias).<br><br>
+                    <strong>PRICING:</strong> $0.40 por secret por mês, $0.05 por 10.000 API calls. Considerável 
+                    para muitos secrets, mas benefícios de segurança justificam custo.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Certificate Manager (ACM)</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço para provisionar, gerenciar e implantar certificados 
+                    SSL/TLS públicos e privados.<br><br>
+                    <strong>RECURSOS:</strong> Certificados públicos gratuitos (para uso com serviços AWS), 
+                    renovação automática (você nunca precisa se preocupar com expiração), wildcard certificates, 
+                    Private CA (autoridade certificadora privada para uso interno).<br><br>
+                    <strong>INTEGRAÇÃO:</strong> Elastic Load Balancing, CloudFront, API Gateway, Elastic 
+                    Beanstalk, App Runner. Deployment automático - você não gerencia arquivos de certificado.<br><br>
+                    <strong>CASOS DE USO:</strong> HTTPS para websites, APIs seguras, comunicação interna 
+                    criptografada, compliance com requisitos de criptografia em trânsito, mutual TLS authentication.<br><br>
+                    <strong>BENEFÍCIOS:</strong> Elimina custos de certificados comerciais, não há risco de 
+                    expiração de certificado causando outage, facilita melhores práticas de segurança, 
+                    auditoria de uso via CloudTrail.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS CloudHSM</h4>
+                <p>
+                    <strong>O QUE É:</strong> Módulos de segurança de hardware (HSMs) dedicados que atendem 
+                    requisitos rigorosos de compliance para chaves criptográficas.<br><br>
+                    <strong>DIFERENÇA vs KMS:</strong> HSMs single-tenant (apenas você usa), você controla 
+                    chaves completamente, suporta algorithms não disponíveis em KMS, certificações FIPS 140-2 
+                    Level 3, requisito para alguns compliance frameworks.<br><br>
+                    <strong>CASOS DE USO:</strong> Compliance que requer HSMs dedicados (PCI-DSS para payment 
+                    processing), offloading SSL/TLS processing, proteção de chaves privadas para PKI, aplicações 
+                    que requerem PKCS#11, Java JCE ou Microsoft CNG.<br><br>
+                    <strong>CONSIDERAÇÕES:</strong> Significativamente mais caro que KMS ($1.50/hora por HSM), 
+                    você gerencia alta disponibilidade (mínimo 2 HSMs em AZs diferentes), complexidade operacional 
+                    maior, requer expertise em HSMs.<br><br>
+                    <strong>QUANDO USAR:</strong> Apenas se você tem requisitos específicos que KMS não atende - 
+                    regulamentações, contractual obligations, aplicações existentes que requerem HSMs.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon Macie (Proteção de Dados)</h4>
+                <p>
+                    <strong>CAPABILITIES DE PROTEÇÃO:</strong> Além de discovery, Macie oferece proteção 
+                    contínua de dados sensíveis em S3.<br><br>
+                    <strong>AUTOMATED MONITORING:</strong> Jobs contínuos que monitoram novos objetos em S3, 
+                    alertas quando dados sensíveis são detectados, tracking de mudanças em bucket policies que 
+                    afetam segurança.<br><br>
+                    <strong>REMEDIATION:</strong> Integração com EventBridge para automação - quando dados 
+                    sensíveis detectados, pode automaticamente alterar permissões de bucket, mover objetos para 
+                    storage mais seguro, notificar equipe de segurança.<br><br>
+                    <strong>COMPLIANCE:</strong> Findings detalhados para auditorias, relatórios de onde dados 
+                    regulamentados estão armazenados, evidências para compliance com GDPR, LGPD, CCPA, PCI-DSS, 
+                    HIPAA.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🌐 Segurança de Rede</h2>
+
+            <div class="service-box">
+                <h4>AWS WAF (Web Application Firewall)</h4>
+                <p>
+                    <strong>O QUE É:</strong> Firewall de aplicação web que protege contra exploits e bots 
+                    comuns que afetam disponibilidade, comprometem segurança ou consomem recursos excessivos.<br><br>
+                    <strong>PROTEÇÕES:</strong> SQL injection, Cross-Site Scripting (XSS), malicious bots, 
+                    rate limiting (DDoS layer 7), geo-blocking (bloquear países específicos), IP reputation 
+                    lists (IPs maliciosos conhecidos).<br><br>
+                    <strong>AWS MANAGED RULES:</strong> Rule groups pré-configurados mantidos pela AWS - Core 
+                    Rule Set (OWASP Top 10), Known Bad Inputs, SQL Database, Linux/Windows/PHP specific, Admin 
+                    Protection, Amazon IP Reputation List, Anonymous IP List.<br><br>
+                    <strong>CUSTOM RULES:</strong> Crie suas próprias regras baseadas em headers, query strings, 
+                    body, URIs. Use rate-based rules para DDoS protection. CAPTCHA challenges para suspicious 
+                    requests.<br><br>
+                    <strong>INTEGRAÇÃO:</strong> Application Load Balancer, API Gateway, CloudFront, AppSync, 
+                    Cognito user pools. Deploy em minutos sem mudanças de arquitetura.<br><br>
+                    <strong>PRICING:</strong> $5/mês por Web ACL, $1/mês por rule, $0.60 per million requests. 
+                    Managed rules adicionam custo mas economizam tempo tremendamente.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Shield</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço de proteção contra DDoS (Distributed Denial of Service) 
+                    gerenciado que protege aplicações na AWS.<br><br>
+                    <strong>SHIELD STANDARD:</strong> Gratuito, automaticamente incluído. Protege contra ataques 
+                    DDoS mais comuns de camada 3 e 4 (network/transport). Disponível para CloudFront, Route 53, 
+                    ELB, Global Accelerator. Detecta e mitigar ataques em segundos.<br><br>
+                    <strong>SHIELD ADVANCED:</strong> $3.000/mês, proteção adicional contra ataques maiores e 
+                    mais sofisticados. Inclui: DDoS Response Team (DRT) 24/7, proteção de custo (créditos para 
+                    scaling durante ataque), proteção estendida para EC2, visibility avançada, proteção de 
+                    camada 7.<br><br>
+                    <strong>QUANDO USAR ADVANCED:</strong> Aplicações críticas de negócio, alvos prováveis de 
+                    ataques DDoS, compliance que requer DDoS protection documentada, workloads onde custo de 
+                    downtime é alto, necessidade de SRT support durante incidentes.<br><br>
+                    <strong>INTEGRAÇÃO:</strong> Funciona em conjunto com WAF para proteção em camadas (Shield 
+                    para volumetric attacks, WAF para application attacks).
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Firewall Manager</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço de gerenciamento central de firewall rules em múltiplas 
+                    contas e recursos AWS Organizations.<br><br>
+                    <strong>O QUE GERENCIA:</strong> WAF rules, Shield Advanced protections, Security Groups, 
+                    Network Firewalls, Route 53 Resolver DNS Firewall. Policies aplicadas automaticamente em 
+                    novos recursos/contas.<br><br>
+                    <strong>RECURSOS:</strong> Policy deployment automático, compliance dashboard (veja recursos 
+                    out-of-compliance), automatic remediation, hierarchical policies (organizational, account, 
+                    resource level), audit security groups centrally.<br><br>
+                    <strong>CASOS DE USO:</strong> Governança de segurança em múltiplas contas, enforcement de 
+                    baseline de segurança, compliance com políticas corporativas, simplificação de gestão em 
+                    escala, prevenção de misconfigurations.<br><br>
+                    <strong>BENEFÍCIOS:</strong> Elimina necessidade de configurar WAF/Security Groups 
+                    manualmente em cada conta, garante consistência de políticas, detecta e corrige drift 
+                    automaticamente, reduz overhead operacional significativamente.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Network Firewall</h4>
+                <p>
+                    <strong>O QUE É:</strong> Firewall de rede stateful gerenciado que permite filtrar tráfego 
+                    no nível de VPC.<br><br>
+                    <strong>CAPACIDADES:</strong> Stateful inspection (mantém contexto de conexões), IDS/IPS 
+                    (intrusion detection/prevention), domain filtering (bloquear domínios específicos), protocol 
+                    detection, deep packet inspection, integração com AWS managed threat intelligence.<br><br>
+                    <strong>CASOS DE USO:</strong> Segmentar VPCs complexas, proteger conexões VPN/Direct Connect, 
+                    inspecionar tráfego entre VPCs (Transit Gateway), filtrar tráfego outbound (prevenir data 
+                    exfiltration), compliance que requer IDS/IPS.<br><br>
+                    <strong>RULE GROUPS:</strong> Managed rule groups (AWS e parceiros como Proofpoint, Forcepoint), 
+                    custom stateful rules (baseadas em Suricata IDS syntax), stateless rules (ACL-style filtering).<br><br>
+                    <strong>PRICING:</strong> $0.395/hora por firewall endpoint, $0.065 per GB processed. 
+                    Considerável, mas elimina necessidade de appliances third-party e sua gestão.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon VPC (Recursos de Segurança)</h4>
+                <p>
+                    <strong>SECURITY GROUPS:</strong> Firewalls stateful no nível de instância. Allow rules 
+                    apenas (tudo negado por padrão). Avaliam tráfego antes de chegar à instância.<br><br>
+                    <strong>NETWORK ACLs:</strong> Firewalls stateless no nível de subnet. Suportam allow e 
+                    deny rules. Avaliados antes de Security Groups. Úteis para block rules explícitas.<br><br>
+                    <strong>VPC FLOW LOGS:</strong> Capturam informações sobre tráfego IP. Enviam para 
+                    CloudWatch Logs, S3 ou Kinesis Data Firehose. Essenciais para troubleshooting, detecção de 
+                    anomalias, auditoria.<br><br>
+                    <strong>VPC ENDPOINTS:</strong> Conectividade privada para serviços AWS sem internet gateway. 
+                    Interface Endpoints (ENIs privadas) e Gateway Endpoints (S3, DynamoDB). Reduzem exposição e 
+                    melhoram segurança.<br><br>
+                    <strong>PRIVATE LINK:</strong> Expor serviços para outras VPCs de forma privada. Não requer 
+                    VPC peering, internet gateway, NAT. Tráfego não sai da rede AWS.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS PrivateLink</h4>
+                <p>
+                    <strong>O QUE É:</strong> Tecnologia que permite acesso privado e seguro a serviços através 
+                    da rede AWS, sem exposição à internet.<br><br>
+                    <strong>ARQUITETURA:</strong> Service provider expõe serviço via VPC Endpoint Service. 
+                    Service consumers criam Interface Endpoints em suas VPCs. Tráfego flui através da rede 
+                    backbone AWS.<br><br>
+                    <strong>BENEFÍCIOS DE SEGURANÇA:</strong> Tráfego nunca atravessa internet pública, não 
+                    requer VPC peering (evita overlapping CIDRs), isolamento de rede completo, integra com 
+                    Security Groups para controle granular, reduz surface de ataque.<br><br>
+                    <strong>CASOS DE USO:</strong> SaaS offerings (oferecer serviço para clientes securamente), 
+                    shared services (compartilhar serviços entre contas/VPCs), third-party integrations 
+                    (conectar a parceiros sem exposição), microservices architecture (comunicação segura entre 
+                    serviços).<br><br>
+                    <strong>AWS SERVICES VIA PRIVATELINK:</strong> 100+ serviços AWS acessíveis via VPC Endpoints - 
+                    S3, DynamoDB, API Gateway, Systems Manager, Secrets Manager, KMS, ECR e muitos outros.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔍 Avaliação e Análise de Vulnerabilidades</h2>
+
+            <div class="service-box">
+                <h4>Amazon Inspector</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço automatizado de avaliação de vulnerabilidades e gestão de 
+                    segurança para EC2, Lambda e container images.<br><br>
+                    <strong>O QUE AVALIA:</strong> Software vulnerabilities (CVEs em packages), network 
+                    reachability (portas acessíveis via internet, outros recursos), Lambda code and configuration 
+                    issues, container images em ECR (vulnerabilidades em layers).<br><br>
+                    <strong>CONTINUOUS SCANNING:</strong> Automaticamente escaneia novos recursos quando 
+                    criados, re-escaneia quando softwares são atualizados, monitora novos CVEs publicados e 
+                    re-avalia recursos existentes, integra com Systems Manager para patch management.<br><br>
+                    <strong>RISK SCORING:</strong> Inspector score (0-10 baseado em CVSS), contextualized 
+                    findings (considera reachability - vulnerabilidade em recurso privado é menos crítica), 
+                    prioritização automática, integração com Security Hub.<br><br>
+                    <strong>REMEDIATION:</strong> Guidance específico para cada finding, integração com Systems 
+                    Manager para patch deployment, EventBridge para automação customizada, export para ticketing 
+                    systems.<br><br>
+                    <strong>PRICING:</strong> Baseado em número de instâncias/Lambda functions/containers 
+                    avaliados. Primeiros 30 dias gratuitos.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Config</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço que registra configurações de recursos AWS e avalia 
+                    conformidade com regras desejadas.<br><br>
+                    <strong>FUNCIONALIDADES:</strong> Configuration history (timeline de mudanças em recursos), 
+                    configuration snapshots (estado de recursos em momento específico), configuration streams 
+                    (mudanças em tempo real), relationships (como recursos conectam entre si).<br><br>
+                    <strong>CONFIG RULES:</strong> AWS managed rules (150+ regras pré-construídas) e custom 
+                    rules (Lambda functions). Avaliam se recursos estão em conformidade. Exemplos: 
+                    encrypted-volumes, s3-bucket-public-read-prohibited, iam-password-policy.<br><br>
+                    <strong>REMEDIATION:</strong> Automatic remediation via Systems Manager Automation, manual 
+                    remediation guidance, custom remediation actions via Lambda.<br><br>
+                    <strong>CONFORMITY PACKS:</strong> Collections de Config Rules para compliance frameworks 
+                    completos (CIS Benchmark, PCI-DSS, HIPAA). Deploy framework inteiro com um click.<br><br>
+                    <strong>CASOS DE USO:</strong> Compliance auditing, security analysis, change management, 
+                    troubleshooting, resource inventory, disaster recovery.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Systems Manager - Patch Manager</h4>
+                <p>
+                    <strong>O QUE É:</strong> Automatiza processo de patching de instâncias EC2 e servidores 
+                    on-premises com security patches e updates.<br><br>
+                    <strong>RECURSOS:</strong> Patch baselines (defina quais patches instalar), maintenance 
+                    windows (quando executar patching), patch groups (agrupe instâncias por patching schedule), 
+                    compliance reporting (quais instâncias estão out-of-compliance).<br><br>
+                    <strong>SUPPORTED OS:</strong> Amazon Linux, Ubuntu, RHEL, CentOS, SUSE, Windows Server. 
+                    Pode gerenciar também aplicações como Microsoft SQL Server, Exchange.<br><br>
+                    <strong>INTEGRATION:</strong> Inspector identifica vulnerabilidades, Patch Manager aplica 
+                    patches, Config verifica compliance, tudo reportado em Security Hub.<br><br>
+                    <strong>AUTOMATION:</strong> Schedule patching automático, auto-reboot se necessário, 
+                    rollback em caso de falha, pre/post patching scripts, notifications via SNS.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon ECR Image Scanning</h4>
+                <p>
+                    <strong>O QUE É:</strong> Scanning de vulnerabilidades integrado para container images 
+                    armazenados em Amazon Elastic Container Registry.<br><br>
+                    <strong>TIPOS:</strong> Basic scanning (powered by Clair, gratuito, scan on push), Enhanced 
+                    scanning (powered by Inspector, continuous scanning, mais detalhes).<br><br>
+                    <strong>FUNCIONALIDADES:</strong> Detecta CVEs em packages, identifica severity levels, 
+                    integra com Security Hub, EventBridge para automação, scan results armazenados para 
+                    auditoria.<br><br>
+                    <strong>BEST PRACTICES:</strong> Scan todas as images antes de deploy, configure pipeline 
+                    CI/CD para bloquear deploy de images com vulnerabilidades críticas, re-scan periodicamente 
+                    images em produção, use enhanced scanning para compliance.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📊 Compliance e Governança</h2>
+
+            <div class="service-box">
+                <h4>AWS Audit Manager</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço que automatiza coleta de evidências para facilitar 
+                    auditorias de compliance.<br><br>
+                    <strong>FRAMEWORKS:</strong> Pré-construídos para CIS AWS Foundations Benchmark, PCI-DSS, 
+                    GDPR, HIPAA, SOC 2, ISO 27001, NIST, FedRAMP. Custom frameworks para requisitos específicos.<br><br>
+                    <strong>FUNCIONAMENTO:</strong> Mapeia controles para recursos AWS, coleta evidências 
+                    automaticamente (configurações, logs, políticas), organiza por controle e período, gera 
+                    assessment reports para auditores.<br><br>
+                    <strong>EVIDENCE COLLECTION:</strong> Automated (CloudTrail, Config, Security Hub), manual 
+                    (uploads de documentos), evidence folders (organizados por data e controle), immutable 
+                    storage (evidências não podem ser modificadas).<br><br>
+                    <strong>BENEFÍCIOS:</strong> Reduz tempo de preparação para auditoria de semanas para dias, 
+                    elimina trabalho manual de coleta, prova contínua de compliance, facilita auditorias 
+                    recorrentes.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Organizations</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço de gerenciamento central de múltiplas contas AWS.<br><br>
+                    <strong>SERVICE CONTROL POLICIES (SCPs):</strong> Guardrails que definem permissões máximas 
+                    para contas. Preventive controls - impedem ações antes que ocorram. Aplicados em nível de 
+                    OU ou conta individual.<br><br>
+                    <strong>SECURITY USE CASES:</strong> Proibir desativação de CloudTrail, requerer encryption, 
+                    restringir regiões AWS permitidas, bloquear exposição pública de S3, prevenir deleção de 
+                    recursos críticos, enforçar uso de MFA.<br><br>
+                    <strong>RECURSOS:</strong> Consolidated billing, centralized CloudTrail, tag policies, backup 
+                    policies, AI services opt-out policies, hierarchical structure (OUs).<br><br>
+                    <strong>BENEFÍCIOS:</strong> Governance em escala, isolation de workloads, separação de 
+                    ambientes (prod, dev, test), blast radius containment, simplified billing.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Control Tower</h4>
+                <p>
+                    <strong>O QUE É:</strong> Forma mais fácil de setup e governança de ambiente AWS multi-conta 
+                    seguro e compliant baseado em best practices.<br><br>
+                    <strong>LANDING ZONE:</strong> Automated setup de environment multi-conta. Inclui: Log 
+                    Archive account, Audit account, organizational units pré-configuradas, baseline de segurança.<br><br>
+                    <strong>GUARDRAILS:</strong> Preventive (SCPs) e Detective (Config Rules). Mandatory 
+                    (sempre ligados), Strongly Recommended, Elective. Exemplos: disallow public read access to 
+                    S3, enable encryption for EBS volumes, detect CloudTrail enabled.<br><br>
+                    <strong>ACCOUNT FACTORY:</strong> Automated provisioning de novas contas com baseline. 
+                    Self-service para equipes. Garante consistência. Configuração padrão de segurança aplicada 
+                    automaticamente.<br><br>
+                    <strong>DASHBOARD:</strong> Visibilidade de compliance status, violations alertadas, drift 
+                    detection (mudanças fora de Control Tower), integrado com Organizations e Service Catalog.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Trusted Advisor</h4>
+                <p>
+                    <strong>O QUE É:</strong> Ferramenta online que analisa ambiente AWS e fornece recomendações 
+                    em tempo real para reduzir custos, melhorar performance, segurança, fault tolerance, service limits.<br><br>
+                    <strong>SECURITY CHECKS:</strong> S3 bucket permissions, Security Groups com portas 
+                    irrestritas, IAM use (root account usage, MFA), EBS public snapshots, RDS public snapshots, 
+                    CloudTrail logging, exposed access keys, IAM password policy.<br><br>
+                    <strong>TIERS:</strong> Basic/Developer support (7 checks gratuitos), Business/Enterprise 
+                    support (todos os checks, programmatic access via API, CloudWatch integration para alertas).<br><br>
+                    <strong>REFRESH:</strong> Checks executam automaticamente semanalmente. Business/Enterprise 
+                    podem refresh manualmente ou via API. Integra com EventBridge para automação de remediação.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🚨 Resposta a Incidentes</h2>
+
+            <div class="service-box">
+                <h4>Amazon EventBridge (CloudWatch Events)</h4>
+                <p>
+                    <strong>O QUE É:</strong> Barramento de eventos serverless que conecta dados de aplicações 
+                    e serviços AWS.<br><br>
+                    <strong>SECURITY AUTOMATION:</strong> Responda automaticamente a eventos de segurança. 
+                    GuardDuty finding → Lambda function quarantines instance. Config violation → SNS notification 
+                    + remediation action. IAM policy change → log to S3 + notify security team.<br><br>
+                    <strong>EVENT PATTERNS:</strong> Filtre eventos específicos, routing baseado em conteúdo, 
+                    transforms de dados, múltiplos targets por evento.<br><br>
+                    <strong>TARGETS:</strong> Lambda functions, Step Functions, SNS/SQS, Systems Manager 
+                    Automation, EC2 actions, ECS tasks, Kinesis streams, API destinations (webhooks).<br><br>
+                    <strong>CASOS DE USO:</strong> Automated incident response, security orchestration, 
+                    compliance automation, security event aggregation, alerting workflows.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Systems Manager - Session Manager</h4>
+                <p>
+                    <strong>O QUE É:</strong> Acesso seguro a instâncias EC2 sem necessidade de bastion hosts, 
+                    SSH keys ou portas abertas.<br><br>
+                    <strong>BENEFÍCIOS DE SEGURANÇA:</strong> Elimina necessidade de Security Group rules para 
+                    SSH/RDP, não requer public IPs, não requer key management, centraliza acesso via IAM, logs 
+                    completos de sessões em CloudTrail e S3.<br><br>
+                    <strong>RECURSOS:</strong> Browser-based shell, port forwarding, document automation, audit 
+                    trail completo, session recording, restrição de comandos permitidos.<br><br>
+                    <strong>COMPLIANCE:</strong> Atende requisitos de auditoria de acesso, provê non-repudiation, 
+                    facilita investigações forenses, suporta break-glass scenarios com approval workflow.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Step Functions</h4>
+                <p>
+                    <strong>SECURITY USE CASE:</strong> Orquestre workflows complexos de resposta a incidentes 
+                    de forma visual e auditable.<br><br>
+                    <strong>EXEMPLO DE WORKFLOW:</strong> GuardDuty detecta compromised instance → Step Function 
+                    iniciado → Snapshot EBS volume (forense) → Isola instance (change Security Group) → Notify 
+                    security team → Create ticket → Run Inspector scan → Generate report.<br><br>
+                    <strong>BENEFÍCIOS:</strong> Visual workflow (fácil entender e modificar), error handling 
+                    robusto, retry logic, parallel execution, audit trail completo, integração nativa com AWS 
+                    services.<br><br>
+                    <strong>INTEGRAÇÃO:</strong> Lambda, ECS, Batch, DynamoDB, SNS, SQS, API Gateway, todos os 
+                    serviços AWS via SDK integration.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Backup</h4>
+                <p>
+                    <strong>SECURITY PERSPECTIVE:</strong> Backups são componente crítico de incident response 
+                    e disaster recovery.<br><br>
+                    <strong>RECURSOS:</strong> Centralized backup policies, automated backup schedules, lifecycle 
+                    management (transition para cold storage), cross-region backup copy, cross-account backup 
+                    (backup em conta separada para proteção adicional).<br><br>
+                    <strong>BACKUP VAULT LOCK:</strong> Torna backups imutáveis. Nem root account pode deletar 
+                    durante retention period. Compliance WORM (Write Once Read Many). Proteção contra ransomware.<br><br>
+                    <strong>SUPPORTED SERVICES:</strong> EC2, EBS, RDS, Aurora, DynamoDB, EFS, FSx, 
+                    Storage Gateway, DocumentDB, Neptune, S3.<br><br>
+                    <strong>RESTORE TESTING:</strong> Automated restore testing para validar que backups 
+                    funcionam. Critical - backups não testados são backups que não funcionam.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🔐 Proteção de Aplicações</h2>
+
+            <div class="service-box">
+                <h4>AWS App Runner</h4>
+                <p>
+                    <strong>SECURITY FEATURES:</strong> Serviço fully managed para deploy de aplicações com 
+                    segurança built-in.<br><br>
+                    <strong>RECURSOS:</strong> Automatic HTTPS, managed certificates via ACM, VPC integration 
+                    (acesso a recursos privados), IAM roles para aplicação, secrets integration com Secrets 
+                    Manager e Parameter Store.<br><br>
+                    <strong>BENEFÍCIOS:</strong> Elimina necessidade de gerenciar infraestrutura de segurança, 
+                    best practices aplicadas automaticamente, patches e updates gerenciados pela AWS, 
+                    compliance easier.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Lambda (Security Features)</h4>
+                <p>
+                    <strong>EXECUTION ROLE:</strong> IAM role que define permissões da function. Princípio do 
+                    menor privilégio. Sem chaves hardcoded.<br><br>
+                    <strong>VPC INTEGRATION:</strong> Lambda pode executar dentro de VPC para acessar recursos 
+                    privados. Hyperplane ENIs (não consome IPs da subnet).<br><br>
+                    <strong>ENVIRONMENT VARIABLES:</strong> Encryption at rest com KMS. Pode armazenar 
+                    configurações sensíveis. Melhor prática: use Secrets Manager para secrets realmente sensíveis.<br><br>
+                    <strong>CODE SIGNING:</strong> Garante que apenas código aprovado e assinado executa. 
+                    Previne deployment de código não autorizado. Integra com AWS Signer.<br><br>
+                    <strong>LAYERS SECURITY:</strong> Controle quem pode usar suas layers. Compartilhe layers 
+                    entre contas de forma controlada. Scan layers com Inspector.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon API Gateway</h4>
+                <p>
+                    <strong>AUTHENTICATION:</strong> IAM authentication, Cognito User Pools, Lambda authorizers 
+                    (custom auth logic), API keys (rate limiting, identificação básica).<br><br>
+                    <strong>AUTHORIZATION:</strong> IAM policies (quem pode invocar API), resource policies 
+                    (quem pode acessar API Gateway), Lambda authorizers (custom authorization logic), Cognito 
+                    groups.<br><br>
+                    <strong>SECURITY FEATURES:</strong> HTTPS only (certificados via ACM), throttling 
+                    (previne DDoS), WAF integration, CloudWatch logging, AWS X-Ray tracing, VPC Link (privado), 
+                    mutual TLS authentication.<br><br>
+                    <strong>DATA PROTECTION:</strong> Request/response validation, encryption em trânsito, 
+                    client certificate authentication, API keys rotation, usage plans para rate limiting.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>AWS Amplify</h4>
+                <p>
+                    <strong>SECURITY BUILT-IN:</strong> Framework para desenvolvimento de aplicações com 
+                    segurança integrada.<br><br>
+                    <strong>AUTHENTICATION:</strong> Cognito integration out-of-the-box, social sign-in, 
+                    MFA, password policies, account recovery.<br><br>
+                    <strong>AUTHORIZATION:</strong> Fine-grained access control via Cognito groups e IAM, 
+                    API authorization rules, GraphQL field-level authorization.<br><br>
+                    <strong>HOSTING:</strong> HTTPS by default via CloudFront, DDoS protection via Shield, 
+                    automatic certificate management, branch-based deployments (isolamento de ambientes).
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>📱 Segurança de Endpoints e Dispositivos</h2>
+
+            <div class="service-box">
+                <h4>AWS IoT Device Defender</h4>
+                <p>
+                    <strong>O QUE É:</strong> Serviço de segurança para gerenciar segurança de frotas IoT.<br><br>
+                    <strong>AUDIT:</strong> Avalia policies e configurações IoT contra best practices de 
+                    segurança. Identifica gaps de segurança, certificados expirados, policies permissivas.<br><br>
+                    <strong>DETECT:</strong> Monitora comportamento de dispositivos para detectar anomalias. 
+                    Machine learning identifica desvios de baseline. Alertas de atividades suspeitas.<br><br>
+                    <strong>MITIGATE:</strong> Actions automatizadas quando ameaças detectadas. Quarantine 
+                    device, update certificate, notify security team, trigger investigation workflow.
+                </p>
+            </div>
+
+            <div class="service-box">
+                <h4>Amazon WorkSpaces / AppStream 2.0</h4>
+                <p>
+                    <strong>SECURITY FEATURES:</strong> Virtual desktops e streaming de aplicações com 
+                    segurança enterprise-grade.<br><br>
+                    <strong>CONTROLES:</strong> MFA, IP access control rules, CloudWatch monitoring, VPC 
+                    integration, client device control (USB, clipboard, printing), connection logging.<br><br>
+                    <strong>DATA PROTECTION:</strong> Data at rest encryption, in-transit encryption, no data 
+                    stored on user devices, ephemeral sessions, integration com AD para RBAC.<br><br>
+                    <strong>COMPLIANCE:</strong> HIPAA eligible, PCI-DSS compliant infrastructure, SOC reports 
+                    disponíveis, facilita BYOD policies securamente.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🎨 Melhores Práticas de Arquitetura</h2>
+
+            <div class="feature-box">
+                <h4>Defense in Depth</h4>
+                <p>
+                    Implemente múltiplas camadas de segurança. Se uma falhar, outras protegem. Network layer 
+                    (Security Groups, NACLs), Application layer (WAF, Shield), Data layer (encryption, access 
+                    controls), Identity layer (IAM, MFA), Detection layer (GuardDuty, Config), Response layer 
+                    (EventBridge automation, incident response procedures).
+                </p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Least Privilege</h4>
+                <p>
+                    Conceda apenas permissões mínimas necessárias. Use IAM Access Analyzer para identificar 
+                    permissões não utilizadas. Comece com nenhuma permissão, adicione conforme necessário. 
+                    Revise permissões regularmente. Use time-based permissions quando possível (temporary 
+                    elevated access). Service Control Policies como guardrails organizacionais.
+                </p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Security Automation</h4>
+                <p>
+                    Automatize detecção e resposta. EventBridge para orquestração, Lambda para remediações, 
+                    Systems Manager para patch management, Config para compliance enforcement. Reduz MTTR 
+                    (mean time to respond), elimina erros humanos, escala eficientemente, libera equipe para 
+                    trabalho estratégico.
+                </p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Logging e Monitoring</h4>
+                <p>
+                    Log tudo, sempre. CloudTrail para API calls, VPC Flow Logs para network traffic, application 
+                    logs para CloudWatch Logs, access logs para S3/ALB/CloudFront. Retenção apropriada conforme 
+                    compliance. Alertas para atividades suspeitas. Análise regular de logs. Integration com SIEM 
+                    se necessário.
+                </p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Encryption Everywhere</h4>
+                <p>
+                    Dados em repouso e em trânsito devem ser criptografados. Use KMS CMKs para controle total. 
+                    TLS 1.2+ para comunicação. Rotação automática de chaves. Certificate management via ACM. 
+                    Validate encryption com Config rules. Secrets no Secrets Manager, não hardcoded.
+                </p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Network Isolation</h4>
+                <p>
+                    Use VPCs para isolamento. Subnets privadas para workloads. Public subnets apenas para load 
+                    balancers e NAT. VPC Endpoints para serviços AWS (tráfego não sai da rede AWS). Security 
+                    Groups restritivos. Network Firewall para inspection avançada. Transit Gateway para 
+                    conectividade complexa.
+                </p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Incident Response Readiness</h4>
+                <p>
+                    Tenha plano antes que incidente ocorra. Playbooks documentados para cenários comuns. 
+                    Automated response onde possível. Forensic readiness (snapshots automáticos, log retention). 
+                    Teste plano regularmente (tabletop exercises). Clear roles e responsabilidades. Contatos de 
+                    emergência atualizados.
+                </p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Regular Security Assessments</h4>
+                <p>
+                    Segurança é processo contínuo, não one-time setup. Reviews mensais de Security Hub findings. 
+                    Quarterly access reviews. Vulnerability scans com Inspector. Penetration testing (notifique 
+                    AWS). Compliance assessments. Gap analysis contra frameworks. Update procedures conforme 
+                    ameaças evoluem.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>💰 Considerações de Custo</h2>
+
+            <div class="pricing-box">
+                <h4>Serviços Gratuitos</h4>
+                <p>
+                    <strong>SEMPRE GRATUITOS:</strong> IAM (gerenciamento de identidade), CloudTrail (primeira 
+                    trail de management events gratuita), AWS Shield Standard (proteção DDoS básica), ACM 
+                    (certificados SSL para uso com AWS services).<br><br>
+                    <strong>FREE TIERS:</strong> GuardDuty (30 dias), Security Hub (30 dias), Inspector (15 
+                    dias EC2/90 dias Lambda), Macie (30 dias), Config (primeiros 2 rules gratuitos).
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Otimização de Custos</h4>
+                <p>
+                    <strong>PRIORIZE:</strong> Implemente serviços críticos primeiro (CloudTrail, GuardDuty, 
+                    Config básico). Use managed rules quando possível (menos custo que custom). Lifecycle 
+                    policies para logs (transition para Glacier). Filtre logs desnecessários.<br><br>
+                    <strong>ROI:</strong> Custos de segurança são investimento. Breach custa muito mais. 
+                    Automação reduz headcount necessário. Compliance evita multas. Calculate total cost of 
+                    ownership incluindo operational overhead.
+                </p>
+            </div>
+
+            <div class="pricing-box">
+                <h4>Recursos por Tamanho de Organização</h4>
+                <p>
+                    <strong>STARTUP/PEQUENO:</strong> CloudTrail, IAM + MFA, Security Groups bem configurados, 
+                    Config básico, GuardDuty, Security Hub free tier, AWS Backup. Total: ~$50-200/mês.<br><br>
+                    <strong>MÉDIO:</strong> Adicione WAF, Secrets Manager, Inspector, Macie (se dados sensíveis), 
+                    enhanced monitoring. Total: ~$500-2000/mês.<br><br>
+                    <strong>ENTERPRISE:</strong> Shield Advanced, Network Firewall, CloudHSM (se necessário), 
+                    Audit Manager, Control Tower, multi-account strategy. Total: $5000+/mês.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>✅ Checklist de Implementação</h2>
+
+            <div class="warning-box">
+                <h4>Essenciais - Implemente Imediatamente</h4>
+                <p>
+                    ☑️ Habilitar MFA na conta root e usuários admin<br>
+                    ☑️ Ativar CloudTrail em todas as regiões<br>
+                    ☑️ Configurar billing alerts<br>
+                    ☑️ Criar usuários IAM (nunca usar root)<br>
+                    ☑️ Configurar Security Groups (negar tudo por padrão)<br>
+                    ☑️ Habilitar GuardDuty<br>
+                    ☑️ Ativar AWS Config com rules básicas<br>
+                    ☑️ Configurar VPC Flow Logs<br>
+                    ☑️ Habilitar encryption por padrão (EBS, S3)<br>
+                    ☑️ Setup de AWS Backup para recursos críticos
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Importantes - Primeiras Semanas</h4>
+                <p>
+                    ☑️ Ativar Security Hub<br>
+                    ☑️ Implementar IAM password policy forte<br>
+                    ☑️ Configurar Secrets Manager para credenciais<br>
+                    ☑️ Setup de Systems Manager Session Manager<br>
+                    ☑️ Habilitar Amazon Inspector<br>
+                    ☑️ Configurar AWS WAF (se tem aplicações web)<br>
+                    ☑️ Implementar CloudWatch Alarms para eventos críticos<br>
+                    ☑️ Documentar plano de resposta a incidentes<br>
+                    ☑️ Configurar EventBridge para automação básica<br>
+                    ☑️ Review de IAM permissions com Access Analyzer
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>Avançados - Primeiros Meses</h4>
+                <p>
+                    ☑️ Implementar multi-account strategy com Organizations<br>
+                    ☑️ Setup de AWS Control Tower<br>
+                    ☑️ Configurar Macie (se processa dados sensíveis)<br>
+                    ☑️ Implementar Network Firewall (se necessário)<br>
+                    ☑️ Setup de Detective para investigações<br>
+                    ☑️ Configurar Audit Manager para compliance<br>
+                    ☑️ Implementar automated remediation workflows<br>
+                    ☑️ Setup de cross-region backups<br>
+                    ☑️ Treinamento de equipe em serviços de segurança<br>
+                    ☑️ Teste de disaster recovery procedures
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🎓 Recursos de Aprendizado</h2>
+
+            <div class="integration-box">
+                <h4>Documentação Oficial AWS</h4>
+                <p>
+                    <strong>AWS Security Documentation:</strong> docs.aws.amazon.com/security<br>
+                    <strong>Security Best Practices:</strong> Whitepapers oficiais para cada serviço<br>
+                    <strong>AWS Security Blog:</strong> Artigos técnicos e anúncios de features<br>
+                    <strong>AWS re:Inforce:</strong> Conferência anual de segurança (gravações disponíveis)
+                </p>
+            </div>
+
+            <div class="integration-box">
+                <h4>Treinamento e Certificação</h4>
+                <p>
+                    <strong>AWS Skill Builder:</strong> Cursos gratuitos de segurança<br>
+                    <strong>AWS Security Fundamentals:</strong> Curso introdutório gratuito<br>
+                    <strong>AWS Certified Security – Specialty:</strong> Certificação de segurança<br>
+                    <strong>Workshops Hands-on:</strong> workshops.aws - labs práticos gratuitos
+                </p>
+            </div>
+
+            <div class="integration-box">
+                <h4>Comunidade e Suporte</h4>
+                <p>
+                    <strong>AWS re:Post:</strong> Comunidade para perguntas técnicas<br>
+                    <strong>AWS Support Plans:</strong> Developer, Business, Enterprise tiers<br>
+                    <strong>AWS Solutions Architects:</strong> Consultoria para arquitetura segura<br>
+                    <strong>AWS Partner Network:</strong> Parceiros especializados em segurança
+                </p>
+            </div>
+
+            <div class="integration-box">
+                <h4>Ferramentas e Utilities</h4>
+                <p>
+                    <strong>AWS CLI:</strong> Interface de linha de comando para automação<br>
+                    <strong>AWS SDKs:</strong> Integração programática em várias linguagens<br>
+                    <strong>CloudFormation/Terraform:</strong> Infrastructure as Code<br>
+                    <strong>AWS CDK:</strong> Define infraestrutura com linguagens de programação<br>
+                    <strong>Prowler:</strong> Open source security assessment tool<br>
+                    <strong>ScoutSuite:</strong> Multi-cloud security auditing tool
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>⚠️ Armadilhas Comuns</h2>
+
+            <div class="critical-box">
+                <h4>❌ Não Habilitar Serviços de Detecção</h4>
+                <p>
+                    <strong>ERRO:</strong> "Custos de GuardDuty/Security Hub são altos, vou economizar."<br>
+                    <strong>REALIDADE:</strong> Custo de um breach é 100x maior. Detecção precoce é crítica. 
+                    Free tiers permitem avaliar valor. Automação reduz necessidade de headcount.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>❌ Logging Insuficiente</h4>
+                <p>
+                    <strong>ERRO:</strong> CloudTrail só em algumas regiões, VPC Flow Logs desabilitados para 
+                    "economizar".<br>
+                    <strong>REALIDADE:</strong> Sem logs, investigação de incidentes é impossível. Compliance 
+                    requer logs. Custo de storage é mínimo comparado a valor. Use lifecycle policies para otimizar.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>❌ Permissões Excessivas</h4>
+                <p>
+                    <strong>ERRO:</strong> "Vou dar AdministratorAccess por enquanto, depois ajusto."<br>
+                    <strong>REALIDADE:</strong> "Depois" nunca chega. Permissões excessivas são exploradas. 
+                    Difícil reduzir depois (quebra coisas). Use Access Analyzer desde início.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>❌ Não Testar Backups</h4>
+                <p>
+                    <strong>ERRO:</strong> "Backups configurados, check!"<br>
+                    <strong>REALIDADE:</strong> Backups não testados não funcionam quando precisa. Teste restore 
+                    procedures regularmente. Valide RPO/RTO. Backup sem teste é falsa segurança.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>❌ Segurança Como Afterthought</h4>
+                <p>
+                    <strong>ERRO:</strong> "Vamos lançar rápido, adicionamos segurança depois."<br>
+                    <strong>REALIDADE:</strong> Security by design é mais fácil e barato. Retrofit de segurança 
+                    é caro e complexo. Technical debt de segurança tem juros altos. Shift-left sempre.
+                </p>
+            </div>
+
+            <div class="critical-box">
+                <h4>❌ Ignorar Alertas</h4>
+                <p>
+                    <strong>ERRO:</strong> "Muitos false positives, vou desabilitar alertas."<br>
+                    <strong>REALIDADE:</strong> Tune alertas, não ignore. False positives indicam configuração 
+                    inadequada. Alert fatigue é real mas solução é ajustar, não desabilitar. Pode perder real threats.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>🚀 Roadmap de Maturidade</h2>
+
+            <div class="feature-box">
+                <h4>Nível 1 - Fundação (0-3 meses)</h4>
+                <p>
+                    IAM setup correto, CloudTrail habilitado, Security Groups básicos, backup configurado, 
+                    billing alerts, MFA obrigatório, password policies. Foco: prevenir low-hanging fruit attacks.
+                </p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Nível 2 - Detecção (3-6 meses)</h4>
+                <p>
+                    GuardDuty, Security Hub, Config, Inspector, VPC Flow Logs, CloudWatch Alarms. Automation 
+                    básica via EventBridge. Foco: detectar ameaças rapidamente, compliance básico.
+                </p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Nível 3 - Resposta (6-12 meses)</h4>
+                <p>
+                    Detective, automated remediation, incident response procedures testados, multi-account 
+                    strategy, WAF, Secrets Manager. Foco: responder a incidentes eficientemente, reduzir blast radius.
+                </p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Nível 4 - Proativo (12+ meses)</h4>
+                <p>
+                    Threat hunting, red team exercises, advanced automation, Macie para data discovery, Network 
+                    Firewall, continuous compliance, security metrics e KPIs. Foco: prevenir ataques sofisticados, 
+                    compliance contínuo.
+                </p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Nível 5 - Otimização (Ongoing)</h4>
+                <p>
+                    Machine learning customizado, integration com SIEM enterprise, zero trust architecture, 
+                    security as code completamente, automated compliance evidence collection. Foco: excelência 
+                    operacional, inovação contínua.
+                </p>
+            </div>
+        </div>
+
+        <center>
+            <a class="link-voltar" href="conformidade.html">Voltar para Conformidade</a>
+        </center>
+    </div>
+</body>
+</html>

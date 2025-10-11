@@ -147,6 +147,10 @@ def praticas_recomendadas():
 def conformidade():
     return render_template('conformidade.html')
 
+@app.route('/recursos_seguranca')
+def recursos_seguranca():
+    return render_template('recursos_seguranca.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')
