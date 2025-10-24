@@ -151,6 +151,10 @@ def conformidade():
 def recursos_seguranca():
     return render_template('recursos_seguranca.html')
 
+@app.route('/infraestrutura')
+def infraestrutura():
+    return render_template('infraestrutura.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')
