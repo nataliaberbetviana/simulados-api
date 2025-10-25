@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazon EC2 - AWS Practitioner</title>
+    <title>Amazon EC2 - Elastic Compute Cloud</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -51,10 +51,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            background-image:
+                    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
             animation: float 20s ease-in-out infinite;
             pointer-events: none;
         }
@@ -208,26 +208,7 @@
             font-weight: 600;
         }
 
-        .service-box {
-            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-            border-left: 4px solid var(--primary);
-            padding: 20px;
-            border-radius: var(--radius-md);
-            margin: 20px 0;
-        }
-
-        .service-box h4 {
-            color: var(--secondary);
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .service-box p {
-            margin-bottom: 8px;
-        }
-
-        .highlight-box {
+        .info-box {
             background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
             border-left: 4px solid #3b82f6;
             padding: 20px;
@@ -235,14 +216,29 @@
             margin: 20px 0;
         }
 
-        .highlight-box h4 {
+        .info-box h4 {
             color: var(--secondary);
-            font-size: 1.1em;
+            font-size: 1.2em;
             margin-bottom: 10px;
             font-weight: 600;
         }
 
-        .pricing-box {
+        .highlight-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .success-box {
             background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
             border-left: 4px solid #22c55e;
             padding: 20px;
@@ -250,11 +246,66 @@
             margin: 20px 0;
         }
 
-        .pricing-box h4 {
+        .success-box h4 {
             color: var(--secondary);
             font-size: 1.1em;
             margin-bottom: 10px;
             font-weight: 600;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .danger-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-left: 4px solid #ef4444;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .danger-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            overflow: hidden;
+            border-radius: var(--radius-md);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .comparison-table th {
+            background: var(--gray-100);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--gray-50);
         }
 
         .link-voltar {
@@ -270,7 +321,7 @@
             font-size: 1.1em;
             box-shadow: var(--shadow-md);
             transition: var(--transition);
-            animation: fadeIn 0.6s ease-out 0.8s backwards;
+            animation: fadeIn 0.6s ease-out 1s backwards;
         }
 
         .link-voltar::before {
@@ -316,6 +367,10 @@
             .content-card h2 {
                 font-size: 1.5em;
             }
+
+            .comparison-table {
+                font-size: 0.9em;
+            }
         }
 
         @media (max-width: 480px) {
@@ -330,294 +385,394 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header-card">
-            <div class="header-content">
-                <div class="header-icon">💻</div>
-                <h1>Amazon EC2</h1>
-                <p>Elastic Compute Cloud - Servidores Virtuais na Nuvem</p>
-            </div>
+<div class="container">
+    <div class="header-card">
+        <div class="header-content">
+            <div class="header-icon">🖥️</div>
+            <h1>Amazon EC2</h1>
+            <p>Elastic Compute Cloud - Computação Escalável na Nuvem</p>
         </div>
-
-        <div class="content-card">
-            <h2>📋 O que é o Amazon EC2?</h2>
-            <p>
-                O Amazon EC2 (Elastic Compute Cloud) é um serviço web que fornece capacidade de computação 
-                redimensionável na nuvem. Ele permite que você execute servidores virtuais, chamados de 
-                <strong>instâncias</strong>, com configurações personalizáveis de CPU, memória, armazenamento 
-                e rede.
-            </p>
-            <p>
-                Com o EC2, você tem controle completo sobre suas instâncias e pode dimensionar recursos 
-                para cima ou para baixo conforme suas necessidades, pagando apenas pelo que usar.
-            </p>
-        </div>
-
-        <div class="content-card">
-            <h2>✨ Principais Características</h2>
-            
-            <div class="service-box">
-                <h4>Elasticidade</h4>
-                <p>
-                    Aumente ou diminua a capacidade em minutos, não em semanas. Escale verticalmente 
-                    (mais recursos) ou horizontalmente (mais instâncias) conforme a demanda.
-                </p>
-            </div>
-
-            <div class="service-box">
-                <h4>Controle Completo</h4>
-                <p>
-                    Você tem acesso root completo às suas instâncias e pode gerenciá-las como qualquer 
-                    outro servidor físico.
-                </p>
-            </div>
-
-            <div class="service-box">
-                <h4>Variedade de Tipos de Instância</h4>
-                <p>
-                    Mais de 500 tipos de instâncias otimizadas para diferentes casos de uso, desde 
-                    aplicações web simples até workloads de machine learning.
-                </p>
-            </div>
-
-            <div class="service-box">
-                <h4>Integração com Serviços AWS</h4>
-                <p>
-                    Integra-se facilmente com outros serviços AWS como S3, RDS, VPC, CloudWatch e muitos outros.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>🔧 Tipos de Instâncias</h2>
-            <p>
-                As instâncias EC2 são organizadas em famílias, cada uma otimizada para diferentes tipos de workloads:
-            </p>
-
-            <div class="highlight-box">
-                <h4>💼 Uso Geral (T, M)</h4>
-                <p>
-                    <strong>T3, T4g, M5, M6i:</strong> Balanceamento entre computação, memória e rede. 
-                    Ideais para aplicações web, ambientes de desenvolvimento e bancos de dados pequenos a médios.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>⚡ Otimizadas para Computação (C)</h4>
-                <p>
-                    <strong>C5, C6i, C7g:</strong> Alta performance de CPU. Ideais para modelagem científica, 
-                    servidores de jogos, processamento em lote e machine learning.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>🧠 Otimizadas para Memória (R, X, Z)</h4>
-                <p>
-                    <strong>R5, R6i, X2, Z1d:</strong> Grande quantidade de RAM. Ideais para bancos de dados 
-                    em memória, análise de big data e aplicações empresariais.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>💾 Otimizadas para Armazenamento (I, D, H)</h4>
-                <p>
-                    <strong>I3, I4i, D2, D3:</strong> Alto desempenho de I/O. Ideais para bancos de dados NoSQL, 
-                    data warehousing e processamento de logs.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>🚀 Computação Acelerada (P, G, F, Inf)</h4>
-                <p>
-                    <strong>P4, G5, F1, Inf1:</strong> GPUs e FPGAs para machine learning, deep learning, 
-                    renderização de gráficos e análise genômica.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>💰 Modelos de Precificação</h2>
-
-            <div class="pricing-box">
-                <h4>Sob Demanda (On-Demand)</h4>
-                <p>
-                    Pague por hora ou por segundo de uso, sem compromissos de longo prazo. Ideal para 
-                    workloads de curto prazo, imprevisíveis ou para testes.
-                </p>
-            </div>
-
-            <div class="pricing-box">
-                <h4>Instâncias Reservadas (Reserved Instances)</h4>
-                <p>
-                    Comprometa-se com 1 ou 3 anos e economize até 75% comparado ao sob demanda. Ideal para 
-                    workloads estáveis e previsíveis.
-                </p>
-            </div>
-
-            <div class="pricing-box">
-                <h4>Savings Plans</h4>
-                <p>
-                    Comprometa-se com uma quantidade consistente de uso ($/hora) por 1 ou 3 anos e economize 
-                    até 72%. Mais flexível que instâncias reservadas.
-                </p>
-            </div>
-
-            <div class="pricing-box">
-                <h4>Spot Instances</h4>
-                <p>
-                    Aproveite a capacidade não utilizada da AWS com desconto de até 90%. Ideal para workloads 
-                    tolerantes a falhas como processamento em lote, análise de dados e testes.
-                </p>
-            </div>
-
-            <div class="pricing-box">
-                <h4>Dedicated Hosts</h4>
-                <p>
-                    Servidores físicos dedicados exclusivamente para seu uso. Útil para conformidade regulatória 
-                    e licenciamento de software vinculado ao servidor.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>🔐 Segurança</h2>
-            
-            <div class="service-box">
-                <h4>Security Groups</h4>
-                <p>
-                    Firewall virtual que controla o tráfego de entrada e saída das instâncias. Funciona 
-                    no nível da instância e permite regras apenas de permissão.
-                </p>
-            </div>
-
-            <div class="service-box">
-                <h4>Key Pairs</h4>
-                <p>
-                    Pares de chaves públicas e privadas para autenticação segura via SSH (Linux) ou RDP (Windows). 
-                    A AWS armazena a chave pública e você mantém a chave privada.
-                </p>
-            </div>
-
-            <div class="service-box">
-                <h4>IAM Roles</h4>
-                <p>
-                    Permissões que podem ser associadas às instâncias EC2 para acessar outros serviços AWS 
-                    de forma segura, sem necessidade de armazenar credenciais.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>📊 Armazenamento EC2</h2>
-
-            <div class="highlight-box">
-                <h4>Amazon EBS (Elastic Block Store)</h4>
-                <p>
-                    Volumes de armazenamento persistente que podem ser anexados às instâncias. Os dados 
-                    permanecem mesmo após o desligamento da instância. Tipos: gp3, gp2, io2, io1, st1, sc1.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>Instance Store</h4>
-                <p>
-                    Armazenamento temporário fisicamente conectado ao servidor host. Alto desempenho, mas 
-                    os dados são perdidos quando a instância é interrompida ou terminada.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>Amazon EFS (Elastic File System)</h4>
-                <p>
-                    Sistema de arquivos compartilhado que pode ser montado em múltiplas instâncias EC2 
-                    simultaneamente. Ideal para workloads que exigem compartilhamento de arquivos.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>🎯 Casos de Uso Comuns</h2>
-            <div class="pricing-box">
-                <h4>Hospedagem de Aplicações Web:</h4>
-                <p>
-                    Sites, APIs e aplicações web de todos os tamanhos.
-                </p>
-            </div>
-            <div class="pricing-box">
-                <h4>Processamento em Lote:</h4>
-                <p>
-                    Análise de grandes volumes de dados, renderização e transcodificação.
-                </p>
-            </div>
-            <div class="pricing-box">
-                <h4>Ambientes de Desenvolvimento e Teste:</h4>
-                <p>
-                    Criação rápida de ambientes isolados para desenvolvimento.
-                </p>
-            </div>
-            <div class="pricing-box">
-                <h4>Machine Learning e IA:</h4>
-                <p>
-                    Treinamento de modelos e inferência usando instâncias com GPU.
-                </p>
-            </div>
-            <div class="pricing-box">
-                <h4>Servidores de Jogos:</h4>
-                <p>
-                    Hospedagem de servidores dedicados para jogos multiplayer.
-                </p>
-            </div>
-            <div class="pricing-box">
-                <h4>Bancos de Dados:</h4>
-                <p>
-                    Execução de bancos de dados relacionais e NoSQL autogerenciados.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>💡 Melhores Práticas</h2>
-            <div class="service-box">
-                <h4>Use Auto Scaling:</h4>
-                <p>
-                    Configure grupos de Auto Scaling para ajustar automaticamente a capacidade com base na demanda.
-                </p>
-            </div>
-            <div class="service-box">
-                <h4>Implemente Backup Regular:</h4>
-                <p>
-                    Crie snapshots regulares dos volumes EBS e use AMIs para backup completo das instâncias.
-                </p>
-            </div>
-            <div class="service-box">
-                <h4>Monitore com CloudWatch:</h4>
-                <p>
-                    Configure alarmes e métricas para monitorar o desempenho e a saúde das instâncias.
-                </p>
-            </div>
-            <div class="service-box">
-                <h4>Otimize Custos:</h4>
-                <p>
-                   Use Instâncias Spot para workloads flexíveis e Reserved Instances para cargas estáveis. 
-                </p>
-            </div>
-            <div class="service-box">
-                <h4>Aplique Tags:</h4>
-                <p>
-                    Organize e gerencie recursos usando tags consistentes para controle de custos e governança.
-                </p>
-            </div>
-            <div class="service-box">
-                <h4>Dimensione Adequadamente:</h4>
-                <p>
-                    Escolha o tipo de instância correto para seu workload para evitar super ou subdimensionamento.
-                </p>
-            </div>
-        </div>
-
-        <center>
-            <a class="link-voltar" href="/materiais">Voltar para Materiais</a>
-        </center>
     </div>
+
+    <div class="content-card">
+        <h2>🏗️ Famílias e Tipos de Instância EC2</h2>
+        <p>
+            As instâncias EC2 são oferecidas em diversas famílias, cada uma otimizada para um caso de
+            uso específico, variando as combinações de CPU, memória, armazenamento e capacidade de rede.
+        </p>
+
+        <table class="comparison-table">
+            <thead>
+            <tr>
+                <th>Categoria</th>
+                <th>Famílias Típicas</th>
+                <th>Casos de Uso Principais</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>Uso Geral</strong></td>
+                <td>M (M7, M6, M5), T (T2, T3, T4g)</td>
+                <td>Oferecem um <strong>equilíbrio</strong> de recursos (CPU, memória). Ideais para web
+                servers, pequenos/médios bancos de dados ou ambientes de desenvolvimento/teste.</td>
+            </tr>
+            <tr>
+                <td><strong>Otimizadas para Computação</strong></td>
+                <td>C (C7, C6, C5)</td>
+                <td>Indicadas para cargas de trabalho que exigem <strong>alto desempenho de CPU</strong>.
+                Usadas para processamento em batch, modelagem científica e web servers de alto desempenho.</td>
+            </tr>
+            <tr>
+                <td><strong>Otimizadas para Memória</strong></td>
+                <td>R (R8, R7, R6, R5), X, High Memory</td>
+                <td>Perfeitas para aplicações que processam <strong>grandes conjuntos de dados na memória</strong>.
+                Incluem bancos de dados de alto desempenho (SAP HANA, Oracle DB, Microsoft SQL Server) e
+                Big Data Analytics.</td>
+            </tr>
+            <tr>
+                <td><strong>Otimizadas para Armazenamento</strong></td>
+                <td>I (I4, I3), D (D2, D3), H1</td>
+                <td>Projetadas para cargas de trabalho que requerem <strong>alto I/O sequencial</strong> para
+                grandes conjuntos de dados em armazenamento local. Exemplos: sistemas de arquivos distribuídos,
+                data warehousing e bancos de dados NoSQL (MongoDB, Cassandra).</td>
+            </tr>
+            <tr>
+                <td><strong>Computação Acelerada</strong></td>
+                <td>P, G, F, Inf (P5, G6, Inf2)</td>
+                <td>Para aplicações que se beneficiam de <strong>aceleração de hardware</strong> (GPUs, FPGAs).
+                Usadas em Machine Learning (ML), HPC e renderização gráfica.</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h3>Conceitos Chave de Tipos de Instância</h3>
+
+        <div class="info-box">
+            <h4>Instâncias Burstable</h4>
+            <p>
+                As famílias <strong>T2</strong> e <strong>T3</strong> são burstable, o que significa que
+                têm um desempenho bom para cargas de trabalho que não usam a CPU frequentemente, mas
+                ocasionalmente precisam de um burst para um desempenho superior. O tipo T3 é a próxima
+                geração do T2, oferecendo mais poder de computação a um custo mais baixo.
+            </p>
+        </div>
+
+        <div class="success-box">
+            <h4>Instâncias Graviton</h4>
+            <p>
+                Instâncias como <strong>M6g</strong> e <strong>T4g</strong> usam processadores Graviton
+                projetados pela AWS (baseados em ARM), que podem oferecer <strong>até 40% de melhor
+                preço/desempenho</strong> em comparação com instâncias x86 comparáveis.
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>Convenção de Nomenclatura</h4>
+            <p>
+                Um nome como <strong>t3.large</strong> indica:<br><br>
+                • <strong>t</strong> = Família de instância<br>
+                • <strong>3</strong> = Geração do hardware<br>
+                • <strong>large</strong> = Tamanho (define vCPU, Memória, etc.)
+            </p>
+        </div>
+
+        <div class="warning-box">
+            <h4>Bare Metal vs. Virtualizada</h4>
+            <p>
+                <strong>Instâncias Bare Metal</strong> (como as *.metal) fornecem acesso direto ao hardware
+                físico subjacente, eliminando a camada do hypervisor, o que é crucial para baixa latência e
+                requisitos de segurança estritos.<br><br>
+                <strong>Instâncias Virtualizadas</strong> (como nano, 2xlarge, etc.) são fatias da capacidade
+                de um servidor físico e são isoladas usando o hypervisor da AWS.
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>💰 Modelos de Preço EC2</h2>
+        <p>
+            A escolha do modelo de preço tem um impacto significativo na eficiência de custos.
+        </p>
+
+        <table class="comparison-table">
+            <thead>
+            <tr>
+                <th>Modelo de Preço</th>
+                <th>Desconto vs. Sob Demanda</th>
+                <th>Flexibilidade</th>
+                <th>Caso de Uso Ideal</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>Sob Demanda (On-Demand)</strong></td>
+                <td>0% (Preço total)</td>
+                <td><strong>Máxima</strong></td>
+                <td>Cargas de trabalho curtas, imprevisíveis, ou em picos (desenvolvimento/teste)</td>
+            </tr>
+            <tr>
+                <td><strong>Instâncias Reservadas (RIs)</strong></td>
+                <td>Até <strong>75%</strong> (Standard RI)</td>
+                <td><strong>Mínima</strong> (Compromisso com tipo específico)</td>
+                <td>Cargas de trabalho estáveis e previsíveis de 1 ou 3 anos. <strong>Apenas Standard RIs
+                podem reservar capacidade</strong></td>
+            </tr>
+            <tr>
+                <td><strong>Savings Plans (SPs)</strong></td>
+                <td>Até <strong>72%</strong> (EC2 SP) ou <strong>66%</strong> (Compute SP)</td>
+                <td><strong>Alta</strong> (Compromisso em gasto/hora)</td>
+                <td>Cargas de trabalho dinâmicas. SPs não reservam capacidade, mas aplicam descontos
+                automaticamente ao uso elegível</td>
+            </tr>
+            <tr>
+                <td><strong>Instâncias Spot</strong></td>
+                <td>Até <strong>90%</strong></td>
+                <td>Sujeito a Interrupção</td>
+                <td>Cargas de trabalho tolerantes a falhas ou de grande escala (web back-ends, Big Data).
+                A AWS pode retomar a capacidade a qualquer momento (com aviso de 2 minutos)</td>
+            </tr>
+            <tr>
+                <td><strong>Hosts Dedicados</strong></td>
+                <td>Varia</td>
+                <td>Controle de Hardware</td>
+                <td>Restrições de licenciamento de software (por soquete, núcleo) ou requisitos de conformidade</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h3>Savings Plans vs. Reserved Instances (RIs)</h3>
+        <p>
+            Para a certificação, é vital entender a diferença de flexibilidade:
+        </p>
+
+        <div class="warning-box">
+            <h4>RIs Padrão (Standard RIs)</h4>
+            <p>
+                Oferecem os descontos mais altos (até 75%). São rígidas, exigindo compromisso com tipo,
+                tamanho, plataforma e região exatos.<br><br>
+                <strong>⚠️ RIs Padrão com escopo zonal são o ÚNICO modelo que garante a reserva de
+                capacidade dentro de uma Availability Zone (AZ) específica.</strong>
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>Savings Plans de Computação (Compute SPs)</h4>
+            <p>
+                Oferecem a maior flexibilidade, pois o desconto se aplica a EC2, Fargate e Lambda,
+                independentemente da família, tamanho ou região. O desconto é ligeiramente menor
+                (até 66%).
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>🚀 O Processo de Execução e o Ciclo de Vida</h2>
+        <p>
+            Ao lançar uma instância (o termo usado para criar uma instância EC2), nove decisões
+            essenciais são tomadas no assistente:
+        </p>
+
+        <div class="highlight-box">
+            <h4>9 Decisões Essenciais ao Lançar uma Instância</h4>
+            <p>
+                <strong>1. AMI (Amazon Machine Image):</strong> O modelo que contém o sistema operacional,
+                software e configurações iniciais.<br><br>
+                <strong>2. Tipo de Instância:</strong> Seleciona o hardware (vCPU, Memória, etc.).<br><br>
+                <strong>3. Definições de Rede:</strong> Especifica a VPC e a sub-rede.<br><br>
+                <strong>4. Função do IAM:</strong> (Opcional) Concede permissões à instância para interagir
+                com outros serviços AWS (ex: Amazon S3).<br><br>
+                <strong>5. Dados do Usuário (User Data):</strong> Um script executado na primeira inicialização
+                para automatizar a configuração. No Linux, pode ser shell scripts ou diretivas cloud-init.
+                No Windows, usa-se tags &lt;script&gt; ou &lt;powershell&gt;. O user data é limitado a 16 KB.<br><br>
+                <strong>6. Opções de Armazenamento:</strong> Configura o Volume Raiz (normalmente Amazon EBS).<br><br>
+                <strong>7. Tags:</strong> Rótulos chave/valor para organização e alocação de custos.<br><br>
+                <strong>8. Security Group:</strong> Atua como um firewall virtual que controla o tráfego de
+                entrada e saída.<br><br>
+                <strong>9. Par de Chaves (Key Pair):</strong> Usado para autenticação segura (via SSH para
+                Linux ou para obter a senha no Windows).
+            </p>
+        </div>
+
+        <h3>Ciclo de Vida da Instância</h3>
+        <p>
+            Os estados principais de uma instância são:
+        </p>
+
+        <table class="comparison-table">
+            <thead>
+            <tr>
+                <th>Estado</th>
+                <th>Descrição</th>
+                <th>Cobrança</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>Pendente (Pending)</strong></td>
+                <td>Estado inicial durante o provisionamento</td>
+                <td>Não há cobrança de computação</td>
+            </tr>
+            <tr>
+                <td><strong>Em execução (Running)</strong></td>
+                <td>Instância totalmente operacional</td>
+                <td>Cobrança ativa de computação</td>
+            </tr>
+            <tr>
+                <td><strong>Interrompida (Stopped)</strong></td>
+                <td>Apenas para instâncias com volumes raiz EBS. A instância não incorre em custos de
+                computação e pode ser reiniciada posteriormente. O volume raiz EBS persiste</td>
+                <td>Sem cobrança de computação, mas cobra armazenamento EBS</td>
+            </tr>
+            <tr>
+                <td><strong>Encerrada (Terminated)</strong></td>
+                <td>A instância é excluída permanentemente e <strong>não pode ser reiniciada</strong>.
+                Todos os volumes EBS configurados para exclusão na terminação são permanentemente deletados</td>
+                <td>Sem cobrança</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="content-card">
+        <h2>⚖️ Amazon EC2 Auto Scaling</h2>
+        <p>
+            O Amazon EC2 Auto Scaling é essencial para arquiteturas resilientes e econômicas.
+        </p>
+
+        <div class="success-box">
+            <h4>Melhor Tolerância a Falhas</h4>
+            <p>
+                Pode detectar quando uma instância está não saudável (unhealthy), encerrá-la e lançar uma
+                substituta. Pode também ser configurado para usar múltiplas <strong>Availability Zones (AZs)</strong>,
+                lançando instâncias em outra AZ se uma ficar indisponível.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>Melhor Disponibilidade</h4>
+            <p>
+                Garante que a aplicação tenha a quantidade certa de capacidade para lidar com a demanda
+                de tráfego.
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>Melhor Gerenciamento de Custos</h4>
+            <p>
+                Aumenta e diminui a capacidade dinamicamente, permitindo que você pague apenas pelas
+                instâncias usadas, encerrando-as quando não são mais necessárias.
+            </p>
+        </div>
+
+        <div class="warning-box">
+            <h4>Distribuição de Instâncias</h4>
+            <p>
+                O Auto Scaling tenta manter números equivalentes de instâncias em cada AZ habilitada
+                para alta disponibilidade e confiabilidade.
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>🔒 Segurança e Conectividade</h2>
+
+        <div class="danger-box">
+            <h4>Security Groups</h4>
+            <p>
+                Agem como um <strong>firewall virtual</strong> para controlar o tráfego de entrada
+                (inbound) e saída (outbound) da instância. É crucial garantir que o Security Group
+                permita o tráfego SSH (porta 22) de seu IP para se conectar a uma instância Linux.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>Par de Chaves</h4>
+            <p>
+                É usado para autenticar conexões seguras. Para instâncias Linux, você usa o cliente
+                SSH e a chave privada (.pem).
+            </p>
+        </div>
+
+        <h3>Nomes de Usuário Padrão (para SSH)</h3>
+        <p>
+            Para se conectar a uma instância, você precisa do nome de usuário correto dependendo da AMI:
+        </p>
+
+        <table class="comparison-table">
+            <thead>
+            <tr>
+                <th>Sistema Operacional</th>
+                <th>Nome de Usuário Padrão</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>Amazon Linux</strong></td>
+                <td>ec2-user</td>
+            </tr>
+            <tr>
+                <td><strong>Ubuntu</strong></td>
+                <td>ubuntu</td>
+            </tr>
+            <tr>
+                <td><strong>CentOS</strong></td>
+                <td>centos ou ec2-user</td>
+            </tr>
+            <tr>
+                <td><strong>RHEL</strong></td>
+                <td>ec2-user ou root</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="warning-box">
+            <h4>Conectividade de Rede</h4>
+            <p>
+                Erros de <strong>"Connection timed out"</strong> (conexão expirada) são frequentemente
+                causados por Security Groups ou Network ACLs (ACLs de Rede) que bloqueiam o tráfego SSH
+                (Porta 22).
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>🎓 Pontos-Chave para a Certificação</h2>
+
+        <div class="warning-box">
+            <h4>Conceitos Essenciais para o Exame</h4>
+            <p>
+                ✅ <strong>FAMÍLIAS DE INSTÂNCIAS:</strong> M (Uso Geral), C (Computação), R (Memória),
+                I/D/H (Armazenamento), P/G/F/Inf (Acelerada).<br><br>
+                ✅ <strong>NOMENCLATURA:</strong> t3.large = t (família), 3 (geração), large (tamanho).<br><br>
+                ✅ <strong>INSTÂNCIAS BURSTABLE:</strong> T2/T3 são ideais para cargas que não usam CPU
+                constantemente mas precisam de bursts ocasionais.<br><br>
+                ✅ <strong>GRAVITON:</strong> Processadores ARM da AWS oferecem até 40% melhor preço/desempenho.<br><br>
+                ✅ <strong>BARE METAL:</strong> Acesso direto ao hardware, elimina hypervisor, ideal para
+                baixa latência e segurança estrita.<br><br>
+                ✅ <strong>MODELOS DE PREÇO:</strong> On-Demand (0% desconto, máxima flexibilidade),
+                RIs (até 75%), Savings Plans (até 72%), Spot (até 90%, pode ser interrompido).<br><br>
+                ✅ <strong>RESERVA DE CAPACIDADE:</strong> Apenas Standard RIs com escopo zonal garantem
+                capacidade em uma AZ específica.<br><br>
+                ✅ <strong>SAVINGS PLANS:</strong> Compute SPs têm máxima flexibilidade (EC2, Fargate, Lambda)
+                mas desconto menor (66%).<br><br>
+                ✅ <strong>INSTÂNCIAS SPOT:</strong> Até 90% desconto mas AWS pode retomar com aviso de 2 minutos.<br><br>
+                ✅ <strong>USER DATA:</strong> Script executado na primeira inicialização, limitado a 16 KB.<br><br>
+                ✅ <strong>ESTADOS:</strong> Pending → Running (cobra) → Stopped (não cobra computação,
+                mantém EBS) → Terminated (deletado permanentemente).<br><br>
+                ✅ <strong>AUTO SCALING:</strong> Tolerância a falhas, melhor disponibilidade, otimização
+                de custos, distribui entre múltiplas AZs.<br><br>
+                ✅ <strong>SECURITY GROUPS:</strong> Firewall virtual, porta 22 para SSH deve estar aberta.<br><br>
+                ✅ <strong>SSH USERNAMES:</strong> Amazon Linux (ec2-user), Ubuntu (ubuntu), CentOS
+                (centos/ec2-user), RHEL (ec2-user/root).<br><br>
+                ✅ <strong>CONNECTION TIMEOUT:</strong> Geralmente causado por Security Groups ou Network
+                ACLs bloqueando porta 22.
+            </p>
+        </div>
+    </div>
+
+    <center>
+        <a class="link-voltar" href="/materiais">Voltar para Materiais</a>
+    </center>
+</div>
 </body>
 </html>
