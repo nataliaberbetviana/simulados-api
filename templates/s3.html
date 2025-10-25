@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazon S3 - AWS Practitioner</title>
+    <title>Amazon S3 - Simple Storage Service</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -51,10 +51,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            background-image:
+                    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
             animation: float 20s ease-in-out infinite;
             pointer-events: none;
         }
@@ -157,7 +157,6 @@
         .content-card:nth-child(6) { animation-delay: 0.5s; }
         .content-card:nth-child(7) { animation-delay: 0.6s; }
         .content-card:nth-child(8) { animation-delay: 0.7s; }
-        .content-card:nth-child(9) { animation-delay: 0.8s; }
 
         .content-card::before {
             content: '';
@@ -209,26 +208,7 @@
             font-weight: 600;
         }
 
-        .service-box {
-            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-            border-left: 4px solid var(--primary);
-            padding: 20px;
-            border-radius: var(--radius-md);
-            margin: 20px 0;
-        }
-
-        .service-box h4 {
-            color: var(--secondary);
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .service-box p {
-            margin-bottom: 8px;
-        }
-
-        .highlight-box {
+        .info-box {
             background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
             border-left: 4px solid #3b82f6;
             padding: 20px;
@@ -236,14 +216,29 @@
             margin: 20px 0;
         }
 
-        .highlight-box h4 {
+        .info-box h4 {
             color: var(--secondary);
-            font-size: 1.1em;
+            font-size: 1.2em;
             margin-bottom: 10px;
             font-weight: 600;
         }
 
-        .pricing-box {
+        .highlight-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .success-box {
             background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
             border-left: 4px solid #22c55e;
             padding: 20px;
@@ -251,11 +246,51 @@
             margin: 20px 0;
         }
 
-        .pricing-box h4 {
+        .success-box h4 {
             color: var(--secondary);
             font-size: 1.1em;
             margin-bottom: 10px;
             font-weight: 600;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            overflow: hidden;
+            border-radius: var(--radius-md);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .comparison-table th {
+            background: var(--gray-100);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--gray-50);
         }
 
         .link-voltar {
@@ -271,7 +306,7 @@
             font-size: 1.1em;
             box-shadow: var(--shadow-md);
             transition: var(--transition);
-            animation: fadeIn 0.6s ease-out 0.9s backwards;
+            animation: fadeIn 0.6s ease-out 1s backwards;
         }
 
         .link-voltar::before {
@@ -317,6 +352,10 @@
             .content-card h2 {
                 font-size: 1.5em;
             }
+
+            .comparison-table {
+                font-size: 0.9em;
+            }
         }
 
         @media (max-width: 480px) {
@@ -331,403 +370,332 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header-card">
-            <div class="header-content">
-                <div class="header-icon">🪣</div>
-                <h1>Amazon S3</h1>
-                <p>Simple Storage Service - Armazenamento de Objetos Altamente Durável</p>
-            </div>
+<div class="container">
+    <div class="header-card">
+        <div class="header-content">
+            <div class="header-icon">🪣</div>
+            <h1>Amazon S3</h1>
+            <p>Simple Storage Service - Armazenamento de Objetos na Nuvem</p>
         </div>
-
-        <div class="content-card">
-            <h2>📋 O que é o Amazon S3?</h2>
-            <p>
-                O Amazon S3 (Simple Storage Service) é um serviço de armazenamento de objetos que oferece 
-                escalabilidade, disponibilidade de dados, segurança e performance líderes do setor. Ele 
-                permite armazenar e recuperar qualquer quantidade de dados, a qualquer momento, de qualquer 
-                lugar na web.
-            </p>
-            <p>
-                Com o S3, você pode armazenar desde backups e arquivos de mídia até data lakes para big data 
-                analytics, pagando apenas pelo armazenamento que realmente utiliza.
-            </p>
-        </div>
-
-        <div class="content-card">
-            <h2>✨ Principais Características</h2>
-            
-            <div class="service-box">
-                <h4>Durabilidade Excepcional</h4>
-                <p>
-                    Projetado para 99.999999999% (11 noves) de durabilidade. Os dados são automaticamente 
-                    distribuídos em múltiplos dispositivos e instalações dentro de uma região.
-                </p>
-            </div>
-
-            <div class="service-box">
-                <h4>Escalabilidade Ilimitada</h4>
-                <p>
-                    Armazene quantidades praticamente ilimitadas de dados sem se preocupar com capacidade. 
-                    O S3 escala automaticamente para atender sua demanda.
-                </p>
-            </div>
-
-            <div class="service-box">
-                <h4>Alta Disponibilidade</h4>
-                <p>
-                    Projetado para 99.99% de disponibilidade ao longo de um ano. O S3 Standard oferece 
-                    SLA de disponibilidade de 99.9%.
-                </p>
-            </div>
-
-            <div class="service-box">
-                <h4>Segurança Robusta</h4>
-                <p>
-                    Criptografia de dados em repouso e em trânsito, controle de acesso granular com IAM, 
-                    bucket policies, ACLs e integração com AWS KMS.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>🗂️ Conceitos Fundamentais</h2>
-
-            <div class="highlight-box">
-                <h4>📦 Buckets</h4>
-                <p>
-                    Containers para armazenar objetos no S3. Cada bucket tem um nome globalmente único 
-                    e é criado em uma região específica da AWS.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>📄 Objetos</h4>
-                <p>
-                    Arquivos armazenados no S3. Cada objeto consiste em dados, metadados e uma chave 
-                    (nome único dentro do bucket). Tamanho máximo: 5 TB por objeto.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>🔑 Chaves (Keys)</h4>
-                <p>
-                    Identificador único de um objeto dentro de um bucket. A combinação de bucket, 
-                    chave e ID de versão identifica exclusivamente cada objeto.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>🌐 Regiões</h4>
-                <p>
-                    Localização geográfica onde seus dados são armazenados. Você escolhe a região 
-                    para otimizar latência, minimizar custos ou atender requisitos regulatórios.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>💾 Classes de Armazenamento</h2>
-
-            <div class="pricing-box">
-                <h4>S3 Standard</h4>
-                <p>
-                    Armazenamento de uso geral para dados acessados com frequência. Alto throughput 
-                    e baixa latência. Ideal para aplicações em nuvem, sites dinâmicos e distribuição 
-                    de conteúdo.
-                </p>
-            </div>
-
-            <div class="pricing-box">
-                <h4>S3 Intelligent-Tiering</h4>
-                <p>
-                    Move automaticamente os dados entre camadas de acesso frequente e infrequente 
-                    quando os padrões de acesso mudam. Sem taxas de recuperação e sem impacto operacional.
-                </p>
-            </div>
-
-            <div class="pricing-box">
-                <h4>S3 Standard-IA (Infrequent Access)</h4>
-                <p>
-                    Para dados acessados com menos frequência, mas que requerem acesso rápido quando 
-                    necessário. Menor custo de armazenamento, mas cobra por recuperação.
-                </p>
-            </div>
-
-            <div class="pricing-box">
-                <h4>S3 One Zone-IA</h4>
-                <p>
-                    Similar ao Standard-IA, mas armazena dados em uma única zona de disponibilidade. 
-                    Custo 20% menor, ideal para dados secundários ou replicáveis.
-                </p>
-            </div>
-
-            <div class="pricing-box">
-                <h4>S3 Glacier Instant Retrieval</h4>
-                <p>
-                    Para dados de arquivo acessados uma vez por trimestre. Recuperação em milissegundos. 
-                    Economia de até 68% em custos de armazenamento.
-                </p>
-            </div>
-
-            <div class="pricing-box">
-                <h4>S3 Glacier Flexible Retrieval</h4>
-                <p>
-                    Armazenamento de baixo custo para arquivamento. Recuperação de minutos a horas. 
-                    Ideal para backups e arquivos que raramente precisam ser acessados.
-                </p>
-            </div>
-
-            <div class="pricing-box">
-                <h4>S3 Glacier Deep Archive</h4>
-                <p>
-                    Classe de menor custo, ideal para retenção de longo prazo. Recuperação em 12 horas. 
-                    Perfeito para conformidade regulatória e arquivamento digital.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>🔐 Segurança e Controle de Acesso</h2>
-            
-            <div class="service-box">
-                <h4>Bucket Policies</h4>
-                <p>
-                    Políticas baseadas em JSON que concedem permissões de acesso ao bucket e aos objetos 
-                    nele contidos. Permitem controle granular sobre quem pode acessar seus dados.
-                </p>
-            </div>
-
-            <div class="service-box">
-                <h4>IAM Policies</h4>
-                <p>
-                    Controle de acesso no nível do usuário ou função IAM. Define permissões para usuários 
-                    e aplicações acessarem recursos S3.
-                </p>
-            </div>
-
-            <div class="service-box">
-                <h4>Access Control Lists (ACLs)</h4>
-                <p>
-                    Mecanismo legado para gerenciar acesso a buckets e objetos. Recomenda-se usar 
-                    bucket policies e IAM policies em vez de ACLs.
-                </p>
-            </div>
-
-            <div class="service-box">
-                <h4>Criptografia</h4>
-                <p>
-                    <strong>Em repouso:</strong> SSE-S3 (gerenciado pela AWS), SSE-KMS (AWS KMS), 
-                    SSE-C (chaves gerenciadas pelo cliente).<br>
-                    <strong>Em trânsito:</strong> SSL/TLS para transferências seguras.
-                </p>
-            </div>
-
-            <div class="service-box">
-                <h4>S3 Block Public Access</h4>
-                <p>
-                    Configurações para bloquear acesso público aos buckets e objetos. Proteção adicional 
-                    contra exposição acidental de dados.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>⚙️ Recursos Avançados</h2>
-
-            <div class="highlight-box">
-                <h4>Versionamento</h4>
-                <p>
-                    Mantém múltiplas versões de um objeto no bucket. Protege contra exclusões acidentais 
-                    e permite recuperar versões anteriores.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>Replicação (CRR e SRR)</h4>
-                <p>
-                    <strong>Cross-Region Replication (CRR):</strong> Replica objetos entre regiões.<br>
-                    <strong>Same-Region Replication (SRR):</strong> Replica objetos dentro da mesma região.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>Lifecycle Policies</h4>
-                <p>
-                    Automatiza a transição de objetos entre classes de armazenamento e configura 
-                    expiração automática de objetos com base em regras definidas.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>S3 Transfer Acceleration</h4>
-                <p>
-                    Acelera uploads de longa distância usando os pontos de presença da Amazon CloudFront. 
-                    Pode ser até 50-500% mais rápido.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>S3 Event Notifications</h4>
-                <p>
-                    Receba notificações quando eventos específicos ocorrem no bucket (upload, exclusão). 
-                    Integra com SNS, SQS e Lambda.
-                </p>
-            </div>
-
-            <div class="highlight-box">
-                <h4>S3 Select e Glacier Select</h4>
-                <p>
-                    Recupere subconjuntos de dados de objetos usando SQL simples. Reduz quantidade de 
-                    dados transferidos e melhora performance.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>🎯 Casos de Uso Comuns</h2>
-            <div class="pricing-box">
-                <h4>Backup e Recuperação:</h4>
-                <p>
-                    Armazenamento durável e econômico para backups críticos de dados e disaster recovery.
-                </p>
-            </div>
-            <div class="pricing-box">
-                <h4>Data Lakes e Big Data:</h4>
-                <p>
-                    Armazene grandes volumes de dados estruturados e não estruturados para analytics com Athena, Redshift Spectrum e EMR.
-                </p>
-            </div>
-            <div class="pricing-box">
-                <h4>Hospedagem de Sites Estáticos:</h4>
-                <p>
-                    Hospede sites HTML, CSS e JavaScript diretamente do S3 com alta disponibilidade.
-                </p>
-            </div>
-            <div class="pricing-box">
-                <h4>Distribuição de Conteúdo:</h4>
-                <p>
-                    Armazene e distribua mídias, imagens, vídeos e downloads de software.
-                </p>
-            </div>
-            <div class="pricing-box">
-                <h4>Arquivamento de Dados:</h4>
-                <p>
-                    Armazenamento de longo prazo para conformidade regulatória e requisitos de retenção.
-                </p>
-            </div>
-            <div class="pricing-box">
-                <h4>Armazenamento de Logs:</h4>
-                <p>
-                    Centralize logs de aplicações, servidores e serviços AWS para análise e auditoria.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>💰 Modelo de Precificação</h2>
-            <div class="service-box">
-                <h4>Armazenamento:</h4>
-                <p>
-                    Cobrado por GB armazenado por mês. Preço varia conforme a classe de armazenamento.
-                </p>
-            </div>
-            <div class="service-box">
-                <h4>Requisições:</h4>
-                <p>
-                    Cobra-se por número de requisições (PUT, COPY, POST, LIST, GET, SELECT).
-                </p>
-            </div>
-            <div class="service-box">
-                <h4>Transferência de Dados:</h4>
-                <p>
-                    Entrada de dados é gratuita. Saída de dados é cobrada após o nível gratuito.
-                </p>
-            </div>
-            <div class="service-box">
-                <h4>Gerenciamento:</h4>
-                <p>
-                    Custos adicionais para recursos como S3 Inventory, Analytics e Object Tagging.
-                </p>
-            </div>
-            <div class="service-box">
-                <h4>Replicação:</h4>
-                <p>
-                    Cobra-se pela replicação de objetos entre regiões ou dentro da mesma região.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2>💡 Melhores Práticas</h2>
-            <div class="highlight-box">
-                <h4>Use Classes de Armazenamento Apropriadas:</h4>
-                <p>
-                    Escolha a classe correta baseada nos padrões de acesso para otimizar custos.
-                </p>
-            </div>
-            <div class="highlight-box">
-                <h4>Implemente Lifecycle Policies:</h4>
-                <p>
-                    Automatize a movimentação e expiração de objetos para reduzir custos.
-                </p>
-            </div>
-            <div class="highlight-box">
-                <h4>Habilite Versionamento:</h4>
-                <p>
-                    Proteja contra exclusões acidentais e mantenha histórico de alterações.
-                </p>
-            </div>
-            <div class="highlight-box">
-                <h4>Configure Replicação: </h4>
-                <p>
-                    Implemente CRR para disaster recovery e SRR para conformidade.
-                </p>
-            </div>
-            <div class="highlight-box">
-                <h4>Use Criptografia:</h4>
-                <p>
-                    Sempre criptografe dados sensíveis em repouso e em trânsito.
-                </p>
-            </div>
-            <div class="highlight-box">
-                <h4>Monitore com CloudWatch:</h4>
-                <p>
-                   Configure métricas e alarmes para monitorar uso, custos e performance.
-                </p>
-            </div>
-            <div class="highlight-box">
-                <h4>Aplique Block Public Access:</h4>
-                <p>
-                    Ative por padrão para prevenir exposição acidental de dados.
-                </p>
-            </div>
-            <div class="highlight-box">
-                <h4>Use Tags para Organização:</h4>
-                <p>
-                    Implemente estratégia de tags consistente para gerenciamento de custos e governança.
-                </p>
-            </div>
-            <p><strong></strong> </p>
-            
-            <p><strong>
-            
-            <p><strong>
-            
-            <p><strong></p>
-            
-            <p><strong></p>
-            
-            <p><strong></p>
-            
-            <p><strong></strong> </p>
-            
-            <p><strong></p>
-        </div>
-
-        <center>
-            <a class="link-voltar" href="/materiais">Voltar para Materiais</a>
-        </center>
     </div>
+
+    <div class="content-card">
+        <h2>📦 Conceitos Fundamentais do S3</h2>
+
+        <h3>O que é S3?</h3>
+        <p>
+            O S3 (Simple Storage Service) é um serviço de armazenamento de objetos desenvolvido para
+            armazenar e recuperar qualquer quantidade de dados de qualquer lugar. Ele oferece
+            escalabilidade, disponibilidade de dados, segurança e desempenho líderes do setor.
+        </p>
+
+        <div class="info-box">
+            <h4>Estrutura Básica</h4>
+            <p>
+                <strong>• Objetos e Buckets:</strong> Os dados são armazenados como objetos em
+                contêineres chamados buckets.<br><br>
+                <strong>• Chave de Objeto:</strong> Cada objeto tem um nome exclusivo (chave de objeto).<br><br>
+                <strong>• Buckets:</strong> Para armazenar dados no S3, você deve primeiro criar um
+                bucket, especificando um nome e uma Região AWS.<br><br>
+                <strong>• Acessibilidade:</strong> O S3 pode ser acessado por meio do Console de
+                Gerenciamento da AWS, AWS CLI, AWS SDKs ou diretamente usando Endpoints REST (HTTP/HTTPS).
+            </p>
+        </div>
+
+        <h3>Atributos Críticos do S3</h3>
+        <table class="comparison-table">
+            <thead>
+            <tr>
+                <th>Atributo</th>
+                <th>Descrição</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>Durabilidade</strong></td>
+                <td>Projetado para 99,999999999% (11 noves) de durabilidade. Os dados são armazenados
+                de forma redundante em várias instalações e dispositivos diferentes dentro de uma Região AWS.</td>
+            </tr>
+            <tr>
+                <td><strong>Escalabilidade</strong></td>
+                <td>É totalmente elástico, aumentando e diminuindo automaticamente; não há necessidade
+                de provisionar armazenamento. Você paga somente pelo uso.</td>
+            </tr>
+            <tr>
+                <td><strong>Disponibilidade</strong></td>
+                <td>O S3 foi projetado para fornecer 99,99% de disponibilidade por padrão.</td>
+            </tr>
+            <tr>
+                <td><strong>Consistência</strong></td>
+                <td>O Amazon S3 fornece consistência de leitura após gravação forte (strong read-after-write
+                consistency) automaticamente para todas as aplicações.</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="success-box">
+            <h4>Segurança</h4>
+            <p>
+                O S3 é <strong>seguro, privado e criptografado por padrão</strong>. Você pode proteger
+                seus dados e configurar controles de acesso usando:<br><br>
+                • Políticas de bucket<br>
+                • Políticas do AWS Identity and Access Management (IAM)<br>
+                • Listas de Controle de Acesso (ACLs)<br>
+                • <strong>Versionamento do S3:</strong> Permite manter múltiplas versões de um objeto,
+                sendo útil para restaurar objetos excluídos ou sobrescritos acidentalmente
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>🗂️ Classes de Armazenamento do Amazon S3</h2>
+        <p>
+            O S3 oferece diversas classes para permitir que você otimize custos com base na frequência
+            e no padrão de acesso aos dados. Conhecer as principais classes e seus casos de uso é essencial.
+        </p>
+
+        <table class="comparison-table">
+            <thead>
+            <tr>
+                <th>Classe de Armazenamento</th>
+                <th>Padrão de Acesso</th>
+                <th>Latência</th>
+                <th>Resiliência</th>
+                <th>Uso Típico</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>S3 Standard</strong></td>
+                <td>Frequente</td>
+                <td>Milissegundos</td>
+                <td>Multi-AZ</td>
+                <td>Conteúdo de sites, aplicativos, Big Data</td>
+            </tr>
+            <tr>
+                <td><strong>S3 Standard-IA</strong></td>
+                <td>Infrequente</td>
+                <td>Milissegundos</td>
+                <td>Multi-AZ</td>
+                <td>Backups, DR, dados com acesso rápido quando necessário</td>
+            </tr>
+            <tr>
+                <td><strong>S3 One Zone-IA</strong></td>
+                <td>Infrequente</td>
+                <td>Milissegundos</td>
+                <td>Única AZ</td>
+                <td>Dados não críticos que podem ser recriados; menor custo</td>
+            </tr>
+            <tr>
+                <td><strong>S3 Intelligent-Tiering</strong></td>
+                <td>Imprevisível/Mutável</td>
+                <td>Milissegundos</td>
+                <td>Multi-AZ</td>
+                <td>Otimiza custos automaticamente, sem taxas de recuperação</td>
+            </tr>
+            <tr>
+                <td><strong>S3 Glacier Instant Retrieval</strong></td>
+                <td>Raro, Acesso Instantâneo</td>
+                <td>Milissegundos</td>
+                <td>Multi-AZ</td>
+                <td>Arquivamento com recuperação imediata. Mínimo 90 dias</td>
+            </tr>
+            <tr>
+                <td><strong>S3 Glacier Flexible Retrieval</strong></td>
+                <td>Raro, Acesso Flexível</td>
+                <td>Minutos a Horas</td>
+                <td>Multi-AZ</td>
+                <td>Arquivamento de longo prazo. Recuperações: 1-5 min, 3-5h ou 5-12h. Mínimo 90 dias</td>
+            </tr>
+            <tr>
+                <td><strong>S3 Glacier Deep Archive</strong></td>
+                <td>Mais Raro</td>
+                <td>Até 12 Horas</td>
+                <td>Multi-AZ</td>
+                <td>Conformidade regulatória, retenção 7-10 anos. Menor custo. Mínimo 180 dias</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="content-card">
+        <h2>💰 Modelo de Precificação e Otimização de Custos</h2>
+        <p>
+            O S3 utiliza o modelo de <strong>Pague Somente Pelo Que Usar</strong>, e não há cobrança
+            mínima. Entender o que gera custo e o que é gratuito é crucial.
+        </p>
+
+        <div class="warning-box">
+            <h4>Fatores que Geram Custo (Você Paga Por)</h4>
+            <p>
+                <strong>1. Armazenamento (GB/mês):</strong> Baseado no volume de dados e na Classe de
+                Armazenamento escolhida. Classes IA e Glacier têm tamanhos mínimos de objeto e durações
+                mínimas (30, 90 ou 180 dias).<br><br>
+                <strong>2. Solicitações:</strong> O número e o tipo de operações de API realizadas
+                (PUT, COPY, POST, LIST, GET).<br><br>
+                <strong>3. Transferência de Dados para FORA (Egress):</strong> Transferências de dados
+                do S3 para a Internet ou para outras Regiões AWS.<br><br>
+                <strong>4. Recuperação de Dados (Retrieval):</strong> Custos associados à recuperação
+                de dados das classes Infrequent Access (IA) e Glacier.
+            </p>
+        </div>
+
+        <div class="success-box">
+            <h4>Transferências Gratuitas (Você NÃO Paga Por)</h4>
+            <p>
+                ✅ Transferência de dados PARA o Amazon S3 (Upload)<br><br>
+                ✅ Transferência de dados para serviços AWS na mesma Região que o bucket S3
+                (ex: S3 para EC2 ou CloudFront na mesma Região)<br><br>
+                ✅ O Nível Gratuito da AWS inclui 5 GB de armazenamento Standard e 100 GB de
+                transferência de dados para fora por mês
+            </p>
+        </div>
+
+        <h3>Recursos de Otimização</h3>
+
+        <div class="highlight-box">
+            <h4>Política de Ciclo de Vida (S3 Lifecycle)</h4>
+            <p>
+                Ferramenta essencial para <strong>otimizar custos</strong> ao configurar a transição
+                automática de objetos entre classes (ex: de Standard para Standard-IA ou Glacier) à
+                medida que envelhecem, ou para expirarem objetos (excluí-los).
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>S3 Intelligent-Tiering</h4>
+            <p>
+                Reduz os custos <strong>automaticamente</strong> para dados com padrões de acesso variáveis,
+                movendo objetos entre camadas sem taxas de recuperação.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>S3 Storage Lens</h4>
+            <p>
+                O Amazon S3 Storage Lens é um recurso de análise de armazenamento que fornece
+                <strong>visibilidade em toda a organização</strong> sobre a atividade e o armazenamento
+                de objetos. Ele analisa métricas para fornecer recomendações contextuais que ajudam a
+                otimizar custos de armazenamento e aplicar melhores práticas (como identificação de
+                buckets sem regras de ciclo de vida ou versionamento).
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>🎯 Casos de Uso Comuns do S3</h2>
+        <p>
+            O S3 é a base para diversos cenários na nuvem:
+        </p>
+
+        <div class="highlight-box">
+            <h4>Data Lakes</h4>
+            <p>
+                O S3 é usado como um repositório centralizado e dimensionável para Big Data, Machine
+                Learning, análise e IA generativa, armazenando dados estruturados e não estruturados
+                em qualquer escala.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>Hospedagem na Web</h4>
+            <p>
+                Ideal para armazenar <strong>conteúdo estático</strong> para websites (arquivos HTML,
+                CSS, JavaScript).
+            </p>
+        </div>
+
+        <div class="success-box">
+            <h4>Backup e Recuperação de Desastres (DR)</h4>
+            <p>
+                Devido à sua alta durabilidade e capacidade de replicação entre Regiões, é fundamental
+                para planos de backup.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>Armazenamento de Dados de Aplicativos</h4>
+            <p>
+                Serve como um local compartilhado altamente durável para objetos acessados por instâncias
+                EC2 ou aplicativos.
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>Arquivamento</h4>
+            <p>
+                As classes S3 Glacier são projetadas especificamente para arquivamento de longo prazo
+                com o menor custo (ex: conformidade regulatória, preservação de mídia digital).
+            </p>
+        </div>
+
+        <h3>Replicação (CRR e SRR)</h3>
+        <p>
+            A replicação permite a cópia assíncrona de objetos e é essencial para DR, conformidade e
+            minimização de latência.
+        </p>
+
+        <table class="comparison-table">
+            <thead>
+            <tr>
+                <th>Tipo de Replicação</th>
+                <th>Descrição</th>
+                <th>Casos de Uso</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>Replicação entre Regiões (CRR)</strong></td>
+                <td>Copia objetos entre buckets em diferentes Regiões AWS</td>
+                <td>Conformidade com requisitos geográficos, minimização de latência para usuários
+                em diferentes localizações</td>
+            </tr>
+            <tr>
+                <td><strong>Replicação na Mesma Região (SRR)</strong></td>
+                <td>Copia objetos entre buckets na mesma Região AWS</td>
+                <td>Agregação de logs em um único bucket, cumprimento de leis de soberania de dados
+                com múltiplas cópias em contas separadas</td>
+            </tr>
+            <tr>
+                <td><strong>Controle de Tempo de Replicação S3 (S3 RTC)</strong></td>
+                <td>Garante que 99,99% dos novos objetos sejam replicados em 15 minutos (com SLA)</td>
+                <td>Cenários que exigem replicação rápida e previsível</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="content-card">
+        <h2>🎓 Pontos-Chave para a Certificação</h2>
+
+        <div class="warning-box">
+            <h4>Conceitos Essenciais para o Exame</h4>
+            <p>
+                ✅ <strong>DURABILIDADE 11 NOVES:</strong> S3 oferece 99,999999999% de durabilidade com
+                redundância em múltiplas instalações.<br><br>
+                ✅ <strong>CONSISTÊNCIA FORTE:</strong> Read-after-write consistency para todas as operações.<br><br>
+                ✅ <strong>CLASSES DE ARMAZENAMENTO:</strong> Standard (frequente), IA (infrequente),
+                Glacier (arquivamento), Intelligent-Tiering (automático).<br><br>
+                ✅ <strong>OTIMIZAÇÃO DE CUSTOS:</strong> Use Lifecycle policies para transições automáticas
+                e S3 Storage Lens para análise.<br><br>
+                ✅ <strong>GRATUITO PARA UPLOAD:</strong> Transferências para dentro do S3 e para serviços
+                na mesma região são gratuitas.<br><br>
+                ✅ <strong>COBRADO POR EGRESS:</strong> Transferências para fora (Internet ou outras regiões)
+                geram custos.<br><br>
+                ✅ <strong>CRR vs SRR:</strong> CRR para diferentes regiões (DR, latência), SRR para mesma
+                região (logs, conformidade).<br><br>
+                ✅ <strong>VERSIONAMENTO:</strong> Permite manter múltiplas versões e recuperar objetos
+                excluídos acidentalmente.<br><br>
+                ✅ <strong>DATA LAKES:</strong> S3 é a base para Big Data, ML e análise em qualquer escala.<br><br>
+                ✅ <strong>GLACIER DEEP ARCHIVE:</strong> Menor custo, recuperação até 12h, mínimo 180 dias
+                de armazenamento.
+            </p>
+        </div>
+    </div>
+
+    <center>
+        <a class="link-voltar" href="/materiais">Voltar para Materiais</a>
+    </center>
+</div>
 </body>
 </html>
