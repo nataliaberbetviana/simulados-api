@@ -155,6 +155,10 @@ def recursos_seguranca():
 def infraestrutura():
     return render_template('infraestrutura.html')
 
+@app.route('/definicao_preco')
+def definicao_preco():
+    return render_template('definicao_preco.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')

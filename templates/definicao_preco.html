@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelo de Preços AWS - Guia Completo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --primary-light: #FFB84D;
+            --secondary: #232F3E;
+            --secondary-light: #37475A;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-card h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out backwards;
+        }
+
+        .content-card:nth-child(2) { animation-delay: 0.1s; }
+        .content-card:nth-child(3) { animation-delay: 0.2s; }
+        .content-card:nth-child(4) { animation-delay: 0.3s; }
+        .content-card:nth-child(5) { animation-delay: 0.4s; }
+        .content-card:nth-child(6) { animation-delay: 0.5s; }
+        .content-card:nth-child(7) { animation-delay: 0.6s; }
+        .content-card:nth-child(8) { animation-delay: 0.7s; }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card h2 {
+            color: var(--secondary);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-card h3 {
+            color: var(--secondary-light);
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+        }
+
+        .content-card p {
+            color: var(--gray-700);
+            line-height: 1.8;
+            font-size: 1.05em;
+            margin-bottom: 15px;
+        }
+
+        .content-card strong {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .info-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-left: 4px solid #22c55e;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .success-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .comparison-table th {
+            background: var(--gray-100);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--gray-50);
+        }
+
+        .link-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: var(--white);
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            animation: fadeIn 0.6s ease-out 1s backwards;
+        }
+
+        .link-voltar::before {
+            content: '←';
+            font-size: 1.3em;
+        }
+
+        .link-voltar:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header-card {
+                padding: 35px 25px;
+            }
+
+            .header-card h1 {
+                font-size: 2em;
+            }
+
+            .content-card {
+                padding: 30px 20px;
+            }
+
+            .content-card h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-card h1 {
+                font-size: 1.6em;
+            }
+
+            .header-icon {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header-card">
+        <div class="header-content">
+            <div class="header-icon">💰</div>
+            <h1>Modelo de Preços AWS</h1>
+            <p>Guia Essencial para Certificação: Fundamentos e Estratégias de Otimização</p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>🎯 A Filosofia Central do Preço AWS</h2>
+        <p>
+            A AWS adota uma abordagem de preços de <strong>pagamento conforme o uso</strong>
+            (Pay-as-you-go), tornando-se semelhante a um serviço público, como energia ou água.
+            O objetivo central é a flexibilidade: você paga apenas pelos serviços individuais que
+            precisa e pelo tempo que os utiliza, sem a necessidade de contratos de longo prazo ou
+            taxas de cancelamento.
+        </p>
+
+        <div class="highlight-box">
+            <h4>CapEx vs. OpEx: A Grande Mudança</h4>
+            <p>
+                <strong>INFRAESTRUTURA LOCAL (ON-PREMISES):</strong> Exige <strong>Despesas de
+                Capital (CapEx)</strong>. São custos fixos e elevados iniciais (hardware, datacenters)
+                que são difíceis de estimar e não diminuem se a capacidade for subutilizada.<br><br>
+                <strong>NUVEM AWS:</strong> Permite a troca de CapEx por <strong>Despesas
+                Operacionais (OpEx)</strong>. O pagamento é variável e baseado no consumo efetivo.
+                Isso permite agilidade e escalabilidade, adaptando a empresa conforme a necessidade,
+                e não com base em previsões.
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>🏛️ Os Quatro Pilares do Modelo de Preço</h2>
+        <p>
+            Para otimizar os custos, a AWS utiliza quatro estratégias principais que você deve
+            conhecer a fundo para a certificação.
+        </p>
+
+        <div class="success-box">
+            <h4>1. Pagamento Conforme o Uso (Pay-as-you-go)</h4>
+            <p>
+                Este pilar representa a mudança fundamental do modelo de TI tradicional para a nuvem.<br><br>
+                <strong>SUBSTITUIÇÃO DE CUSTOS:</strong> Você troca Despesas de Capital (CapEx) por
+                Despesas Operacionais (OpEx), que são variáveis e baseadas no consumo real.<br><br>
+                <strong>FLEXIBILIDADE TOTAL:</strong> Permite iniciar e interromper o uso de um
+                produto a qualquer momento.<br><br>
+                <strong>COBRANÇA:</strong> O custo de Computação (como EC2) é cobrado por hora ou
+                por segundo, dependendo do recurso.
+            </p>
+        </div>
+
+        <div class="success-box">
+            <h4>2. Pague Menos ao Fazer Reserva (Comprometimento)</h4>
+            <p>
+                Permite economizar significativamente em serviços como Amazon EC2 e Amazon RDS ao
+                comprometer-se com um determinado nível de uso.<br><br>
+                <strong>INSTÂNCIAS RESERVADAS (IR):</strong><br>
+                • <strong>AURI (Pagamento Total Antecipado):</strong> Oferece o <strong>maior desconto</strong><br>
+                • <strong>PURI (Pagamento Antecipado Parcial):</strong> Oferece descontos menores com menor gasto inicial<br>
+                • <strong>NURI (Sem Pagamento Antecipado):</strong> Oferece os menores descontos, sem gasto inicial<br><br>
+                <strong>SAVINGS PLANS:</strong> Modelo de precificação flexível que oferece economia
+                substancial no uso de produtos de computação (Amazon EC2, AWS Lambda, AWS Fargate) e
+                Machine Learning. Requer um compromisso de uso consistente (medido em USD/hora) por
+                um ou três anos.
+            </p>
+        </div>
+
+        <div class="success-box">
+            <h4>3. Pague Menos ao Usar Mais (Descontos por Volume)</h4>
+            <p>
+                A utilização em maior volume resulta em custos mais baixos por unidade, aproveitando
+                a economia de escala.<br><br>
+                <strong>PREÇOS EM CAMADAS (Tiered Pricing):</strong> Para serviços como o Amazon S3
+                e a transferência de dados para fora do EC2, a definição de preço é feita em camadas;
+                quanto mais você usa por GB, menor será o preço por GB.
+            </p>
+        </div>
+
+        <div class="success-box">
+            <h4>4. Pague Menos à Medida que a AWS Cresce</h4>
+            <p>
+                A AWS foca na redução de custos operacionais e repassa essas economias aos clientes
+                por meio de preços mais baixos ao longo do tempo. À medida que a AWS cresce e otimiza
+                suas operações, todos os clientes se beneficiam dessas melhorias.
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>📊 Fatores Fundamentais de Custo</h2>
+        <p>
+            Três fatores determinam o custo da sua solução na AWS. Isso é um ponto de atenção
+            crucial na prova de certificação.
+        </p>
+
+        <div class="info-box">
+            <h4>Os Três Fatores de Custo</h4>
+            <p>
+                <strong>1. COMPUTAÇÃO:</strong> Cobrada por hora/segundo (dependendo do recurso),
+                variando conforme o tipo de instância.<br><br>
+                <strong>2. ARMAZENAMENTO:</strong> Cobrado normalmente por GB (ex: S3, EBS).<br><br>
+                <strong>3. TRANSFERÊNCIA DE DADOS:</strong> Este é o fator mais testado em exames de
+                certificação e requer atenção especial.
+            </p>
+        </div>
+
+        <div class="warning-box">
+            <h4>A Regra Essencial da Transferência de Dados</h4>
+            <p>
+                <strong>TRANSFERÊNCIA DE ENTRADA (INGRESS):</strong> Dados movidos <strong>PARA a
+                AWS</strong> são, na maioria dos casos, <strong>GRATUITOS</strong>. Geralmente não
+                há cobrança.<br><br>
+                <strong>TRANSFERÊNCIA DE SAÍDA (EGRESS):</strong> Dados movidos <strong>PARA FORA
+                da AWS</strong> são agregados e <strong>COBRADOS por GB</strong>. Essa cobrança
+                aparece no relatório mensal como "Transferência de dados para fora da AWS".<br><br>
+                <strong>TRANSFERÊNCIA INTERNA:</strong> <strong>Geralmente não há cobrança</strong>
+                pela transferência entre serviços <strong>dentro da mesma Região da AWS</strong>.<br><br>
+                <strong>LEMBRETE:</strong> Quanto mais dados você transfere para fora, o preço por GB
+                pode diminuir devido à definição de preços em camadas.
+            </p>
+        </div>
+
+        <h3>Tabela de Cobrança de Transferência de Dados</h3>
+        <table class="comparison-table">
+            <thead>
+            <tr>
+                <th>Tipo de Transferência</th>
+                <th>Cobrança</th>
+                <th>Regra Essencial</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>Entrada (Dados para a AWS)</strong></td>
+                <td>Geralmente não há cobrança</td>
+                <td>Os dados movidos PARA a AWS são, na maioria dos casos, gratuitos</td>
+            </tr>
+            <tr>
+                <td><strong>Saída (Dados para Fora da AWS)</strong></td>
+                <td>Cobrada por GB</td>
+                <td>Agregados entre serviços e cobrados de acordo com a taxa de transferência</td>
+            </tr>
+            <tr>
+                <td><strong>Transferência Interna</strong></td>
+                <td>Geralmente não há cobrança</td>
+                <td>Transferência entre serviços dentro da mesma Região da AWS é gratuita</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="content-card">
+        <h2>🛠️ Ferramentas de Custo e Gerenciamento</h2>
+
+        <div class="highlight-box">
+            <h4>1. AWS Calculadora de Preços (AWS Pricing Calculator)</h4>
+            <p>
+                Esta é sua ferramenta obrigatória para estimar a fatura mensal.<br><br>
+                <strong>PROPÓSITO:</strong> Gerar estimativas detalhadas de custos por serviço e por
+                Região.<br><br>
+                <strong>FUNCIONALIDADE:</strong> Permite modelar e comparar soluções complexas (como
+                Recuperação de Desastre) e identificar oportunidades de redução de custos.<br><br>
+                <strong>COMO USAR:</strong> Para configurar uma estimativa, você deve selecionar uma
+                Região e inserir as especificações (parâmetros) do serviço desejado (ex: Amazon EC2).
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>2. Custo Total de Propriedade (TCO)</h4>
+            <p>
+                O TCO é a estimativa financeira utilizada para <strong>comparar os custos diretos e
+                indiretos</strong> de uma infraestrutura local (On-Premises) versus a migração para a
+                nuvem AWS.<br><br>
+                Esta ferramenta é essencial para justificar a migração para a nuvem, mostrando não
+                apenas os custos de hardware e software, mas também custos indiretos como energia,
+                refrigeração, espaço físico e equipe de manutenção.
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>🎁 Serviços Gratuitos</h2>
+        <p>
+            Você deve distinguir entre serviços gratuitos por um tempo limitado e serviços que não
+            têm custo adicional.
+        </p>
+
+        <div class="success-box">
+            <h4>Nível Gratuito (Free Tier)</h4>
+            <p>
+                Aplicável a novos clientes por até um ano, permitindo a experiência prática em
+                produtos específicos. Exemplo: Microinstância T2 do EC2 com uso limitado mensal.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>Serviços Sem Custo Adicional</h4>
+            <p>
+                Serviços que não incorrem em cobrança direta, embora possam provisionar recursos que
+                serão cobrados em outros serviços. Exemplos importantes incluem:<br><br>
+                • <strong>Amazon VPC</strong> (Virtual Private Cloud)<br>
+                • <strong>AWS IAM</strong> (Identity and Access Management)<br>
+                • <strong>AWS Organizations</strong> (para faturamento consolidado)<br>
+                • <strong>AWS CloudFormation</strong><br><br>
+                <strong>IMPORTANTE:</strong> Embora esses serviços não tenham custo próprio, os
+                recursos que eles provisionam ou gerenciam podem gerar cobranças.
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>🚀 Inovações AWS re:Invent 2024</h2>
+        <p>
+            Embora esses tópicos representem inovações recentes, eles destacam o foco contínuo da AWS
+            em performance, custo-benefício e segurança, conceitos importantes para um profissional
+            de nuvem.
+        </p>
+
+        <div class="highlight-box">
+            <h4>1. IA e Otimização de Custos</h4>
+            <p>
+                <strong>AMAZON BEDROCK:</strong> Serviço chave para IA generativa, oferecendo vários
+                modelos e facilitando a criação de aplicações sem gerenciar infraestrutura complexa.<br><br>
+                <strong>PROMPT ROUTER:</strong> Maximiza a performance e minimiza os custos ao
+                encaminhar solicitações de IA para diferentes modelos de acordo com o melhor
+                custo-benefício para a sua problemática.<br><br>
+                <strong>MODEL DISTILLATION:</strong> Recurso que permite criar um modelo de IA menor,
+                mais rápido e mais econômico a partir de um modelo robusto do Bedrock, otimizando a
+                quantidade de prompts.
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>2. Segurança e Governança</h4>
+            <p>
+                <strong>VPC ORIGIN:</strong> Atualização do CloudFront que aumenta a segurança ao
+                permitir que a borda computacional aponte diretamente para a rede privada, reduzindo
+                a exposição pública de serviços sensíveis.<br><br>
+                <strong>AMAZON GUARDDUTY:</strong> Serviço de proteção ativa que recebeu aprimoramento
+                com o Extended Threat Detection, melhorando a precisão na identificação e rastreio de
+                sequências de atividades de ameaças.<br><br>
+                <strong>RESOURCE CONTROL POLICIES:</strong> Nova camada de controle de governança que
+                oferece maior granularidade para os administradores de conta gerenciarem recursos em
+                subcontas, mitigando o uso indevido.
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>3. Banco de Dados</h4>
+            <p>
+                <strong>AURORA LIMITLESS:</strong> Solução desenvolvida para aplicações de larga
+                escala que garante integridade e confiabilidade em cargas massivas de trabalho. Ele
+                segrega as funcionalidades de transações, dados e storages em APIs internas,
+                combinando alta integridade com a disponibilidade que o Serverless (baseado em Shards)
+                oferece.
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>🎓 Pontos-Chave para a Certificação</h2>
+
+        <div class="warning-box">
+            <h4>Conceitos Essenciais para o Exame</h4>
+            <p>
+                ✅ <strong>PAY-AS-YOU-GO:</strong> Filosofia central da AWS - pague apenas pelo que usar,
+                quando usar.<br><br>
+                ✅ <strong>CAPEX vs OPEX:</strong> A nuvem substitui despesas de capital fixas por
+                despesas operacionais variáveis.<br><br>
+                ✅ <strong>QUATRO PILARES:</strong> Pay-as-you-go, Reserva, Volume, Crescimento da AWS.<br><br>
+                ✅ <strong>TRÊS FATORES DE CUSTO:</strong> Computação, Armazenamento, Transferência de Dados.<br><br>
+                ✅ <strong>TRANSFERÊNCIA DE DADOS:</strong> Entrada geralmente gratuita, Saída cobrada
+                por GB, Interna na mesma região geralmente gratuita.<br><br>
+                ✅ <strong>INSTÂNCIAS RESERVADAS:</strong> AURI (maior desconto), PURI (intermediário),
+                NURI (menor desconto).<br><br>
+                ✅ <strong>SAVINGS PLANS:</strong> Compromisso flexível medido em USD/hora por 1 ou 3 anos.<br><br>
+                ✅ <strong>PRICING CALCULATOR:</strong> Ferramenta para estimar custos antes da implementação.<br><br>
+                ✅ <strong>TCO:</strong> Compara custos On-Premises vs AWS.<br><br>
+                ✅ <strong>SERVIÇOS GRATUITOS:</strong> VPC, IAM, Organizations, CloudFormation não têm
+                custo próprio.
+            </p>
+        </div>
+    </div>
+
+    <center>
+        <a class="link-voltar" href="/materiais">Voltar para Materiais</a>
+    </center>
+</div>
+</body>
+</html>
