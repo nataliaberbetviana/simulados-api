@@ -139,45 +139,73 @@
             opacity: 0.95;
         }
 
+        .filter-container {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 25px 35px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 35px;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 12px 24px;
+            border: 2px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-700);
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
         .materiais-grid {
             display: grid;
-            /* ATUALIZAÇÃO: Define a largura mínima para 350px.
-               Em um contêiner de 1200px, 3 colunas de 350px (1050px) cabem e se expandem com 1fr.
-               4 colunas de 350px (1400px) não cabem, forçando o layout a ter no máximo 3.
-            */
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
             margin-bottom: 40px;
         }
 
         .material-card {
             background: var(--white);
             border-radius: var(--radius-xl);
-            padding: 35px;
+            padding: 30px;
             box-shadow: var(--shadow-lg);
             position: relative;
             overflow: hidden;
             transition: var(--transition);
-            animation: slideIn 0.6s ease-out backwards;
             text-decoration: none;
             color: inherit;
-            display: block;
-            /* Garante que o card se estique quando o conteúdo de outro card for maior */
-            display: flex; 
+            display: flex;
             flex-direction: column;
         }
-        
-        /* Estilos adicionais para layout interno do card */
-        .material-card p {
-            flex-grow: 1; /* Faz o parágrafo ocupar o máximo de espaço vertical */
-            margin-bottom: 20px;
+
+        .material-card.hidden {
+            display: none;
         }
-
-
-        .material-card:nth-child(1) { animation-delay: 0.1s; }
-        .material-card:nth-child(2) { animation-delay: 0.2s; }
-        .material-card:nth-child(3) { animation-delay: 0.3s; }
-        .material-card:nth-child(4) { animation-delay: 0.4s; }
 
         .material-card::before {
             content: '';
@@ -186,8 +214,31 @@
             left: 0;
             right: 0;
             height: 5px;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
             transition: var(--transition);
+        }
+
+        .material-card.fundamentos::before {
+            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .material-card.computacao::before {
+            background: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
+        .material-card.armazenamento::before {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        }
+
+        .material-card.redes::before {
+            background: linear-gradient(90deg, #06b6d4 0%, #0891b2 100%);
+        }
+
+        .material-card.seguranca::before {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .material-card.dados::before {
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
         }
 
         .material-card:hover {
@@ -211,8 +262,8 @@
         }
 
         .material-icon {
-            font-size: 3.5em;
-            margin-bottom: 20px;
+            font-size: 3.2em;
+            margin-bottom: 18px;
             display: block;
             transition: var(--transition);
         }
@@ -223,15 +274,17 @@
 
         .material-card h3 {
             color: var(--secondary);
-            font-size: 1.6em;
+            font-size: 1.5em;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .material-card p {
             color: var(--gray-700);
             line-height: 1.7;
-            font-size: 1.05em;
+            font-size: 1em;
+            flex-grow: 1;
+            margin-bottom: 18px;
         }
 
         .material-status {
@@ -242,14 +295,25 @@
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: var(--white);
             border-radius: 20px;
-            font-size: 0.9em;
+            font-size: 0.85em;
             font-weight: 600;
-            margin-top: auto; /* Empurra o status para o final do card */
+            margin-top: auto;
         }
 
         .material-status::before {
             content: '✓';
             font-size: 1.2em;
+        }
+
+        .material-category {
+            display: inline-block;
+            padding: 5px 12px;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-bottom: 12px;
         }
 
         .link-voltar {
@@ -265,7 +329,6 @@
             font-size: 1.1em;
             box-shadow: var(--shadow-md);
             transition: var(--transition);
-            animation: fadeIn 0.6s ease-out 0.5s backwards;
         }
 
         .link-voltar::before {
@@ -280,18 +343,6 @@
             box-shadow: var(--shadow-lg);
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        /* Removidas as media queries que forçavam 1fr, pois o auto-fit/minmax faz isso naturalmente */
         @media (max-width: 768px) {
             body {
                 padding: 20px 10px;
@@ -305,20 +356,22 @@
                 font-size: 2em;
             }
 
-            .header-card p {
-                font-size: 1.1em;
+            .filter-container {
+                padding: 20px;
+            }
+
+            .filter-btn {
+                padding: 10px 18px;
+                font-size: 0.9em;
             }
 
             .materiais-grid {
+                grid-template-columns: 1fr;
                 gap: 20px;
             }
 
             .material-card {
                 padding: 25px;
-            }
-
-            .material-card h3 {
-                font-size: 1.4em;
             }
         }
 
@@ -332,7 +385,7 @@
             }
 
             .material-icon {
-                font-size: 2.8em;
+                font-size: 2.5em;
             }
         }
     </style>
@@ -347,106 +400,174 @@
             </div>
         </div>
 
+        <div class="filter-container">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-category="all">
+                    <span>🎯</span> Todos
+                </button>
+                <button class="filter-btn" data-category="fundamentos">
+                    <span>🎓</span> Fundamentos
+                </button>
+                <button class="filter-btn" data-category="computacao">
+                    <span>💻</span> Computação
+                </button>
+                <button class="filter-btn" data-category="armazenamento">
+                    <span>💾</span> Armazenamento
+                </button>
+                <button class="filter-btn" data-category="redes">
+                    <span>🌐</span> Redes
+                </button>
+                <button class="filter-btn" data-category="seguranca">
+                    <span>🔐</span> Segurança
+                </button>
+                <button class="filter-btn" data-category="dados">
+                    <span>🗄️</span> Bancos de Dados
+                </button>
+            </div>
+        </div>
+
         <div class="materiais-grid">
-            <a href="{{ url_for('servicos_aws') }}" class="material-card">
-                <span class="material-icon">🔧</span>
-                <h3>Serviços AWS</h3>
-                <p>Conheça os serviços essenciais da AWS.</p>
-                <span class="material-status">Disponível</span>
-            </a>
-
-            <!-- Exemplo de como um segundo card aparecerá ao lado do primeiro -->
-            <a href="{{ url_for('home') }}ec2" class="material-card"> 
-                <span class="material-icon">💻</span>
-                <h3>Amazon EC2</h3>
-                <p>Elastic Compute Cloud - Servidores Virtuais na Nuvem.</p>
-                <span class="material-status">Disponível</span>
-            </a>
-
-            <!-- Novo Card Exemplo -->
-            <a href="{{ url_for('home') }}s3" class="material-card"> 
-                <span class="material-icon">🪣</span>
-                <h3>Amazon S3</h3>
-                <p>Simple Storage Service - Armazenamento de Objetos Altamente Durável</p>
-                <span class="material-status">Disponível</span>
-            </a>
-            
-            <a href="{{ url_for('home') }}vpc" class="material-card"> 
-                <span class="material-icon">🌐</span>
-                <h3>Amazon VPC</h3>
-                <p>Virtual Private Cloud - Rede Privada Virtual Isolada na AWS.</p>
-                <span class="material-status">Disponível</span>
-            </a>
-            
-            <a href="{{ url_for('home') }}iam" class="material-card"> 
-                <span class="material-icon">🔐</span>
-                <h3>AWS IAM</h3>
-                <p>Identity and Access Management - Gerenciamento de Identidade e Acesso.</p>
-                <span class="material-status">Disponível</span>
-            </a>
-           
-            <a href="{{ url_for('home') }}cloud_trail" class="material-card"> 
-                <span class="material-icon">📋</span>
-                <h3>AWS CloudTrail</h3>
-                <p>Auditoria e Rastreamento de Atividades na AWS.</p>
-                <span class="material-status">Disponível</span>
-            </a>
-            
-            <a href="{{ url_for('home') }}config" class="material-card"> 
-                <span class="material-icon">⚙️</span>
-                <h3>AWS Config</h3>
-                <p>Avaliação, Auditoria e Conformidade de Recursos AWS.</p>
-                <span class="material-status">Disponível</span>
-            </a>
-            
-            <a href="{{ url_for('home') }}trusted_advisor" class="material-card"> 
-                <span class="material-icon">✅</span>
-                <h3>AWS Trusted Advisor</h3>
-                <p>Recomendações em Tempo Real para Otimizar sua Infraestrutura AWS.</p>
-                <span class="material-status">Disponível</span>
-            </a>
-            
-            <a href="{{ url_for('home') }}praticas_recomendadas" class="material-card"> 
-                <span class="material-icon">🔐</span>
-                <h3>Práticas de Segurança AWS</h3>
-                <p>Melhores Práticas para Criar e Proteger sua Conta AWS.</p>
-                <span class="material-status">Disponível</span>
-            </a>
-            
-            <a href="{{ url_for('home') }}conformidade" class="material-card"> 
-                <span class="material-icon">🛡️</span>
-                <h3>Conformidade de Segurança AWS</h3>
-                <p>Frameworks, Padrões e Certificações para Compliance na Nuvem</p>
-                <span class="material-status">Disponível</span>
-            </a>
-            
-            <a href="{{ url_for('home') }}recursos_seguranca" class="material-card"> 
-                <span class="material-icon">🔐</span>
-                <h3>Recursos de Segurança AWS</h3>
-                <p>Serviços e Ferramentas para Proteger sua Infraestrutura na Nuvem</p>
-                <span class="material-status">Disponível</span>
-            </a>
-
-            <a href="{{ url_for('home') }}infraestrutura" class="material-card">
+            <!-- FUNDAMENTOS -->
+            <a href="{{ url_for('home') }}infraestrutura" class="material-card fundamentos">
+                <span class="material-category">Fundamentos</span>
                 <span class="material-icon">🌍</span>
                 <h3>Infraestrutura Global AWS</h3>
-                <p>Fundamentos de Regiões, Zonas de Disponibilidade e Pontos de Presença</p>
+                <p>Regiões, Zonas de Disponibilidade e Pontos de Presença</p>
                 <span class="material-status">Disponível</span>
             </a>
 
-            <a href="{{ url_for('home') }}definicao_preco" class="material-card">
+            <a href="{{ url_for('home') }}definicao_preco" class="material-card fundamentos">
+                <span class="material-category">Fundamentos</span>
                 <span class="material-icon">💰</span>
                 <h3>Modelo de Preços AWS</h3>
-                <p>Guia Essencial para Certificação: Fundamentos e Estratégias de Otimização</p>
+                <p>Fundamentos e Estratégias de Otimização</p>
                 <span class="material-status">Disponível</span>
             </a>
-            <!-- Adicione mais cards aqui conforme criar novos materiais -->
-            
+
+            <a href="{{ url_for('home') }}servicos_aws" class="material-card fundamentos">
+                <span class="material-category">Fundamentos</span>
+                <span class="material-icon">🔧</span>
+                <h3>Serviços AWS</h3>
+                <p>Visão geral dos principais serviços da AWS</p>
+                <span class="material-status">Disponível</span>
+            </a>
+
+            <a href="{{ url_for('home') }}praticas_recomendadas" class="material-card fundamentos">
+                <span class="material-category">Segurança</span>
+                <span class="material-icon">🛡️</span>
+                <h3>Práticas de Segurança AWS</h3>
+                <p>Melhores Práticas para Criar e Proteger sua Conta</p>
+                <span class="material-status">Disponível</span>
+            </a>
+
+            <a href="{{ url_for('home') }}conformidade" class="material-card fundamentos">
+                <span class="material-category">Segurança</span>
+                <span class="material-icon">📜</span>
+                <h3>Conformidade de Segurança AWS</h3>
+                <p>Frameworks, Padrões e Certificações para Compliance</p>
+                <span class="material-status">Disponível</span>
+            </a>
+
+            <a href="{{ url_for('home') }}recursos_seguranca" class="material-card fundamentos">
+                <span class="material-category">Segurança</span>
+                <span class="material-icon">🔒</span>
+                <h3>Recursos de Segurança AWS</h3>
+                <p>Serviços e Ferramentas para Proteger sua Infraestrutura</p>
+                <span class="material-status">Disponível</span>
+            </a>
+
+            <!-- COMPUTAÇÃO -->
+            <a href="{{ url_for('home') }}ec2" class="material-card computacao">
+                <span class="material-category">Computação</span>
+                <span class="material-icon">🖥️</span>
+                <h3>Amazon EC2</h3>
+                <p>Elastic Compute Cloud - Servidores Virtuais na Nuvem</p>
+                <span class="material-status">Disponível</span>
+            </a>
+
+            <!-- ARMAZENAMENTO -->
+            <a href="{{ url_for('home') }}s3" class="material-card armazenamento">
+                <span class="material-category">Armazenamento</span>
+                <span class="material-icon">🪣</span>
+                <h3>Amazon S3</h3>
+                <p>Simple Storage Service - Armazenamento de Objetos</p>
+                <span class="material-status">Disponível</span>
+            </a>
+
+            <!-- REDES -->
+            <a href="{{ url_for('home') }}vpc" class="material-card redes">
+                <span class="material-category">Redes</span>
+                <span class="material-icon">🌐</span>
+                <h3>Amazon VPC</h3>
+                <p>Virtual Private Cloud - Rede Privada Virtual Isolada</p>
+                <span class="material-status">Disponível</span>
+            </a>
+
+            <!-- SEGURANÇA -->
+            <a href="{{ url_for('home') }}iam" class="material-card seguranca">
+                <span class="material-category">Segurança</span>
+                <span class="material-icon">🔐</span>
+                <h3>AWS IAM</h3>
+                <p>Identity and Access Management - Gerenciamento de Acesso</p>
+                <span class="material-status">Disponível</span>
+            </a>
+
+            <a href="{{ url_for('home') }}cloud_trail" class="material-card seguranca">
+                <span class="material-category">Segurança</span>
+                <span class="material-icon">📋</span>
+                <h3>AWS CloudTrail</h3>
+                <p>Auditoria e Rastreamento de Atividades na AWS</p>
+                <span class="material-status">Disponível</span>
+            </a>
+
+            <a href="{{ url_for('home') }}config" class="material-card seguranca">
+                <span class="material-category">Segurança</span>
+                <span class="material-icon">⚙️</span>
+                <h3>AWS Config</h3>
+                <p>Avaliação, Auditoria e Conformidade de Recursos</p>
+                <span class="material-status">Disponível</span>
+            </a>
+
+            <a href="{{ url_for('home') }}trusted_advisor" class="material-card seguranca">
+                <span class="material-category">Segurança</span>
+                <span class="material-icon">✅</span>
+                <h3>AWS Trusted Advisor</h3>
+                <p>Recomendações para Otimizar sua Infraestrutura</p>
+                <span class="material-status">Disponível</span>
+            </a>
         </div>
 
         <center>
             <a class="link-voltar" href="{{ url_for('home') }}">Voltar para o Início</a>
         </center>
     </div>
+
+    <script>
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const materialCards = document.querySelectorAll('.material-card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active de todos os botões
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Adiciona active no botão clicado
+                btn.classList.add('active');
+
+                const category = btn.getAttribute('data-category');
+
+                materialCards.forEach(card => {
+                    if (category === 'all') {
+                        card.classList.remove('hidden');
+                    } else {
+                        if (card.classList.contains(category)) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
