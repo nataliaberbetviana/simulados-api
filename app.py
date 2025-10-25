@@ -159,6 +159,10 @@ def infraestrutura():
 def definicao_preco():
     return render_template('definicao_preco.html')
 
+@app.route('/responsabilidade_compartilhada')
+def responsabilidade_compartilhada():
+    return render_template('responsabilidade_compartilhada.html')
+
 @app.route('/links')
 def links():
     return render_template('links.html')

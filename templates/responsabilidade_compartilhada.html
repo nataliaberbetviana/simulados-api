@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelo de Responsabilidade Compartilhada AWS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #EC7211;
+            --primary-light: #FFB84D;
+            --secondary: #232F3E;
+            --secondary-light: #37475A;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-card h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out backwards;
+        }
+
+        .content-card:nth-child(2) { animation-delay: 0.1s; }
+        .content-card:nth-child(3) { animation-delay: 0.2s; }
+        .content-card:nth-child(4) { animation-delay: 0.3s; }
+        .content-card:nth-child(5) { animation-delay: 0.4s; }
+        .content-card:nth-child(6) { animation-delay: 0.5s; }
+        .content-card:nth-child(7) { animation-delay: 0.6s; }
+        .content-card:nth-child(8) { animation-delay: 0.7s; }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card h2 {
+            color: var(--secondary);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-card h3 {
+            color: var(--secondary-light);
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+        }
+
+        .content-card p {
+            color: var(--gray-700);
+            line-height: 1.8;
+            font-size: 1.05em;
+            margin-bottom: 15px;
+        }
+
+        .content-card strong {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .info-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-left: 4px solid #22c55e;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .success-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .danger-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-left: 4px solid #ef4444;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+        }
+
+        .danger-box h4 {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .comparison-table th {
+            background: var(--gray-100);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--gray-50);
+        }
+
+        .split-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .aws-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+        }
+
+        .cliente-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: var(--radius-md);
+        }
+
+        .aws-box h4, .cliente-box h4 {
+            color: var(--secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .link-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: var(--white);
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            animation: fadeIn 0.6s ease-out 1s backwards;
+        }
+
+        .link-voltar::before {
+            content: '←';
+            font-size: 1.3em;
+        }
+
+        .link-voltar:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header-card {
+                padding: 35px 25px;
+            }
+
+            .header-card h1 {
+                font-size: 2em;
+            }
+
+            .content-card {
+                padding: 30px 20px;
+            }
+
+            .content-card h2 {
+                font-size: 1.5em;
+            }
+
+            .split-box {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-card h1 {
+                font-size: 1.6em;
+            }
+
+            .header-icon {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header-card">
+        <div class="header-content">
+            <div class="header-icon">🤝</div>
+            <h1>Modelo de Responsabilidade Compartilhada AWS</h1>
+            <p>Segurança "DA" Nuvem vs Segurança "NA" Nuvem</p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>🎯 O Conceito Fundamental</h2>
+        <p>
+            O Modelo de Responsabilidade Compartilhada da AWS estabelece papéis definidos para a AWS
+            e para o cliente, garantindo a segurança e conformidade dos serviços utilizados na nuvem.
+            Este modelo ajuda a reduzir os encargos operacionais do cliente, pois a AWS opera, gerencia
+            e controla os componentes fundamentais do sistema.
+        </p>
+        <p>
+            A distinção principal neste modelo é feita entre a segurança <strong>"DA" nuvem</strong>
+            e a segurança <strong>"NA" nuvem</strong>.
+        </p>
+
+        <div class="split-box">
+            <div class="aws-box">
+                <h4>Responsabilidade da AWS: Segurança "DA" Nuvem</h4>
+                <p>
+                    A AWS é responsável pela <strong>proteção da infraestrutura global</strong> que
+                    executa todos os serviços oferecidos na Nuvem AWS. A AWS cuida de tudo aquilo que
+                    <strong>mantém a nuvem de pé rodando</strong>.<br><br>
+                    <strong>Inclui:</strong><br>
+                    • Infraestrutura Física e Instalações<br>
+                    • Hardware (servidores, armazenamento)<br>
+                    • Rede (componentes físicos, roteadores)<br>
+                    • Software de Infraestrutura (hypervisor)<br>
+                    • Controles Heredados
+                </p>
+            </div>
+
+            <div class="cliente-box">
+                <h4>Responsabilidade do Cliente: Segurança "NA" Nuvem</h4>
+                <p>
+                    O cliente é responsável por proteger os recursos e dados que utiliza na nuvem.
+                    Em outras palavras, o cliente é responsável por <strong>usar a nuvem de forma
+                    segura</strong>.<br><br>
+                    <strong>Inclui:</strong><br>
+                    • Dados do Cliente<br>
+                    • IAM (usuários, permissões, MFA)<br>
+                    • Sistema Operacional Convidado<br>
+                    • Aplicações<br>
+                    • Configuração de Segurança de Rede<br>
+                    • Criptografia
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>⚖️ Controles Compartilhados</h2>
+        <p>
+            Existem controles que são de responsabilidade <strong>compartilhada</strong> entre AWS e
+            cliente, mas em contextos diferentes:
+        </p>
+
+        <table class="comparison-table">
+            <thead>
+            <tr>
+                <th>Controle</th>
+                <th>Responsabilidade da AWS</th>
+                <th>Responsabilidade do Cliente</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>Gerenciamento de Patches</strong></td>
+                <td>Aplicação de patches na infraestrutura subjacente</td>
+                <td>Aplicação de patches no SO convidado (EC2) e aplicativos</td>
+            </tr>
+            <tr>
+                <td><strong>Gerenciamento de Configuração</strong></td>
+                <td>Manter configuração dos dispositivos de infraestrutura</td>
+                <td>Configuração de bancos de dados, aplicativos e SO convidado</td>
+            </tr>
+            <tr>
+                <td><strong>Conhecimento e Treinamento</strong></td>
+                <td>Treinamento de funcionários da AWS</td>
+                <td>Treinamento dos próprios funcionários</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="content-card">
+        <h2>🏗️ Variação por Tipo de Serviço (IaaS, PaaS, SaaS)</h2>
+        <p>
+            A quantidade de responsabilidade do cliente varia significativamente dependendo do serviço
+            da AWS selecionado. <strong>Quanto mais abstraído o serviço, mais responsabilidade de
+            gerenciamento é transferida para a AWS.</strong>
+        </p>
+
+        <div class="highlight-box">
+            <h4>IaaS - Infrastructure as a Service (Amazon EC2)</h4>
+            <p>
+                <strong>CLIENTE TEM O MAIOR CONTROLE</strong><br><br>
+                O cliente é responsável pelo SO convidado, atualizações, aplicações, dados, IAM e
+                security group. A AWS é responsável pela infraestrutura global (hardware, rede,
+                virtualização).<br><br>
+                <strong>Exemplo:</strong> Para uma instância EC2, o cliente deve manter o Sistema
+                Operacional atualizado com todos os patches de segurança necessários, bem como
+                configurar o security group.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>PaaS - Platform as a Service (AWS Lambda, Amazon RDS)</h4>
+            <p>
+                <strong>RESPONSABILIDADE INTERMEDIÁRIA</strong><br><br>
+                A AWS cuida da infraestrutura e, geralmente, do SO subjacente. No Lambda, o cliente
+                gerencia o código das funções. Em RDS, a responsabilidade pelo SO e configuração de
+                rede é transferida para a AWS, mas o cliente ainda é responsável por dados, IAM e
+                configuração do firewall.
+            </p>
+        </div>
+
+        <div class="success-box">
+            <h4>SaaS/Abstrato - Software as a Service (Amazon S3, DynamoDB)</h4>
+            <p>
+                <strong>AWS ASSUME A MAIOR PARTE DA RESPONSABILIDADE</strong><br><br>
+                A AWS opera a infraestrutura, o SO e as plataformas. Mais segurança é transferida
+                para a AWS, incluindo proteção de dados em repouso e proteção de tráfego de rede
+                para dados em trânsito. O cliente se concentra no <strong>gerenciamento de dados</strong>,
+                classificação, uso de ferramentas IAM e configuração do serviço.
+            </p>
+        </div>
+
+        <h3>Tabela Comparativa de Responsabilidades</h3>
+        <table class="comparison-table">
+            <thead>
+            <tr>
+                <th>Responsabilidade</th>
+                <th>IaaS (EC2)</th>
+                <th>PaaS (RDS, Lambda)</th>
+                <th>SaaS (S3, DynamoDB)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>Infraestrutura Global</strong></td>
+                <td>AWS</td>
+                <td>AWS</td>
+                <td>AWS</td>
+            </tr>
+            <tr>
+                <td><strong>SO Convidado & Rede</strong></td>
+                <td>Cliente</td>
+                <td>AWS</td>
+                <td>AWS</td>
+            </tr>
+            <tr>
+                <td><strong>Plataforma/Aplicações</strong></td>
+                <td>Cliente</td>
+                <td>AWS</td>
+                <td>AWS</td>
+            </tr>
+            <tr>
+                <td><strong>Proteção Dados em Repouso</strong></td>
+                <td>Cliente</td>
+                <td>Cliente</td>
+                <td>AWS</td>
+            </tr>
+            <tr>
+                <td><strong>Proteção Dados em Trânsito</strong></td>
+                <td>Cliente</td>
+                <td>Cliente</td>
+                <td>AWS</td>
+            </tr>
+            <tr>
+                <td><strong>Dados, IAM, Configuração</strong></td>
+                <td>Cliente</td>
+                <td>Cliente</td>
+                <td>Cliente</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="content-card">
+        <h2>📋 Classificações Formais de Controles</h2>
+
+        <div class="success-box">
+            <h4>A. Controles Heredados (AWS Responsável)</h4>
+            <p>
+                Controles que o cliente <strong>herda completamente da AWS</strong>. O cliente não
+                precisa se preocupar em implementá-los ou verificá-los.<br><br>
+                <strong>Exemplos:</strong><br>
+                • Controles Físicos e Ambientais<br>
+                • Segurança física das instalações e data centers<br>
+                • Gestão de geradores, energia e ar-condicionado
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>B. Controles Compartilhados (AWS e Cliente)</h4>
+            <p>
+                Aplicam-se tanto à camada de infraestrutura quanto às camadas do cliente, mas em
+                contextos distintos.<br><br>
+                • <strong>Gerenciamento de Patches:</strong> AWS para infraestrutura, Cliente para SO/apps<br>
+                • <strong>Gerenciamento de Configuração:</strong> AWS para dispositivos, Cliente para recursos<br>
+                • <strong>Conhecimento e Treinamento:</strong> Cada um treina seus próprios funcionários
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>C. Controles Específicos do Cliente</h4>
+            <p>
+                São controles de responsabilidade <strong>exclusiva do cliente</strong> com base na
+                aplicação que ele implanta nos serviços.<br><br>
+                <strong>Exemplo:</strong> Proteção ou zona de segurança de serviços e comunicação,
+                que pode exigir que o cliente roteie dados para ambientes de segurança específicos.
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>⚠️ Desafios e Práticas Recomendadas</h2>
+
+        <div class="danger-box">
+            <h4>O Cliente Causa a Maioria das Falhas</h4>
+            <p>
+                É essencial que as organizações entendam o seu papel na segurança, pois a falta de
+                controles adequados é frequentemente citada como a principal causa de falhas de
+                segurança na nuvem.<br><br>
+                <strong>ESTATÍSTICA IMPORTANTE:</strong> Prevê-se que, até 2025, <strong>99% das
+                falhas de segurança na nuvem serão culpa do cliente</strong>.
+            </p>
+        </div>
+
+        <div class="warning-box">
+            <h4>O Perigo das Configurações Padrão</h4>
+            <p>
+                As configurações padrão da AWS podem fornecer um nível básico de proteção, mas são
+                <strong>provavelmente insuficientes</strong> para os requisitos específicos de
+                segurança e conformidade da sua organização.<br><br>
+                <strong>Você é responsável por garantir que os controles de segurança apropriados
+                estejam ativos.</strong> Por exemplo, se você não habilitar MFA ou configurar
+                credenciais de usuário inadequadas, você será responsável por qualquer violação de
+                dados resultante.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>Dicas para Cumprir Suas Responsabilidades</h4>
+            <p>
+                <strong>1. NÃO ASSUMA COBERTURA TOTAL:</strong> Não presuma que todos os aspectos da
+                segurança são tratados exclusivamente pela AWS.<br><br>
+                <strong>2. CONFIGURAÇÕES CORRETAS:</strong> As configurações padrão podem ser
+                insuficientes para seus requisitos específicos.<br><br>
+                <strong>3. SEGURANÇA PROATIVA:</strong> Tome medidas proativas como monitoramento,
+                patching e avaliações de segurança regulares.<br><br>
+                <strong>4. IAM ADEQUADO:</strong> Implemente práticas adequadas de IAM, incluindo MFA
+                e gerenciamento de credenciais.
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>Responsabilidades Detalhadas do Cliente</h4>
+            <p>
+                <strong>DADOS DO CLIENTE:</strong> O cliente é o único responsável por gerenciar,
+                armazenar e controlar o acesso, incluindo escolha das opções de criptografia e gestão
+                das chaves.<br><br>
+                <strong>GERENCIAMENTO DE ACESSO (IAM):</strong> Implementação adequada de práticas de
+                IAM, incluindo criação de usuários/funções/permissões e configuração de MFA.<br><br>
+                <strong>CONFIGURAÇÃO DE REDE E FIREWALL:</strong> Configuração correta de regras de
+                Security Group, Network ACLs e VPCs para controlar o fluxo de tráfego.
+            </p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>🎓 Pontos-Chave para a Certificação</h2>
+
+        <div class="warning-box">
+            <h4>Conceitos Essenciais para o Exame</h4>
+            <p>
+                ✅ <strong>SEGURANÇA "DA" NUVEM:</strong> AWS é responsável pela infraestrutura que
+                mantém a nuvem funcionando (hardware, rede, virtualização).<br><br>
+                ✅ <strong>SEGURANÇA "NA" NUVEM:</strong> Cliente é responsável por usar a nuvem de
+                forma segura (dados, IAM, SO, aplicações).<br><br>
+                ✅ <strong>IaaS (EC2):</strong> Cliente tem maior responsabilidade - gerencia SO,
+                patches, aplicações, dados.<br><br>
+                ✅ <strong>PaaS (RDS, Lambda):</strong> AWS gerencia SO e plataforma, cliente gerencia
+                dados e código.<br><br>
+                ✅ <strong>SaaS (S3, DynamoDB):</strong> AWS assume mais responsabilidade, cliente
+                foca em dados e configuração.<br><br>
+                ✅ <strong>CONTROLES COMPARTILHADOS:</strong> Patches, configuração e treinamento são
+                compartilhados em contextos diferentes.<br><br>
+                ✅ <strong>99% DAS FALHAS:</strong> São causadas por configurações inadequadas do
+                cliente, não pela AWS.<br><br>
+                ✅ <strong>MFA E IAM:</strong> Cliente DEVE habilitar e configurar corretamente as
+                ferramentas de segurança da AWS.<br><br>
+                ✅ <strong>REGRA DE OURO:</strong> AWS cuida do que mantém a nuvem rodando, Cliente
+                cuida do que coloca NA nuvem.
+            </p>
+        </div>
+    </div>
+
+    <center>
+        <a class="link-voltar" href="/materiais">Voltar para Materiais</a>
+    </center>
+</div>
+</body>
+</html>
